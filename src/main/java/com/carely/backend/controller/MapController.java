@@ -10,6 +10,7 @@ import com.carely.backend.repository.RefreshRepository;
 import com.carely.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,19 +30,22 @@ public class MapController implements MapAPI {
     public ResponseEntity<ResponseDTO> findUsersByCityAndOptionalUserTypes(
             @RequestParam("city") String city,
             @RequestParam(value = "userType", required = false) List<UserType> userTypes) {
+        String kakaoId = SecurityContextHolder.getContext().getAuthentication().getName();
+
 
         List<MapUserDTO> res;
 
-        if (userTypes == null || userTypes.isEmpty()) {
+        if (userTypes == null || userTypes.isEmpty() ||userTypes.contains(UserType.ALL)) {
             // userType이 없을 경우
-            res = userService.findUserByAddress(city);
+            res = userService.findUserByAddress(city, kakaoId);
         } else {
             // userType이 있을 경우
-            res = userService.findUsersByCityAndUserTypes(city, userTypes);
+            res = userService.findUsersByCityAndUserTypes(city, userTypes, kakaoId);
         }
 
         return ResponseEntity
                 .status(SuccessCode.SUCCESS_RETRIEVE_USER.getStatus().value())
                 .body(new ResponseDTO<>(SuccessCode.SUCCESS_RETRIEVE_USER, res));
     }
+
 }

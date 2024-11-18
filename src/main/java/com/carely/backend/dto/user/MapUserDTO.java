@@ -2,6 +2,7 @@ package com.carely.backend.dto.user;
 
 import com.carely.backend.domain.User;
 import com.carely.backend.domain.enums.UserType;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import org.json.JSONObject;
 
@@ -17,22 +18,48 @@ import java.net.URL;
 @Setter
 public class MapUserDTO {
     private Long userId;
-    private String story;
-    private UserType userType;
+    // 이름
+    private String username;
+    // 도시
     private String city;
+    // 주소
     private String address;
+    // 상세 주소
     private String detailAddress;
+    // 타입
+    private UserType userType;
+    // 내 위치 공유 여부
+    private Boolean shareLocation;
+    // 위도 경도
+    @Setter
     private double latitude;
+    @Setter
     private double longitude;
+
+    private String talk;
+    private String eat;
+    private String toilet;
+    private String bath;
+    private String walk;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Setter
+    private Long togetherTime;
 
     public MapUserDTO toDTO(User user) {
         MapUserDTO mapUserDTO =  MapUserDTO.builder()
                 .userId(user.getId())
-                .story(user.getStory())
+                .username(user.getUsername())
+                .shareLocation(user.getShareLocation())
+                .talk(user.getTalk())
+                .eat(user.getEat())
+                .toilet(user.getToilet())
+                .bath(user.getBath())
+                .walk(user.getWalk())
                 .userType(user.getUserType())
                 .city(user.getCity())
                 .address(user.getAddress())
                 .detailAddress(user.getDetailAddress())
+                .togetherTime(togetherTime)
                 .build();
 
         getLocation(mapUserDTO);
@@ -80,4 +107,5 @@ public class MapUserDTO {
         }
     }
 }
+
 
