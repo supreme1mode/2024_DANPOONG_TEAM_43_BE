@@ -46,8 +46,58 @@ public class SwaggerConfig {
                 .addSecurityItem(securityRequirement)
                 .servers(List.of(testServer));
 
-
+        addLogoutPath(openAPI);
         return openAPI;
+    }
+
+    private void addLogoutPath(OpenAPI openAPI) {
+        Parameter refreshParameter = new Parameter()
+                .name("refresh")
+                .in("header")
+                .required(true)
+                .schema(new Schema<String>().type("string"))
+                .description("리프레시 토큰");
+
+        ApiResponse successResponse = new ApiResponse()
+                .description("성공적으로 로그아웃된 경우")
+                .content(new Content()
+                        .addMediaType("application/json", new MediaType()
+                                .schema(new Schema<>()
+                                        .addProperty("status", new Schema<Integer>().type("integer"))
+                                        .addProperty("code", new Schema<String>().type("string"))
+                                        .addProperty("message", new Schema<String>().type("string"))
+                                        .addProperty("data", new Schema<String>().type("string").nullable(true)))
+                                .example("{ \"status\": 200, \"code\": \"SUCCESS_LOGOUT\", \"message\": \"성공적으로 로그아웃했습니다.\", \"data\": null }")));
+
+        ApiResponse invalidRequestResponse = new ApiResponse()
+                .description("인증 정보가 유효하지 않을 경우")
+                .content(new Content()
+                        .addMediaType("application/json", new MediaType()
+                                .schema(new Schema<>()
+                                        .addProperty("status", new Schema<Integer>().type("integer"))
+                                        .addProperty("code", new Schema<String>().type("string"))
+                                        .addProperty("message", new Schema<String>().type("string"))
+                                        .addProperty("data", new Schema<String>().type("string").nullable(true)))
+                                .addExamples("TOKEN_EXPIRED", new Example()
+                                        .value("{ \"status\": 401, \"code\": \"TOKEN_EXPIRED\", \"message\": \"토큰이 만료되었습니다.\", \"data\": null }"))
+                                .addExamples("TOKEN_MISSING", new Example()
+                                        .value("{ \"status\": 401, \"code\": \"TOKEN_MISSING\", \"message\": \"요청 헤더에 토큰이 없습니다.\", \"data\": null }"))
+                                .addExamples("INVALID_REFRESH_TOKEN", new Example()
+                                        .value("{ \"status\": 401, \"code\": \"INVALID_REFRESH_TOKEN\", \"message\": \"유효하지 않은 리프레시 토큰입니다.\", \"data\": null }"))));
+
+        ApiResponses apiResponses = new ApiResponses();
+        apiResponses.addApiResponse("200", successResponse);
+        apiResponses.addApiResponse("401", invalidRequestResponse);
+
+        PathItem pathItem = new PathItem()
+                .post(new io.swagger.v3.oas.models.Operation()
+                        .addTagsItem("user-controller")
+                        .summary("로그아웃하기")
+                        .description("refresh 토큰을 헤더에 추가하여 로그아웃을 진행합니다.")
+                        .addParametersItem(refreshParameter)
+                        .responses(apiResponses));
+
+        openAPI.path("/logout", pathItem); // 경로 추가
     }
 
 }
