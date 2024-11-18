@@ -133,4 +133,12 @@ public class UserService {
 
         return UserResponseDTO.VerificationAddress.toDTO(user);
     }
+
+    public Long getUserId(String kakaoId) {
+        User user = userRepository.findByKakaoId(kakaoId)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        return user.getId();
+    }
+
 }

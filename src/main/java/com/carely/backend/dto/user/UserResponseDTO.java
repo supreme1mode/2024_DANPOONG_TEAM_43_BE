@@ -22,13 +22,15 @@ public class UserResponseDTO {
     public static class Group {
         private Long userId;
         private String username;
-        private com.carely.backend.domain.enums.UserType userType;
+        private UserType userType;
+        private Long timeTogether; // 새로운 필드
 
-        public static Group toDTO(User user) {
+        public static Group toDTO(User user, long timeTogether) {
             return Group.builder()
                     .userId(user.getId())
                     .username(user.getUsername())
                     .userType(user.getUserType())
+                    .timeTogether(timeTogether)
                     .build();
         }
     }
