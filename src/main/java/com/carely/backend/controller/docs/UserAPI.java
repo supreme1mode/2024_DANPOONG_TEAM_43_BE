@@ -2,6 +2,7 @@ package com.carely.backend.controller.docs;
 
 import com.carely.backend.dto.response.ErrorResponseDTO;
 import com.carely.backend.dto.response.ResponseDTO;
+import com.carely.backend.dto.user.AddressDTO;
 import com.carely.backend.dto.user.RegisterDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -14,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -75,5 +77,16 @@ public interface UserAPI {
     @Operation(summary = "카카오 로그인", description = "카카오 code를 이용한 로그인")
     public ResponseEntity<?> kakaoCallback(@RequestParam("code") String code, HttpServletResponse response) throws IOException;
 
+    @Operation(summary = "현재 로그인한 유저 정보 조회하기", description = "현재 로그인한 유저 정보를 조회합니다.")
+    public ResponseEntity<ResponseDTO> getMypage();
+
+    @Operation(summary = "유저 상세 정보 조회하기", description = "유저의 상세 정보를 조회합니다.")
+    public ResponseEntity<ResponseDTO> getDetailUseInfo(@PathVariable("userId") Long userId);
+
+    @Operation(summary = "위치 인증 여부 확인하기", description = "사용자가 위치를 인증했는지 확인합니다.")
+    public ResponseEntity<ResponseDTO> verifyAuthentication();
+
+    @Operation(summary = "주소를 전달해 위치 인증하기", description = "주소를 전달해 위치 인증을 진행합니다.")
+    public ResponseEntity<ResponseDTO> verifyAuthenticationPost(@RequestBody() AddressDTO addressDTO);
 
 }

@@ -6,10 +6,7 @@ import com.carely.backend.controller.docs.UserAPI;
 import com.carely.backend.domain.RefreshEntity;
 import com.carely.backend.domain.User;
 import com.carely.backend.dto.response.ResponseDTO;
-import com.carely.backend.dto.user.CustomUserDetails;
-import com.carely.backend.dto.user.MyPageDTO;
-import com.carely.backend.dto.user.NotUserDTO;
-import com.carely.backend.dto.user.RegisterDTO;
+import com.carely.backend.dto.user.*;
 import com.carely.backend.jwt.JWTUtil;
 import com.carely.backend.repository.RefreshRepository;
 import com.carely.backend.service.UserService;
@@ -25,10 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -99,6 +93,46 @@ public class UserController implements UserAPI {
         response.getWriter().write(jsonResponse);
 
         return ResponseEntity.ok().build(); // 빈 응답 반환
+    }
+
+    @GetMapping("/mypage")
+    public ResponseEntity<ResponseDTO> getMypage() {
+        String kakaoId = SecurityContextHolder.getContext().getAuthentication().getName();
+        MyPageDTO.DetailRes res = userService.getMypage(kakaoId);
+
+        return ResponseEntity
+                .status(SuccessCode.SUCCESS_RETRIEVE_USER.getStatus().value())
+                .body(new ResponseDTO<>(SuccessCode.SUCCESS_RETRIEVE_USER, res));
+    }
+
+    @GetMapping("/user-info/detail/{userId}")
+    public ResponseEntity<ResponseDTO> getDetailUseInfo(@PathVariable("userId") Long userId) {
+        String kakaoId = SecurityContextHolder.getContext().getAuthentication().getName();
+        MyPageDTO.DetailRes res = userService.getDetailUserInfo(userId, kakaoId);
+
+        return ResponseEntity
+                .status(SuccessCode.SUCCESS_RETRIEVE_USER.getStatus().value())
+                .body(new ResponseDTO<>(SuccessCode.SUCCESS_RETRIEVE_USER, res));
+    }
+
+    @GetMapping("/verify-authentication")
+    public ResponseEntity<ResponseDTO> verifyAuthentication() {
+        String kakaoId = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserResponseDTO.Verification res = userService.verifyAuthentication(kakaoId);
+
+        return ResponseEntity
+                .status(SuccessCode.SUCCESS_RETRIEVE_LOCATION_VERIFICATION.getStatus().value())
+                .body(new ResponseDTO<>(SuccessCode.SUCCESS_RETRIEVE_LOCATION_VERIFICATION, res));
+    }
+
+    @PostMapping("/verify-authentication")
+    public ResponseEntity<ResponseDTO> verifyAuthenticationPost(@RequestBody() AddressDTO addressDTO) {
+        String kakaoId = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserResponseDTO.VerificationAddress res = userService.verifyAuthenticationPost(kakaoId, addressDTO);
+
+        return ResponseEntity
+                .status(SuccessCode.SUCCESS_LOCATION_VERIFICATION.getStatus().value())
+                .body(new ResponseDTO<>(SuccessCode.SUCCESS_LOCATION_VERIFICATION, res));
     }
 
     @PostMapping("/reissue")

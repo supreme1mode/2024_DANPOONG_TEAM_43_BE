@@ -2,16 +2,23 @@ package com.carely.backend.service;
 
 import com.carely.backend.domain.User;
 import com.carely.backend.domain.enums.UserType;
-import com.carely.backend.dto.user.RegisterDTO;
+import com.carely.backend.dto.user.*;
 import com.carely.backend.exception.DuplicateUsernameException;
 import com.carely.backend.repository.UserRepository;
 import com.carely.backend.service.kakao.KakaoAddressService;
 import com.carely.backend.service.parser.AddressParser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -63,5 +70,67 @@ public class UserService {
                 .build();
 
         return RegisterDTO.Res.toDTO(userRepository.save(user));
+    }
+
+    public MyPageDTO.DetailRes getMypage(String kakaoId) {
+        User user = userRepository.findByKakaoId(kakaoId)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        return MyPageDTO.DetailRes.toDTO(user);
+    }
+
+    public MyPageDTO.DetailRes getDetailUserInfo(Long userId, String kakaoId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        return MyPageDTO.DetailRes.toDTO(user);
+    }
+
+    public List<MapUserDTO> findUserByAddress(String city) {
+        // 도시별로 필터링, 데이터가 없으면 빈 리스트 반환
+        List<User> users = userRepository.findByCity(city);
+
+        return users.stream()
+                .map(user -> new MapUserDTO().toDTO(user))
+                .collect(Collectors.toList()); // 빈 리스트도 collect로 반환
+    }
+
+
+
+    @Transactional(readOnly = true)
+    public List<MapUserDTO> findUsersByCityAndUserTypes(String city, List<UserType> userTypes) {
+        List<User> users = userRepository.findByCityAndUserTypeIn(city, userTypes);
+
+        return users.stream()
+                .map(user -> new MapUserDTO().toDTO(user))
+                .collect(Collectors.toList()); // 빈 리스트도 collect로 반환
+    }
+
+    public UserResponseDTO.Verification verifyAuthentication(String kakaoId) {
+        User user = userRepository.findByKakaoId(kakaoId)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        return UserResponseDTO.Verification.toDTO(user);
+    }
+
+    public UserResponseDTO.VerificationAddress verifyAuthenticationPost(String kakaoId, AddressDTO addressDTO) {
+        User user = userRepository.findByKakaoId(kakaoId)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        String address = addressDTO.getAddress();
+        String detailAddress = addressDTO.getDetailAddress();
+
+        KakaoAddressService kakaoAddressService = new KakaoAddressService();
+        String jsonResponse = kakaoAddressService.getAddressDetails(address);
+        String[] addressDetails = AddressParser.parseAddress(jsonResponse);
+
+        String city = addressDetails[1]; // 시/군 정보
+
+        user.updateUserAddress(address, detailAddress, city);
+
+
+        userRepository.save(user);
+
+        return UserResponseDTO.VerificationAddress.toDTO(user);
     }
 }
