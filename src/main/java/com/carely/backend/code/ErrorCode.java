@@ -29,6 +29,12 @@ public enum ErrorCode {
      */
     DUPLICATE_USERNAME(HttpStatus.CONFLICT, "중복된 카카오 아이디입니다."),
     ALREADY_IN_GROUP(HttpStatus.CONFLICT, "이미 가입되어 있는 유저입니다."),
+
+    /**
+     * 500
+     */
+    KAKAO_EXCEPTION(HttpStatus.OK, "카카오 API 사용 중 에러가 발생했습니다."),
+
     ;
     private final HttpStatus status;
     private final String message;

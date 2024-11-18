@@ -20,6 +20,12 @@ public class GlobalHandleException {
                 .body(new ErrorResponseDTO(ErrorCode.DUPLICATE_USERNAME));
     }
 
+    @ExceptionHandler(KakaoException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleKakaoException(final KakaoException e) {
+        return ResponseEntity
+                .status(ErrorCode.KAKAO_EXCEPTION.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.KAKAO_EXCEPTION));
+    }
     /**
      * 입력값 검증
      */
