@@ -1,6 +1,6 @@
-package _oorm.caregiver.backend.dto.chat;
+package com.carely.backend.dto.chat;
 
-import _oorm.caregiver.backend.domain.chat.ChatRoomEntity;
+import com.carely.backend.domain.ChatRoomEntity;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,7 +15,7 @@ public class ChatRoomDTO {
     private String lastMessage;
     private LocalDateTime lastUpdated;
 
-    public ChatRoomDTO(ChatRoomEntity chatRoomEntity) {
+    public ChatRoomDTO(com.carely.backend.domain.ChatRoomEntity chatRoomEntity) {
         this.roomId = chatRoomEntity.getRoomId();
         this.user1 = chatRoomEntity.getUser1();
         this.user2 = chatRoomEntity.getUser2();

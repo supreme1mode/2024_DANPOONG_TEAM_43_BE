@@ -1,4 +1,4 @@
-package _oorm.caregiver.backend.dto.chat;
+package com.carely.backend.dto.chat;
 
 import lombok.Getter;
 

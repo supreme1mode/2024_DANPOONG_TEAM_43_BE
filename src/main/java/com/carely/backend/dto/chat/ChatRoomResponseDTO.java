@@ -1,17 +1,15 @@
-package _oorm.caregiver.backend.dto.chat;
+package com.carely.backend.dto.chat;
 
-import _oorm.caregiver.backend.domain.SuperUser;
-import _oorm.caregiver.backend.domain.chat.ChatRoomEntity;
-import _oorm.caregiver.backend.domain.enums.UserType;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.*;
+
+import com.carely.backend.domain.ChatRoomEntity;
+import com.carely.backend.domain.User;
+import com.carely.backend.domain.enums.UserType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 @Getter
 @Builder
@@ -28,7 +26,7 @@ public class ChatRoomResponseDTO {
     private LocalDateTime lastUpdated = LocalDateTime.now(); // 가장 최근 메시지를 보낸 시간
     private boolean isBlocked; // 방 차단 상태
 
-    public static ChatRoomResponseDTO toDTO(ChatRoomEntity room, SuperUser user) {
+    public static ChatRoomResponseDTO toDTO(ChatRoomEntity room, User user) {
         return ChatRoomResponseDTO.builder()
                 .roomId(room.getRoomId())
                 .receiverId(user.getId())
