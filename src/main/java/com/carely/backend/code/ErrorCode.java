@@ -23,6 +23,7 @@ public enum ErrorCode {
      * 404
      */
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
+    TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "데이터베이스에서 토큰을 찾을 수 없습니다."),
 
     /**
      * 409

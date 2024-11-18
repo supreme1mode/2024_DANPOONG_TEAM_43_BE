@@ -2,6 +2,7 @@ package com.carely.backend.controller;
 
 import com.carely.backend.code.ErrorCode;
 import com.carely.backend.code.SuccessCode;
+import com.carely.backend.controller.docs.UserAPI;
 import com.carely.backend.domain.RefreshEntity;
 import com.carely.backend.domain.User;
 import com.carely.backend.dto.response.ResponseDTO;
@@ -36,7 +37,7 @@ import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
-public class UserController {
+public class UserController implements UserAPI {
     private final UserService userService;
     private final KakaoLoginService kakaoLoginService;
     private final RefreshRepository refreshRedisRepository;
