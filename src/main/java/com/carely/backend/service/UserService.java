@@ -2,10 +2,7 @@ package com.carely.backend.service;
 
 import com.carely.backend.domain.User;
 import com.carely.backend.domain.enums.UserType;
-import com.carely.backend.dto.user.MapUserDTO;
-import com.carely.backend.dto.user.MyPageDTO;
-import com.carely.backend.dto.user.RegisterDTO;
-import com.carely.backend.dto.user.UserResponseDTO;
+import com.carely.backend.dto.user.*;
 import com.carely.backend.exception.DuplicateUsernameException;
 import com.carely.backend.repository.UserRepository;
 import com.carely.backend.service.kakao.KakaoAddressService;
@@ -109,4 +106,31 @@ public class UserService {
                 .collect(Collectors.toList()); // 빈 리스트도 collect로 반환
     }
 
+    public UserResponseDTO.Verification verifyAuthentication(String kakaoId) {
+        User user = userRepository.findByKakaoId(kakaoId)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        return UserResponseDTO.Verification.toDTO(user);
+    }
+
+    public UserResponseDTO.VerificationAddress verifyAuthenticationPost(String kakaoId, AddressDTO addressDTO) {
+        User user = userRepository.findByKakaoId(kakaoId)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        String address = addressDTO.getAddress();
+        String detailAddress = addressDTO.getDetailAddress();
+
+        KakaoAddressService kakaoAddressService = new KakaoAddressService();
+        String jsonResponse = kakaoAddressService.getAddressDetails(address);
+        String[] addressDetails = AddressParser.parseAddress(jsonResponse);
+
+        String city = addressDetails[1]; // 시/군 정보
+
+        user.updateUserAddress(address, detailAddress, city);
+
+
+        userRepository.save(user);
+
+        return UserResponseDTO.VerificationAddress.toDTO(user);
+    }
 }

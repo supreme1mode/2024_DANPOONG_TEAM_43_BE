@@ -6,10 +6,7 @@ import com.carely.backend.controller.docs.UserAPI;
 import com.carely.backend.domain.RefreshEntity;
 import com.carely.backend.domain.User;
 import com.carely.backend.dto.response.ResponseDTO;
-import com.carely.backend.dto.user.CustomUserDetails;
-import com.carely.backend.dto.user.MyPageDTO;
-import com.carely.backend.dto.user.NotUserDTO;
-import com.carely.backend.dto.user.RegisterDTO;
+import com.carely.backend.dto.user.*;
 import com.carely.backend.jwt.JWTUtil;
 import com.carely.backend.repository.RefreshRepository;
 import com.carely.backend.service.UserService;
@@ -116,6 +113,26 @@ public class UserController implements UserAPI {
         return ResponseEntity
                 .status(SuccessCode.SUCCESS_RETRIEVE_USER.getStatus().value())
                 .body(new ResponseDTO<>(SuccessCode.SUCCESS_RETRIEVE_USER, res));
+    }
+
+    @GetMapping("/verify-authentication")
+    public ResponseEntity<ResponseDTO> verifyAuthentication() {
+        String kakaoId = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserResponseDTO.Verification res = userService.verifyAuthentication(kakaoId);
+
+        return ResponseEntity
+                .status(SuccessCode.SUCCESS_RETRIEVE_LOCATION_VERIFICATION.getStatus().value())
+                .body(new ResponseDTO<>(SuccessCode.SUCCESS_RETRIEVE_LOCATION_VERIFICATION, res));
+    }
+
+    @PostMapping("/verify-authentication")
+    public ResponseEntity<ResponseDTO> verifyAuthenticationPost(@RequestBody() AddressDTO addressDTO) {
+        String kakaoId = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserResponseDTO.VerificationAddress res = userService.verifyAuthenticationPost(kakaoId, addressDTO);
+
+        return ResponseEntity
+                .status(SuccessCode.SUCCESS_LOCATION_VERIFICATION.getStatus().value())
+                .body(new ResponseDTO<>(SuccessCode.SUCCESS_LOCATION_VERIFICATION, res));
     }
 
     @PostMapping("/reissue")
