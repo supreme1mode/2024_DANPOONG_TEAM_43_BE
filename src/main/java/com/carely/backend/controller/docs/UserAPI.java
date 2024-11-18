@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -75,5 +76,9 @@ public interface UserAPI {
     @Operation(summary = "카카오 로그인", description = "카카오 code를 이용한 로그인")
     public ResponseEntity<?> kakaoCallback(@RequestParam("code") String code, HttpServletResponse response) throws IOException;
 
+    @Operation(summary = "현재 로그인한 유저 정보 조회하기", description = "현재 로그인한 유저 정보를 조회합니다.")
+    public ResponseEntity<ResponseDTO> getMypage();
 
+    @Operation(summary = "유저 상세 정보 조회하기", description = "유저의 상세 정보를 조회합니다.")
+    public ResponseEntity<ResponseDTO> getDetailUseInfo(@PathVariable("userId") Long userId);
 }

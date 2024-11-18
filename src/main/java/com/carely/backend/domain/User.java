@@ -19,6 +19,7 @@ import java.util.Set;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "SuperUser")  // SuperUser 테이블 사용
 public class User extends BaseEntity {
 
     @Id
