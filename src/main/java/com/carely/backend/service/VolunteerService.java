@@ -4,11 +4,10 @@ package com.carely.backend.service;
 import com.carely.backend.domain.ChatMessageEntity;
 import com.carely.backend.domain.User;
 import com.carely.backend.domain.Volunteer;
+import com.carely.backend.domain.enums.UserType;
 import com.carely.backend.dto.volunteer.CreateVolunteerDTO;
 import com.carely.backend.dto.volunteer.GetVolunteerInfoDTO;
-import com.carely.backend.exception.ChatMessageNotFoundException;
-import com.carely.backend.exception.UserNotFoundException;
-import com.carely.backend.exception.VolunteerNotFoundException;
+import com.carely.backend.exception.*;
 import com.carely.backend.repository.ChatMessageRepository;
 import com.carely.backend.repository.UserRepository;
 import com.carely.backend.repository.VolunteerRepository;
@@ -28,8 +27,16 @@ public class VolunteerService {
         User volunteer = userRepository.findById(dto.getVolunteerId())
                 .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
 
+        if (volunteer.getUserType() == UserType.CAREGIVER) {
+            throw new UserMustNotCaregiverException("");
+        }
+
         User caregiver = userRepository.findById(dto.getCaregiverId())
                 .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
+
+        if (caregiver.getUserType() != UserType.CAREGIVER) {
+            throw new UserMustCaregiverException("");
+        }
 
         // Volunteer 객체 생성
         Volunteer volunteerEntity = Volunteer.builder()
