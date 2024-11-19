@@ -19,6 +19,8 @@ public enum ErrorCode {
     INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 액세스 토큰입니다."),
     TOKEN_MISSING(HttpStatus.UNAUTHORIZED, "요청 헤더에 토큰이 없습니다."),
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 리프레시 토큰입니다."),
+    USER_MUST_CAREGIVER(HttpStatus.UNAUTHORIZED, "요청하는 유저가 간병인이어야 합니다."),
+    USER_MUST_NOT_CAREGIVER(HttpStatus.UNAUTHORIZED, "요청하는 유저가 자원봉사자 혹은 요양보호사여야 합니다."),
 
     /**
      * 404
