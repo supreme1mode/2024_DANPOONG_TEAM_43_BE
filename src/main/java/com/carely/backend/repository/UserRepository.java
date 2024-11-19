@@ -14,4 +14,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findByCityAndUserTypeIn(String city, List<UserType> userTypes);
 
     List<User> findByUserTypeIn(List<UserType> userTypes);
+    List<User> findByUserType(UserType userType);
 }
