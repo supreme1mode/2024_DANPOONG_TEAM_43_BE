@@ -10,6 +10,7 @@ public enum ErrorCode {
      * 400
      */
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
+    NOT_VALID_ADDRESS(HttpStatus.BAD_REQUEST, "잘못된 주소입니다."),
 
     /**
      * 401
