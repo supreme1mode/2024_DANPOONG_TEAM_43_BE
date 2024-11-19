@@ -27,6 +27,9 @@ public class SwaggerConfig {
         Server testServer = new Server();
         testServer.setUrl("http://localhost:8080/");
 
+        Server deployServer = new Server();
+        deployServer.setUrl("https://carely-backend.site/");
+
         String jwt = "JWT";
         SecurityRequirement securityRequirement = new SecurityRequirement().addList(jwt);
         Components components = new Components().addSecuritySchemes(jwt, new SecurityScheme()
@@ -44,7 +47,7 @@ public class SwaggerConfig {
                         .description("2024 단풍톤 백엔드 carely API 명세서")
                         .version("1.0.0"))
                 .addSecurityItem(securityRequirement)
-                .servers(List.of(testServer));
+                .servers(List.of(deployServer, testServer));
 
         addLogoutPath(openAPI);
         return openAPI;
