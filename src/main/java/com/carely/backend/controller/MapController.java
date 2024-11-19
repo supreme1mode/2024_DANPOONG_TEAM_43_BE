@@ -32,16 +32,9 @@ public class MapController implements MapAPI {
             @RequestParam(value = "userType", required = false) List<UserType> userTypes) {
         String kakaoId = SecurityContextHolder.getContext().getAuthentication().getName();
 
-
         List<MapUserDTO> res;
 
-        if (userTypes == null || userTypes.isEmpty() ||userTypes.contains(UserType.ALL)) {
-            // userType이 없을 경우
-            res = userService.findUserByAddress(city, kakaoId);
-        } else {
-            // userType이 있을 경우
-            res = userService.findUsersByCityAndUserTypes(city, userTypes, kakaoId);
-        }
+        res = userService.findUsersByCityAndOptionalUserTypes(city, userTypes, kakaoId);
 
         return ResponseEntity
                 .status(SuccessCode.SUCCESS_RETRIEVE_USER.getStatus().value())

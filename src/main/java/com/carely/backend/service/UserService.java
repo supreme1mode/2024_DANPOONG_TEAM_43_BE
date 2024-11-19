@@ -97,30 +97,6 @@ public class UserService {
         return res;
     }
 
-    @Transactional(readOnly = true)
-    public List<MapUserDTO> findUsersByCityAndUserTypes(String city, List<UserType> userTypes, String kakaoId) {
-        User superUser = userRepository.findByKakaoId(kakaoId)
-                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
-
-        List<User> users = userRepository.findByCityAndUserTypeIn(city, userTypes);
-
-        return users.stream()
-                .map(user -> new MapUserDTO().toDTO(user, calculateTotalDuration(user, superUser)))
-                .collect(Collectors.toList()); // 빈 리스트도 collect로 반환
-    }
-
-
-    public List<MapUserDTO> findUserByAddress(String city, String kakaoId) {
-        User superUser = userRepository.findByKakaoId(kakaoId)
-                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
-        // 도시별로 필터링, 데이터가 없으면 빈 리스트 반환
-        List<User> users = userRepository.findByCity(city);
-
-        return users.stream()
-                .map(user -> new MapUserDTO().toDTO(user, calculateTotalDuration(user, superUser)))
-                .collect(Collectors.toList()); // 빈 리스트도 collect로 반환
-    }
-
     public UserResponseDTO.Verification verifyAuthentication(String kakaoId) {
         User user = userRepository.findByKakaoId(kakaoId)
                 .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
@@ -168,6 +144,36 @@ public class UserService {
                     return 0;
                 })
                 .sum();
+    }
+
+    @Transactional(readOnly = true)
+    public List<MapUserDTO> findUsersByCityAndOptionalUserTypes(String city, List<UserType> userTypes, String kakaoId) {
+        User superUser = userRepository.findByKakaoId(kakaoId)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        if (userTypes == null || userTypes.isEmpty() || userTypes.contains(UserType.ALL)) {
+            // userType이 없거나 'ALL' 포함된 경우
+            return findUserByAddress(city, superUser);
+        } else {
+            // userType이 명시되어 있는 경우
+            return findUsersByCityAndUserTypes(city, userTypes, superUser);
+        }
+    }
+
+    public List<MapUserDTO> findUsersByCityAndUserTypes(String city, List<UserType> userTypes, User superUser) {
+        List<User> users = userRepository.findByCityAndUserTypeIn(city, userTypes);
+
+        return users.stream()
+                .map(user -> new MapUserDTO().toDTO(user, calculateTotalDuration(user, superUser)))
+                .collect(Collectors.toList()); // 빈 리스트도 collect로 반환
+    }
+
+    public List<MapUserDTO> findUserByAddress(String city, User superUser) {
+        List<User> users = userRepository.findByCity(city);
+
+        return users.stream()
+                .map(user -> new MapUserDTO().toDTO(user, calculateTotalDuration(user, superUser)))
+                .collect(Collectors.toList()); // 빈 리스트도 collect로 반환
     }
 
 }
