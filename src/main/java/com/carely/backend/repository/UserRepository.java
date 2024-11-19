@@ -12,4 +12,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByKakaoId(String kakaoId);
     List<User> findByCity(String city);
     List<User> findByCityAndUserTypeIn(String city, List<UserType> userTypes);
+
+    List<User> findByUserTypeIn(List<UserType> userTypes);
 }
