@@ -45,7 +45,7 @@ public class MapUserDTO {
     @Setter
     private Long togetherTime;
 
-    public MapUserDTO toDTO(User user) {
+    public MapUserDTO toDTO(User user, Long togetherTime) {
         MapUserDTO mapUserDTO =  MapUserDTO.builder()
                 .userId(user.getId())
                 .username(user.getUsername())
