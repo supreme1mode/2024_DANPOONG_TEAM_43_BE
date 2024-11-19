@@ -48,6 +48,13 @@ public class GlobalHandleException {
                 .body(new ErrorResponseDTO(ErrorCode.CHAT_NOT_FOUND));
     }
 
+    @ExceptionHandler(NotValidAddressException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleNotValidAddressException(final NotValidAddressException e) {
+        return ResponseEntity
+                .status(ErrorCode.NOT_VALID_ADDRESS.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.NOT_VALID_ADDRESS));
+    }
+
     /**
      * 입력값 검증
      */
