@@ -179,4 +179,38 @@ public class UserService {
                 .collect(Collectors.toList()); // 빈 리스트도 collect로 반환
     }
 
+    public List<MapUserDTO> findAllUsers(String kakaoId) {
+        User viewer = userRepository.findByKakaoId(kakaoId)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        KakaoAddressService kakaoAddressService = new KakaoAddressService();
+        Map<String, Double> userAddress = kakaoAddressService.getLocationFromAddress(viewer.getAddress());
+        Double latitude = userAddress.get("latitude");
+        Double longitude = userAddress.get("longitude");
+
+        List<User> users = userRepository.findAll();
+
+        return users.stream()
+                .filter(user -> !user.getKakaoId().equals(kakaoId))  // 본인 제외
+                .map(user -> new MapUserDTO().toDTO(user, calculateTotalDuration(user, viewer), latitude, longitude))
+                .collect(Collectors.toList());  // 빈 리스트도 collect로 반환
+    }
+
+
+    public List<MapUserDTO> findAllUsersByCityAndUserTypes(List<UserType> userTypes, String kakaoId) {
+        User viewer = userRepository.findByKakaoId(kakaoId)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        KakaoAddressService kakaoAddressService = new KakaoAddressService();
+        Map<String, Double> userAddress = kakaoAddressService.getLocationFromAddress(viewer.getAddress());
+        Double latitude = userAddress.get("latitude");
+        Double longitude = userAddress.get("longitude");
+
+        List<User> users = userRepository.findByUserTypeIn(userTypes);
+
+        return users.stream()
+                .filter(user -> !user.getKakaoId().equals(kakaoId))  // 본인 제외
+                .map(user -> new MapUserDTO().toDTO(user, calculateTotalDuration(user, viewer), latitude, longitude))
+                .collect(Collectors.toList());  // 빈 리스트도 collect로 반환
+    }
 }

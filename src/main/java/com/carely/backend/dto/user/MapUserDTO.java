@@ -19,9 +19,6 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MapUserDTO {
-    @Autowired
-    private KakaoAddressService kakaoAddressService;;
-
     private Long userId;
     // 이름
     private String username;
@@ -79,8 +76,12 @@ public class MapUserDTO {
         Map<String, Double> location = kakaoAddressService.getLocationFromAddress(mapUserDTO.getAddress());
 
         // 위도, 경도 설정
-        mapUserDTO.setLatitude(location.get("latitude"));
-        mapUserDTO.setLongitude(location.get("longitude"));
+        Double latitude = location.get("latitude");
+        Double longitude = location.get("longitude");
+
+        mapUserDTO.setLatitude(latitude != null ? latitude : 0.0); // 기본값 0.0 사용
+        mapUserDTO.setLongitude(longitude != null ? longitude : 0.0); // 기본값 0.0 사용
+
     }
 
     // 거리 계산

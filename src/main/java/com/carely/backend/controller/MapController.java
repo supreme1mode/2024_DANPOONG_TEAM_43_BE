@@ -26,15 +26,36 @@ public class MapController implements MapAPI {
     private final RefreshRepository refreshRedisRepository;
     private final UserService userService;
 
-    @GetMapping("/user-list")
+//    @GetMapping("/user-list")
+//    public ResponseEntity<ResponseDTO> findUsersByCityAndOptionalUserTypes(
+//            @RequestParam("city") String city,
+//            @RequestParam(value = "userType", required = false) List<UserType> userTypes) {
+//        String kakaoId = SecurityContextHolder.getContext().getAuthentication().getName();
+//
+//        List<MapUserDTO> res;
+//
+//        res = userService.findUsersByCityAndOptionalUserTypes(city, userTypes, kakaoId);
+//
+//        return ResponseEntity
+//                .status(SuccessCode.SUCCESS_RETRIEVE_USER.getStatus().value())
+//                .body(new ResponseDTO<>(SuccessCode.SUCCESS_RETRIEVE_USER, res));
+//    }
+
+    @GetMapping("/list")
     public ResponseEntity<ResponseDTO> findUsersByCityAndOptionalUserTypes(
-            @RequestParam("city") String city,
             @RequestParam(value = "userType", required = false) List<UserType> userTypes) {
         String kakaoId = SecurityContextHolder.getContext().getAuthentication().getName();
 
+
         List<MapUserDTO> res;
 
-        res = userService.findUsersByCityAndOptionalUserTypes(city, userTypes, kakaoId);
+        if (userTypes == null || userTypes.isEmpty() ||userTypes.contains(UserType.ALL)) {
+            // userType이 없을 경우
+            res = userService.findAllUsers(kakaoId);
+        } else {
+            // userType이 있을 경우
+            res = userService.findAllUsersByCityAndUserTypes(userTypes, kakaoId);
+        }
 
         return ResponseEntity
                 .status(SuccessCode.SUCCESS_RETRIEVE_USER.getStatus().value())
