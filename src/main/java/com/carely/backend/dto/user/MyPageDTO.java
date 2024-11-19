@@ -2,6 +2,7 @@ package com.carely.backend.dto.user;
 
 import com.carely.backend.domain.User;
 import com.carely.backend.domain.enums.UserType;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
 import java.io.BufferedReader;
@@ -14,6 +15,40 @@ import org.json.JSONObject;
 @Getter
 public class MyPageDTO {
     private Long userId;
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SimpleRes {
+        private Long userId; // 유저 고유 아이디
+        private UserType userType;
+        private String username;
+        private Integer age;
+        private String city;
+        private String address;
+        private String talk;
+        private String eat;
+        private String toilet;
+        private String bath;
+        private String walk;
+
+        public static SimpleRes toDTO(User user) {
+            return SimpleRes.builder()
+                    .userId(user.getId())
+                    .userType(user.getUserType())
+                    .username(user.getUsername())
+                    .age(user.getAge())
+                    .city(user.getCity())
+                    .address(user.getAddress())
+                    .talk(user.getTalk())
+                    .eat(user.getEat())
+                    .toilet(user.getToilet())
+                    .bath(user.getBath())
+                    .walk(user.getWalk())
+                    .build();
+        }
+    }
 
     @Getter
     @Builder
@@ -51,9 +86,10 @@ public class MyPageDTO {
         private String bath;
         private String walk;
         private String story;
-
-        // 함께한 사람
-        // 함께한 시간 추가해야 함
+        // 함께한 사람 setter 로 추가할 수 있도록 함
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        @Setter
+        private Long togetherTime;
 
         public static DetailRes toDTO(User user) {
             DetailRes detailRes = DetailRes.builder()
@@ -81,10 +117,10 @@ public class MyPageDTO {
 
         private static void getLocation(DetailRes detailRes) {
 
-            String API_KEY = "78256822bbbbbe614142bcad43930708";
+            String API_KEY = "78256822bbbbbe614142bcad43930708"; // 여기에 카카오 API 키 입력
             String GEOCODE_URL = "https://dapi.kakao.com/v2/local/search/address.json";
 
-            String address = detailRes.getAddress();
+            String address = detailRes.getAddress(); // 위도 경도를 구할 주소
             try {
                 String urlStr = GEOCODE_URL + "?query=" + java.net.URLEncoder.encode(address, "UTF-8");
                 URL url = new URL(urlStr);
@@ -122,5 +158,24 @@ public class MyPageDTO {
 
     }
 
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Certification {
+        private Long userId;
+        private String username;
+        private UserType userType;
+        // private String certificateImage;
+
+        public static Certification toDTO(User user) {
+            return Certification.builder()
+                    .userId(user.getId())
+                    .username(user.getUsername())
+                    .userType(user.getUserType())
+                    // .certificateImage(user.getCertificateImage())
+                    .build();
+        }
+    }
 
 }

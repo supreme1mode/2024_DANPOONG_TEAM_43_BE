@@ -26,6 +26,28 @@ public class GlobalHandleException {
                 .status(ErrorCode.KAKAO_EXCEPTION.getStatus().value())
                 .body(new ErrorResponseDTO(ErrorCode.KAKAO_EXCEPTION));
     }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleUserNotFoundException(final UserNotFoundException e) {
+        return ResponseEntity
+                .status(ErrorCode.USER_NOT_FOUND.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.USER_NOT_FOUND));
+    }
+
+    @ExceptionHandler(VolunteerNotFoundException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleVolunteerNotFoundException(final VolunteerNotFoundException e) {
+        return ResponseEntity
+                .status(ErrorCode.VOLUNTEER_NOT_FOUND.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.VOLUNTEER_NOT_FOUND));
+    }
+
+    @ExceptionHandler(ChatMessageNotFoundException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleChatMessageNotFoundException(final ChatMessageNotFoundException e) {
+        return ResponseEntity
+                .status(ErrorCode.CHAT_NOT_FOUND.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.CHAT_NOT_FOUND));
+    }
+
     /**
      * 입력값 검증
      */

@@ -1,10 +1,13 @@
 package com.carely.backend.service;
 
 import com.carely.backend.domain.User;
+import com.carely.backend.domain.Volunteer;
 import com.carely.backend.domain.enums.UserType;
 import com.carely.backend.dto.user.*;
 import com.carely.backend.exception.DuplicateUsernameException;
+import com.carely.backend.exception.UserNotFoundException;
 import com.carely.backend.repository.UserRepository;
+import com.carely.backend.repository.VolunteerRepository;
 import com.carely.backend.service.kakao.KakaoAddressService;
 import com.carely.backend.service.parser.AddressParser;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -24,6 +28,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final VolunteerRepository volunteerRepository;
 
     public RegisterDTO.Res register(RegisterDTO registerDTO, MultipartFile image) {
         String username = registerDTO.getUsername();
@@ -74,16 +79,22 @@ public class UserService {
 
     public MyPageDTO.DetailRes getMypage(String kakaoId) {
         User user = userRepository.findByKakaoId(kakaoId)
-                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
 
         return MyPageDTO.DetailRes.toDTO(user);
     }
 
     public MyPageDTO.DetailRes getDetailUserInfo(Long userId, String kakaoId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
 
-        return MyPageDTO.DetailRes.toDTO(user);
+        User viewer = userRepository.findByKakaoId(kakaoId)
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
+
+        // 함께한 사람 추가
+        MyPageDTO.DetailRes res = MyPageDTO.DetailRes.toDTO(user);
+        res.setTogetherTime(calculateTotalDuration(viewer, user));
+        return res;
     }
 
     @Transactional(readOnly = true)
@@ -94,7 +105,7 @@ public class UserService {
         List<User> users = userRepository.findByCityAndUserTypeIn(city, userTypes);
 
         return users.stream()
-                .map(user -> new MapUserDTO().toDTO(user))
+                .map(user -> new MapUserDTO().toDTO(user, calculateTotalDuration(user, superUser)))
                 .collect(Collectors.toList()); // 빈 리스트도 collect로 반환
     }
 
@@ -106,20 +117,20 @@ public class UserService {
         List<User> users = userRepository.findByCity(city);
 
         return users.stream()
-                .map(user -> new MapUserDTO().toDTO(user))
+                .map(user -> new MapUserDTO().toDTO(user, calculateTotalDuration(user, superUser)))
                 .collect(Collectors.toList()); // 빈 리스트도 collect로 반환
     }
 
     public UserResponseDTO.Verification verifyAuthentication(String kakaoId) {
         User user = userRepository.findByKakaoId(kakaoId)
-                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
 
         return UserResponseDTO.Verification.toDTO(user);
     }
 
     public UserResponseDTO.VerificationAddress verifyAuthenticationPost(String kakaoId, AddressDTO addressDTO) {
         User user = userRepository.findByKakaoId(kakaoId)
-                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
 
         String address = addressDTO.getAddress();
         String detailAddress = addressDTO.getDetailAddress();
@@ -140,9 +151,23 @@ public class UserService {
 
     public Long getUserId(String kakaoId) {
         User user = userRepository.findByKakaoId(kakaoId)
-                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
 
         return user.getId();
+    }
+
+    private Long calculateTotalDuration(User user1, User user2) {
+        List<Volunteer> sharedVolunteers = volunteerRepository.findByVolunteerAndCaregiver(user1, user2);
+
+        return sharedVolunteers.stream()
+                .mapToLong(volunteer -> {
+                    if (volunteer.getStartTime() != null && volunteer.getEndTime() != null &&
+                            volunteer.getEndTime().isBefore(LocalDateTime.now())) { // 종료 시간이 현재 시간보다 이전인 경우
+                        return volunteer.getDurationHours(); // 함께한 시간에 추가
+                    }
+                    return 0;
+                })
+                .sum();
     }
 
 }
