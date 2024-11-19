@@ -4,6 +4,7 @@ import com.carely.backend.domain.User;
 import com.carely.backend.domain.enums.UserType;
 import com.carely.backend.dto.user.*;
 import com.carely.backend.exception.DuplicateUsernameException;
+import com.carely.backend.exception.UserNotFoundException;
 import com.carely.backend.repository.UserRepository;
 import com.carely.backend.service.kakao.KakaoAddressService;
 import com.carely.backend.service.parser.AddressParser;
@@ -74,14 +75,14 @@ public class UserService {
 
     public MyPageDTO.DetailRes getMypage(String kakaoId) {
         User user = userRepository.findByKakaoId(kakaoId)
-                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
 
         return MyPageDTO.DetailRes.toDTO(user);
     }
 
     public MyPageDTO.DetailRes getDetailUserInfo(Long userId, String kakaoId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
 
         return MyPageDTO.DetailRes.toDTO(user);
     }
@@ -89,7 +90,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public List<MapUserDTO> findUsersByCityAndUserTypes(String city, List<UserType> userTypes, String kakaoId) {
         User superUser = userRepository.findByKakaoId(kakaoId)
-                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
 
         List<User> users = userRepository.findByCityAndUserTypeIn(city, userTypes);
 
@@ -101,7 +102,7 @@ public class UserService {
 
     public List<MapUserDTO> findUserByAddress(String city, String kakaoId) {
         User superUser = userRepository.findByKakaoId(kakaoId)
-                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
         // 도시별로 필터링, 데이터가 없으면 빈 리스트 반환
         List<User> users = userRepository.findByCity(city);
 
@@ -112,14 +113,14 @@ public class UserService {
 
     public UserResponseDTO.Verification verifyAuthentication(String kakaoId) {
         User user = userRepository.findByKakaoId(kakaoId)
-                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
 
         return UserResponseDTO.Verification.toDTO(user);
     }
 
     public UserResponseDTO.VerificationAddress verifyAuthenticationPost(String kakaoId, AddressDTO addressDTO) {
         User user = userRepository.findByKakaoId(kakaoId)
-                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
 
         String address = addressDTO.getAddress();
         String detailAddress = addressDTO.getDetailAddress();
@@ -140,7 +141,7 @@ public class UserService {
 
     public Long getUserId(String kakaoId) {
         User user = userRepository.findByKakaoId(kakaoId)
-                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
 
         return user.getId();
     }
