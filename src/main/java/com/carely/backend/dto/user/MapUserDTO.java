@@ -2,21 +2,26 @@ package com.carely.backend.dto.user;
 
 import com.carely.backend.domain.User;
 import com.carely.backend.domain.enums.UserType;
+import com.carely.backend.service.kakao.KakaoAddressService;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Map;
 
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Setter
 public class MapUserDTO {
+    @Autowired
+    private KakaoAddressService kakaoAddressService;;
+
     private Long userId;
     // 이름
     private String username;
@@ -44,8 +49,10 @@ public class MapUserDTO {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @Setter
     private Long togetherTime;
+    @Setter
+    private Double km;
 
-    public MapUserDTO toDTO(User user, Long togetherTime) {
+    public MapUserDTO toDTO(User user, Long togetherTime,  Double latitude, Double longittude) {
         MapUserDTO mapUserDTO =  MapUserDTO.builder()
                 .userId(user.getId())
                 .username(user.getUsername())
@@ -63,48 +70,41 @@ public class MapUserDTO {
                 .build();
 
         getLocation(mapUserDTO);
+        mapUserDTO.setKm(calculateDistance(mapUserDTO.getLatitude(), mapUserDTO.getLatitude(), latitude, latitude));
         return mapUserDTO;
     }
 
     private void getLocation(MapUserDTO mapUserDTO) {
+        KakaoAddressService kakaoAddressService = new KakaoAddressService();
+        Map<String, Double> location = kakaoAddressService.getLocationFromAddress(mapUserDTO.getAddress());
 
-        String API_KEY = "78256822bbbbbe614142bcad43930708"; // 여기에 카카오 API 키 입력
-        String GEOCODE_URL = "https://dapi.kakao.com/v2/local/search/address.json";
+        // 위도, 경도 설정
+        mapUserDTO.setLatitude(location.get("latitude"));
+        mapUserDTO.setLongitude(location.get("longitude"));
+    }
 
-        String address = mapUserDTO.getAddress(); // 위도 경도를 구할 주소
-        try {
-            String urlStr = GEOCODE_URL + "?query=" + java.net.URLEncoder.encode(address, "UTF-8");
-            URL url = new URL(urlStr);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setRequestProperty("Authorization", "KakaoAK " + API_KEY); // API Key 헤더 설정
+    // 거리 계산
+    public static double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+        double R = 6371.0; // 지구 반지름 (단위: km)
 
-            // API 호출 후 응답 받기
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String line;
-            StringBuilder response = new StringBuilder();
-            while ((line = reader.readLine()) != null) {
-                response.append(line);
-            }
-            reader.close();
+        // 위도, 경도를 라디안으로 변환
+        double lat1Rad = Math.toRadians(lat1);
+        double lon1Rad = Math.toRadians(lon1);
+        double lat2Rad = Math.toRadians(lat2);
+        double lon2Rad = Math.toRadians(lon2);
 
-            // 응답을 JSON으로 파싱
-            JSONObject jsonResponse = new JSONObject(response.toString());
-            JSONObject location = jsonResponse.getJSONArray("documents")
-                    .getJSONObject(0)
-                    .getJSONObject("address");
+        // 위도, 경도 차이 계산
+        double deltaLat = lat2Rad - lat1Rad;
+        double deltaLon = lon2Rad - lon1Rad;
 
-            double latitude = location.getDouble("y");  // 위도
-            double longitude = location.getDouble("x"); // 경도
+        // 하버사인 공식
+        double a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
+                Math.cos(lat1Rad) * Math.cos(lat2Rad) *
+                        Math.sin(deltaLon / 2) * Math.sin(deltaLon / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-            System.out.println("Latitude: " + latitude);
-            System.out.println("Longitude: " + longitude);
-
-            mapUserDTO.setLatitude(latitude);
-            mapUserDTO.setLongitude(longitude);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        // 거리 계산 (단위: km)
+        return R * c;
     }
 }
 

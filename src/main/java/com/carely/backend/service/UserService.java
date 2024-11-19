@@ -18,10 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,6 +26,7 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserRepository userRepository;
     private final VolunteerRepository volunteerRepository;
+    // private final KakaoAddressService kakaoAddressService;
 
     public RegisterDTO.Res register(RegisterDTO registerDTO, MultipartFile image) {
         String username = registerDTO.getUsername();
@@ -148,31 +146,36 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public List<MapUserDTO> findUsersByCityAndOptionalUserTypes(String city, List<UserType> userTypes, String kakaoId) {
-        User superUser = userRepository.findByKakaoId(kakaoId)
+        User user = userRepository.findByKakaoId(kakaoId)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        KakaoAddressService kakaoAddressService = new KakaoAddressService();
+        Map<String, Double> userAddress = kakaoAddressService.getLocationFromAddress(user.getAddress());
+        Double latitude = userAddress.get("latitude");
+        Double longtitude = userAddress.get("longtitude");
 
         if (userTypes == null || userTypes.isEmpty() || userTypes.contains(UserType.ALL)) {
             // userType이 없거나 'ALL' 포함된 경우
-            return findUserByAddress(city, superUser);
+            return findUserByAddress(city, user, latitude, longtitude);
         } else {
             // userType이 명시되어 있는 경우
-            return findUsersByCityAndUserTypes(city, userTypes, superUser);
+            return findUsersByCityAndUserTypes(city, userTypes, user, latitude, longtitude);
         }
     }
 
-    public List<MapUserDTO> findUsersByCityAndUserTypes(String city, List<UserType> userTypes, User superUser) {
+    public List<MapUserDTO> findUsersByCityAndUserTypes(String city, List<UserType> userTypes, User superUser, Double latitude, Double longittude) {
         List<User> users = userRepository.findByCityAndUserTypeIn(city, userTypes);
 
         return users.stream()
-                .map(user -> new MapUserDTO().toDTO(user, calculateTotalDuration(user, superUser)))
+                .map(user -> new MapUserDTO().toDTO(user, calculateTotalDuration(user, superUser), latitude, longittude))
                 .collect(Collectors.toList()); // 빈 리스트도 collect로 반환
     }
 
-    public List<MapUserDTO> findUserByAddress(String city, User superUser) {
+    public List<MapUserDTO> findUserByAddress(String city, User superUser, Double latitude, Double longittude) {
         List<User> users = userRepository.findByCity(city);
 
         return users.stream()
-                .map(user -> new MapUserDTO().toDTO(user, calculateTotalDuration(user, superUser)))
+                .map(user -> new MapUserDTO().toDTO(user, calculateTotalDuration(user, superUser),  latitude, longittude))
                 .collect(Collectors.toList()); // 빈 리스트도 collect로 반환
     }
 
