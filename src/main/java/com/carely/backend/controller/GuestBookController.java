@@ -56,4 +56,6 @@ public class GuestBookController {
                 .status(SuccessCode.SUCCESS_RETRIEVE_GUESTBOOK.getStatus().value())
                 .body(new ResponseDTO<>(SuccessCode.SUCCESS_RETRIEVE_GUESTBOOK, responseGuestBookDTOList));
     }
+
+
   }
