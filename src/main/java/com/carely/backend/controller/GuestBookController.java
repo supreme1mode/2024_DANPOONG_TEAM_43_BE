@@ -48,6 +48,7 @@ public class GuestBookController {
                 .body(new ResponseDTO<>(SuccessCode.SUCCESS_RETRIEVE_GUESTBOOK, responseGuestBookDTOList));
     }
 
+
     @GetMapping("/caregiverHome")
     public ResponseEntity<ResponseDTO<?>> getGuestBookCaregiverHome(@AuthenticationPrincipal CustomUserDetails user) {
         List<ResponseGuestBookDTO> responseGuestBookDTOList = guestBookService.getGuestBookCaregiverHome(user.getUsername());
