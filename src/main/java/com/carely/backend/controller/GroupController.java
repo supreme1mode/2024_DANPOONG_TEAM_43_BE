@@ -37,10 +37,10 @@ public class GroupController implements GroupAPI {
 
     // 그룹 목록 조회하기
     @GetMapping("/list")
-    public ResponseEntity<ResponseDTO> getGroupList(@RequestParam("city") String city) {
+    public ResponseEntity<ResponseDTO> getGroupList() {
         String kakaoId = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        List<GetGroupDTO.List> res = groupService.getGroupList(city, kakaoId);
+        List<GetGroupDTO.List> res = groupService.getGroupList(kakaoId);
 
         return ResponseEntity
                 .status(SuccessCode.SUCCESS_REGISTER_GROUP.getStatus().value())

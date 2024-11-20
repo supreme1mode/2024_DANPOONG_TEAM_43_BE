@@ -59,8 +59,8 @@ public class GroupService {
         return CreateGroupDTO.Res.toDTO(newGroup);
     }
 
-    public List<GetGroupDTO.List> getGroupList(String city, String kakaoId) {
-        List<Group> groups = groupRepository.findAllByCity(city);
+    public List<GetGroupDTO.List> getGroupList(String kakaoId) {
+        List<Group> groups = groupRepository.findAll();
 
         User user = userRepository.findByKakaoId(kakaoId)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
