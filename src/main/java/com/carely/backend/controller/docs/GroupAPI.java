@@ -268,7 +268,7 @@ public interface GroupAPI {
     public ResponseEntity<ResponseDTO>getUserJoinedGroups();
 
     @Operation(summary = "그룹 목록 조회하기", description = "존재하는 그룹을 조회합니다.")
-    public ResponseEntity<ResponseDTO> getGroupList(@RequestParam String city);
+    public ResponseEntity<ResponseDTO> getGroupList();
 
     @Operation(summary = "그룹에 대한 상세 정보 조회하기", description = "그룹에 대한 상세 정보를 조회합니다")
     public ResponseEntity<ResponseDTO> getGroupDetail(@PathVariable("groupId") Long groupId) ;
