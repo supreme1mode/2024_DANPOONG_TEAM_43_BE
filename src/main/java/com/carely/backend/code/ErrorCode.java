@@ -35,6 +35,12 @@ public enum ErrorCode {
     LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "그룹을 찜하지 않은 유저입니다."),
 
     /**
+     *  406
+     * */
+    ALREADY_EXISTS_GUESTBOOK(HttpStatus.NOT_ACCEPTABLE, "이미 해당 활동에 대한 방명록이 존재합니다."),
+
+
+    /**
      * 409
      */
     DUPLICATE_USERNAME(HttpStatus.CONFLICT, "중복된 카카오 아이디입니다."),

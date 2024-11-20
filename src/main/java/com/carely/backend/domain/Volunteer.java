@@ -56,6 +56,9 @@ public class Volunteer extends BaseEntity {
     // 승인 상태
     private Boolean isApproved;
 
+    @Builder.Default
+    private Boolean hasGuestBook = Boolean.FALSE;
+
     // 간병인
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "caregiver_id", nullable = false)
@@ -65,4 +68,6 @@ public class Volunteer extends BaseEntity {
     public void updateVolunteerApproval() {
         this.isApproved = true;
     }
+
+    public void updateVolunteerGuestBook() {this.hasGuestBook = true;}
 }
