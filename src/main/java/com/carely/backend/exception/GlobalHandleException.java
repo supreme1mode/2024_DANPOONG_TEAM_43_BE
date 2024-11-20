@@ -75,6 +75,50 @@ public class GlobalHandleException {
                 .status(ErrorCode.USER_MUST_CAREGIVER.getStatus().value())
                 .body(new ErrorResponseDTO(ErrorCode.USER_MUST_CAREGIVER));
     }
+
+    @ExceptionHandler(GroupNotFoundException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleGroupNotFoundException(final GroupNotFoundException e) {
+        return ResponseEntity
+                .status(ErrorCode.GROUP_NOT_FOUND.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.GROUP_NOT_FOUND));
+    }
+
+    @ExceptionHandler(AlreadyInGroupException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleAlreadyInGroupException(final AlreadyInGroupException e) {
+        return ResponseEntity
+                .status(ErrorCode.ALREADY_IN_GROUP.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.ALREADY_IN_GROUP));
+    }
+
+    @ExceptionHandler(NotUserInGroupException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleNotUserInGroupException(final NotUserInGroupException e) {
+        return ResponseEntity
+                .status(ErrorCode.NOT_IN_GROUP.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.NOT_IN_GROUP));
+    }
+
+    @ExceptionHandler(NotLikeGroupUserException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleNotLikeGroupUserException(final NotLikeGroupUserException e) {
+        return ResponseEntity
+                .status(ErrorCode.LIKE_NOT_FOUND.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.LIKE_NOT_FOUND));
+    }
+
+    @ExceptionHandler(AlreadyLikeGroupException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleAlreadyLikeGroupException(final AlreadyLikeGroupException e) {
+        return ResponseEntity
+                .status(ErrorCode.ALREADY_LIKE_GROUP.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.ALREADY_LIKE_GROUP));
+    }
+
+    @ExceptionHandler(NotWriterException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleNotWriterException(final NotWriterException e) {
+        return ResponseEntity
+                .status(ErrorCode.NOT_WRITER.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.NOT_WRITER));
+    }
+
+
     /**
      * 입력값 검증
      */
