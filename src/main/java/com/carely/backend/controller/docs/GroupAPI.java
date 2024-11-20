@@ -174,7 +174,7 @@ public interface GroupAPI {
                             }))
     })
 
-    public ResponseEntity<ResponseDTO> deleteGroup(@RequestBody GetGroupDTO groupDTO) ;
+    public ResponseEntity<ResponseDTO> deleteGroup(@PathVariable("groupId") Long groupId) ;
 
     @Operation(summary = "그룹 가입하기", description = "그룹에 가입합니다.")
     @ApiResponses(value = {
@@ -259,10 +259,10 @@ public interface GroupAPI {
                             }))
     })
 
-    public ResponseEntity<ResponseDTO> joinGroup(@RequestBody GetGroupDTO groupDTO) ;
+    public ResponseEntity<ResponseDTO> joinGroup(@PathVariable("groupId") Long groupId) ;
 
     @Operation(summary = "그룹 탈퇴하기", description = "그룹을 나갑니다.")
-    public ResponseEntity<ResponseDTO> leaveGroup(@RequestBody GetGroupDTO groupDTO);
+    public ResponseEntity<ResponseDTO> leaveGroup(@PathVariable("groupId") Long groupId);
 
     @Operation(summary = "유저가 가입한 그룹 조회하기", description = "유저가 가입한 그룹을 조회합니다.")
     public ResponseEntity<ResponseDTO>getUserJoinedGroups();

@@ -58,34 +58,34 @@ public class GroupController implements GroupAPI {
                 .body(new ResponseDTO<>(SuccessCode.SUCCESS_REGISTER_GROUP, res));
     }
 
-    @PostMapping("/join")
-    public ResponseEntity<ResponseDTO> joinGroup(@RequestBody GetGroupDTO groupDTO) {
+    @PostMapping("/join/{groupId}")
+    public ResponseEntity<ResponseDTO> joinGroup(@PathVariable("groupId") Long groupId) {
 
         String kakaoId = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        GetGroupDTO.List res = groupService.joinGroup(kakaoId, groupDTO.getGroupId());
+        GetGroupDTO.List res = groupService.joinGroup(kakaoId, groupId);
 
         return ResponseEntity
                 .status(SuccessCode.SUCCESS_JOIN_GROUP.getStatus().value())
                 .body(new ResponseDTO<>(SuccessCode.SUCCESS_JOIN_GROUP, res));
     }
 
-    @PostMapping("/leave")
-    public ResponseEntity<ResponseDTO> leaveGroup(@RequestBody GetGroupDTO groupDTO) {
+    @PostMapping("/leave/{groupId}")
+    public ResponseEntity<ResponseDTO> leaveGroup(@PathVariable("groupId") Long groupId) {
         String kakaoId = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        GetGroupDTO.List res = groupService.leaveGroup(kakaoId, groupDTO.getGroupId());
+        GetGroupDTO.List res = groupService.leaveGroup(kakaoId, groupId);
 
         return ResponseEntity
                 .status(SuccessCode.SUCCESS_LEAVE_GROUP.getStatus().value())
                 .body(new ResponseDTO<>(SuccessCode.SUCCESS_LEAVE_GROUP, res));
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<ResponseDTO> deleteGroup(@RequestBody GetGroupDTO groupDTO) {
+    @DeleteMapping("/delete/{groupId}")
+    public ResponseEntity<ResponseDTO> deleteGroup(@PathVariable("groupId") Long groupId) {
         String kakaoId = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        groupService.deleteGroup(kakaoId, groupDTO.getGroupId());
+        groupService.deleteGroup(kakaoId, groupId);
 
         return ResponseEntity
                 .status(SuccessCode.SUCCESS_DELETE_GROUP.getStatus().value())
