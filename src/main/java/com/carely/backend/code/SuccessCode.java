@@ -37,6 +37,14 @@ public enum SuccessCode {
     /**
      * 그룹
      */
+    SUCCESS_CREATE_GROUP(HttpStatus.CREATED, "그룹을 성공적으로 생성했습니다."),
+    SUCCESS_REGISTER_GROUP(HttpStatus.OK, "그룹을 성공적으로 조회했습니다."),
+    SUCCESS_JOIN_GROUP(HttpStatus.OK, "그룹에 성공적으로 가입되었습니다."),
+    SUCCESS_LEAVE_GROUP(HttpStatus.OK, "그룹 가입이 성공적으로 취소되었습니다."),
+    SUCCESS_ADD_LIKE(HttpStatus.OK, "그룹을 성공적으로 찜했습니다."),
+    SUCCESS_REMOVE_LIKE(HttpStatus.OK, "그룹 찜을 성공적으로 취소했습니다."),
+    SUCCESS_DELETE_GROUP(HttpStatus.OK, "그룹을 성공적으로 삭제했습니다."),
+
 
 
     /**

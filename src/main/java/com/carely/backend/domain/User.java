@@ -52,6 +52,16 @@ public class User extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String aiSummary;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<JoinGroup> joinGroups = new HashSet<>();
+
+    @OneToMany(mappedBy = "volunteer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Volunteer> volunteers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Like> likes = new HashSet<>();
+
+
     private String talk;
     private String eat;
     private String toilet;
