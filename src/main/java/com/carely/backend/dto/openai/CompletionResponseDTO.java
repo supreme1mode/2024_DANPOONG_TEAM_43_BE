@@ -1,4 +1,4 @@
-package com.carely.backend.domain.openai;
+package com.carely.backend.dto.openai;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
