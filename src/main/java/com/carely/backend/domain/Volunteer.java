@@ -50,7 +50,7 @@ public class Volunteer extends BaseEntity {
 
     // 자원봉사자 or 요양보호사
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "volunteer_id", nullable = false)
+    @JoinColumn(name = "volunteer_id")
     private User volunteer;
 
     // 승인 상태
@@ -61,7 +61,7 @@ public class Volunteer extends BaseEntity {
 
     // 간병인
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "caregiver_id", nullable = false)
+    @JoinColumn(name = "caregiver_id")
     private User caregiver;
 
     // 승인 처리

@@ -195,6 +195,18 @@ public class UserController implements UserAPI {
         }
     }
 
+
+    // 회원 탈퇴
+    @DeleteMapping("/delete-user")
+    public ResponseEntity<ResponseDTO> deleteUser() {
+        String kakaoId = SecurityContextHolder.getContext().getAuthentication().getName();
+        userService.deleteUser(kakaoId);
+        return ResponseEntity
+                .status(SuccessCode.SUCCESS_DELETE_USER.getStatus().value())
+                .body(new ResponseDTO<>(SuccessCode.SUCCESS_DELETE_USER, null));
+
+    }
+
     @GetMapping("/caregiver/recommend-users")
     public ResponseEntity<ResponseDTO>  recommendUsers() {
         String kakaoId = SecurityContextHolder.getContext().getAuthentication().getName();
