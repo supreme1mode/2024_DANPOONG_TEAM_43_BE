@@ -75,6 +75,13 @@ public class GlobalHandleException {
                 .status(ErrorCode.USER_MUST_CAREGIVER.getStatus().value())
                 .body(new ErrorResponseDTO(ErrorCode.USER_MUST_CAREGIVER));
     }
+
+    @ExceptionHandler(AlreadyExistsMemoException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleAlreadyExistsMemoException(final AlreadyExistsMemoException e) {
+        return ResponseEntity
+                .status(ErrorCode.ALREADY_EXISTS_MEMO.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.ALREADY_EXISTS_MEMO));
+    }
     /**
      * 입력값 검증
      */
