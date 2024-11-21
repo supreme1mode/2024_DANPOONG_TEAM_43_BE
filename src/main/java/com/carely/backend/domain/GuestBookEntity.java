@@ -16,20 +16,20 @@ public class GuestBookEntity extends BaseEntity {
     private Long id;
 
     // 자원봉사 섹션
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "volunteer_section_id", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "volunteer_section_id")
     private Volunteer volunteerSection;
 
     @Lob
     private String content;
 
     // 자원봉사자
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "volunteer_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "volunteer_id")
     private User volunteer;
 
     // 간병인
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "caregiver_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "caregiver_id")
     private User caregiver;
 }

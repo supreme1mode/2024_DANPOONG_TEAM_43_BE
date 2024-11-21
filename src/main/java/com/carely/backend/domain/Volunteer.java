@@ -59,6 +59,9 @@ public class Volunteer extends BaseEntity {
     @Builder.Default
     private Boolean hasGuestBook = Boolean.FALSE;
 
+    @Builder.Default
+    private Boolean hasMemo = Boolean.FALSE;
+
     // 간병인
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "caregiver_id")
@@ -70,4 +73,7 @@ public class Volunteer extends BaseEntity {
     }
 
     public void updateVolunteerGuestBook() {this.hasGuestBook = true;}
+
+    public void updateVolunteerMemo() {this.hasMemo = true;}
+
 }
