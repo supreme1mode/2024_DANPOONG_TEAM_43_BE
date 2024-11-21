@@ -89,4 +89,7 @@ public interface UserAPI {
     @Operation(summary = "주소를 전달해 위치 인증하기", description = "주소를 전달해 위치 인증을 진행합니다.")
     public ResponseEntity<ResponseDTO> verifyAuthenticationPost(@RequestBody() AddressDTO addressDTO);
 
+    @Operation(summary = "유저 삭제하기", description = "유저를 삭제합니다. (회원 탈퇴로 나중에 수정하기)gi")
+    public ResponseEntity<ResponseDTO> deleteUser();
+
 }

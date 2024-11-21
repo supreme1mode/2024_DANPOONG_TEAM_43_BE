@@ -18,6 +18,7 @@ public enum SuccessCode {
     SUCCESS_RETRIEVE_USER(HttpStatus.OK, "유저 정보 조회를 성공했습니다."),
     SUCCESS_RETRIEVE_LOCATION_VERIFICATION(HttpStatus.OK, "성공적으로 위치 인증 여부를 조회했습니다."),
     SUCCESS_LOCATION_VERIFICATION(HttpStatus.OK, "성공적으로 위치 인증했습니다."),
+    SUCCESS_DELETE_USER(HttpStatus.OK, "성공적으로 유저가 삭제되었습니다."),
 
 
     /**

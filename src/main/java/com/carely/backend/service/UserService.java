@@ -176,4 +176,11 @@ public class UserService {
                 .collect(Collectors.toList()); // 빈 리스트도 collect로 반환
     }
 
+    @Transactional
+    public void deleteUser(String kakaoId) {
+        User user = userRepository.findByKakaoId(kakaoId)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        userRepository.delete(user);
+    }
 }
