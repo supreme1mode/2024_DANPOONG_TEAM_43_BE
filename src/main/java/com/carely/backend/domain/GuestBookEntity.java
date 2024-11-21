@@ -18,7 +18,7 @@ public class GuestBookEntity extends BaseEntity {
     // 자원봉사 섹션
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "volunteer_section_id")
-    private GuestBookEntity guestBook;
+    private Volunteer volunteerSection;
 
     @Lob
     private String content;
