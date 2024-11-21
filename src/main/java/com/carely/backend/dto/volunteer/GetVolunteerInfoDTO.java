@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 public class GetVolunteerInfoDTO {
     private Long id;
     private Long volunteerId;
+    private Long caregiverId;
     private String volunteerName;
     private Integer volunteerAge;
     private String phoneNum;
@@ -35,6 +36,7 @@ public class GetVolunteerInfoDTO {
     public static GetVolunteerInfoDTO toDTO(Volunteer e, User volunteer) {
         return GetVolunteerInfoDTO.builder()
                 .id(e.getId())
+                .caregiverId(e.getCaregiver().getId())
                 .volunteerId(volunteer.getId())
                 .volunteerName(volunteer.getUsername())
                 .volunteerAge(volunteer.getAge())
@@ -50,5 +52,4 @@ public class GetVolunteerInfoDTO {
                 .roomId(e.getRoomId())
                 .build();
     }
-
 }

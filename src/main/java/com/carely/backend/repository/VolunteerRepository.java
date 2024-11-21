@@ -22,4 +22,6 @@ public interface VolunteerRepository extends JpaRepository<Volunteer, Long> {
 
     @Query("SELECT v FROM Volunteer v WHERE (v.volunteer = :volunteer OR v.caregiver = :volunteer)")
     List<Volunteer> findByVolunteerOrCaregiver(@Param("volunteer") User volunteer);
+
+    List<Volunteer> findByVolunteerAndHasMemoFalse(User writer);
 }
