@@ -5,6 +5,7 @@ import com.carely.backend.domain.Volunteer;
 import com.carely.backend.domain.enums.UserType;
 import com.carely.backend.dto.user.*;
 import com.carely.backend.exception.DuplicateUsernameException;
+import com.carely.backend.exception.KakaoIdNotFoundException;
 import com.carely.backend.exception.UserNotFoundException;
 import com.carely.backend.repository.UserRepository;
 import com.carely.backend.repository.VolunteerRepository;
@@ -18,10 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,6 +27,7 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserRepository userRepository;
     private final VolunteerRepository volunteerRepository;
+    // private final KakaoAddressService kakaoAddressService;
 
     public RegisterDTO.Res register(RegisterDTO registerDTO, MultipartFile image) {
         String username = registerDTO.getUsername();
@@ -148,33 +147,39 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public List<MapUserDTO> findUsersByCityAndOptionalUserTypes(String city, List<UserType> userTypes, String kakaoId) {
-        User superUser = userRepository.findByKakaoId(kakaoId)
+        User user = userRepository.findByKakaoId(kakaoId)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        KakaoAddressService kakaoAddressService = new KakaoAddressService();
+        Map<String, Double> userAddress = kakaoAddressService.getLocationFromAddress(user.getAddress());
+        Double latitude = userAddress.get("latitude");
+        Double longtitude = userAddress.get("longtitude");
 
         if (userTypes == null || userTypes.isEmpty() || userTypes.contains(UserType.ALL)) {
             // userType이 없거나 'ALL' 포함된 경우
-            return findUserByAddress(city, superUser);
+            return findUserByAddress(city, user, latitude, longtitude);
         } else {
             // userType이 명시되어 있는 경우
-            return findUsersByCityAndUserTypes(city, userTypes, superUser);
+            return findUsersByCityAndUserTypes(city, userTypes, user, latitude, longtitude);
         }
     }
 
-    public List<MapUserDTO> findUsersByCityAndUserTypes(String city, List<UserType> userTypes, User superUser) {
+    public List<MapUserDTO> findUsersByCityAndUserTypes(String city, List<UserType> userTypes, User superUser, Double latitude, Double longittude) {
         List<User> users = userRepository.findByCityAndUserTypeIn(city, userTypes);
 
         return users.stream()
-                .map(user -> new MapUserDTO().toDTO(user, calculateTotalDuration(user, superUser)))
+                .map(user -> new MapUserDTO().toDTO(user, calculateTotalDuration(user, superUser), latitude, longittude))
                 .collect(Collectors.toList()); // 빈 리스트도 collect로 반환
     }
 
-    public List<MapUserDTO> findUserByAddress(String city, User superUser) {
+    public List<MapUserDTO> findUserByAddress(String city, User superUser, Double latitude, Double longittude) {
         List<User> users = userRepository.findByCity(city);
 
         return users.stream()
-                .map(user -> new MapUserDTO().toDTO(user, calculateTotalDuration(user, superUser)))
+                .map(user -> new MapUserDTO().toDTO(user, calculateTotalDuration(user, superUser),  latitude, longittude))
                 .collect(Collectors.toList()); // 빈 리스트도 collect로 반환
     }
+
 
     @Transactional
     public void deleteUser(String kakaoId) {
@@ -182,5 +187,180 @@ public class UserService {
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
         userRepository.delete(user);
+    }
+
+    public List<MapUserDTO> findAllUsers(String kakaoId) {
+        User viewer = userRepository.findByKakaoId(kakaoId)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        KakaoAddressService kakaoAddressService = new KakaoAddressService();
+        Map<String, Double> userAddress = kakaoAddressService.getLocationFromAddress(viewer.getAddress());
+        Double latitude = userAddress.get("latitude");
+        Double longitude = userAddress.get("longitude");
+
+        List<User> users = userRepository.findAll();
+
+        return users.stream()
+                .filter(user -> !user.getKakaoId().equals(kakaoId))  // 본인 제외
+                .map(user -> new MapUserDTO().toDTO(user, calculateTotalDuration(user, viewer), latitude, longitude))
+                .collect(Collectors.toList());  // 빈 리스트도 collect로 반환
+    }
+
+
+    public List<MapUserDTO> findAllUsersByCityAndUserTypes(List<UserType> userTypes, String kakaoId) {
+        User viewer = userRepository.findByKakaoId(kakaoId)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        KakaoAddressService kakaoAddressService = new KakaoAddressService();
+        Map<String, Double> userAddress = kakaoAddressService.getLocationFromAddress(viewer.getAddress());
+        Double latitude = userAddress.get("latitude");
+        Double longitude = userAddress.get("longitude");
+
+        List<User> users = userRepository.findByUserTypeIn(userTypes);
+
+        return users.stream()
+                .filter(user -> !user.getKakaoId().equals(kakaoId))  // 본인 제외
+                .map(user -> new MapUserDTO().toDTO(user, calculateTotalDuration(user, viewer), latitude, longitude))
+                .collect(Collectors.toList());  // 빈 리스트도 collect로 반환
+    }
+
+    // 간병인 리스트 추천
+    public List<RecommandUserDTO.Res> recommendCaregivers(User currentUser) {
+        KakaoAddressService kakaoAddressService = new KakaoAddressService();
+        Map<String, Double> userAddress = kakaoAddressService.getLocationFromAddress(currentUser.getAddress());
+        Double latitude = userAddress.get("latitude");
+        Double longitude = userAddress.get("longitude");
+        // 같은 city에 있는 간병인만 조회
+        List<User> allCaregivers = userRepository.findByUserType(UserType.CAREGIVER);
+        System.out.println(currentUser.getAddress());
+
+        // 본인 제외, 보완 가능한 trait 필터링
+        List<User> filteredCaregivers = allCaregivers.stream()
+                .filter(user -> !user.getId().equals(currentUser.getId())) // 본인 제외
+                .filter(user -> hasComplementaryTraits(currentUser, user)) // 부족한 요소 보완 가능
+                .collect(Collectors.toList());
+
+        List<User> selectedCaregivers;
+
+        if (filteredCaregivers.size() > 10) {
+            // 추천 대상이 많으면 10명을 랜덤으로 선택
+            Collections.shuffle(filteredCaregivers);
+            selectedCaregivers = filteredCaregivers.subList(0, 10);
+        } else if (!filteredCaregivers.isEmpty()) {
+            // 추천 대상이 적으면 그대로 반환
+            selectedCaregivers = filteredCaregivers;
+        } else {
+            // 추천 대상이 없으면 도움 될 만한 간병인 10명 추천
+            selectedCaregivers = allCaregivers.stream()
+                    .filter(user -> !user.getId().equals(currentUser.getId())) // 본인 제외
+                    .sorted(Comparator.comparingInt(user -> calculateHelpfulness(currentUser, user))) // 도움 되는 순으로 정렬
+                    .limit(10)
+                    .collect(Collectors.toList());
+        }
+        return selectedCaregivers.stream()
+                .map(user -> {
+                    Long totalDuration = calculateTotalDuration(user, currentUser);
+                    return RecommandUserDTO.Res.toDTO(user, totalDuration, latitude, latitude);
+                })
+                .collect(Collectors.toList());
+    }
+
+    // 자원봉사 리스트 조회
+    public List<RecommandUserDTO.Res> recommendUsers(User currentUser) {
+        KakaoAddressService kakaoAddressService = new KakaoAddressService();
+        Map<String, Double> userAddress = kakaoAddressService.getLocationFromAddress(currentUser.getAddress());
+        Double latitude = userAddress.get("latitude");
+        Double longitude = userAddress.get("longitude");
+
+        // 같은 city에 있는 모든 사용자 조회
+        List<User> allUsers = userRepository.findAll();
+
+        // 본인 제외, CAREGIVER 제외, 보완 가능한 trait 필터링
+        List<User> filteredUsers = allUsers.stream()
+                .filter(user -> !user.getId().equals(currentUser.getId())) // 본인 제외
+                .filter(user -> !user.getUserType().equals(UserType.CAREGIVER)) // 간병인은 제외
+                .filter(user -> hasComplementaryTraits(currentUser, user)) // 부족한 요소 보완 가능
+                .collect(Collectors.toList());
+
+        List<User> selectedUsers;
+
+        if (filteredUsers.size() > 10) {
+            // 추천 대상이 많으면 10명을 랜덤으로 선택
+            Collections.shuffle(filteredUsers);
+            selectedUsers = filteredUsers.subList(0, 10);
+        } else if (!filteredUsers.isEmpty()) {
+            // 추천 대상이 적으면 그대로 반환
+            selectedUsers = filteredUsers;
+        } else {
+            // 추천 대상이 없으면 도움 될 만한 유저 10명 추천
+            selectedUsers = allUsers.stream()
+                    .filter(user -> !user.getId().equals(currentUser.getId())) // 본인 제외
+                    .filter(user -> !user.getUserType().equals(UserType.CAREGIVER)) // 간병인은 제외
+                    .sorted(Comparator.comparingInt(user -> calculateHelpfulness(currentUser, user))) // 도움 되는 순으로 정렬
+                    .limit(10)
+                    .collect(Collectors.toList());
+        }
+
+        System.out.println(selectedUsers);
+
+        return selectedUsers.stream()
+                .map(user -> {
+                    Long totalDuration = calculateTotalDuration(user, currentUser);
+                    return RecommandUserDTO.Res.toDTO(user, totalDuration, latitude, longitude);
+                })
+                .collect(Collectors.toList());
+    }
+
+
+    // 부족한 요소를 보완할 수 있는지 확인
+    private boolean hasComplementaryTraits(User currentUser, User otherUser) {
+        return isComplementary(currentUser.getTalk(), otherUser.getTalk()) &&
+                isComplementary(currentUser.getEat(), otherUser.getEat()) &&
+                isComplementary(currentUser.getToilet(), otherUser.getToilet()) &&
+                isComplementary(currentUser.getBath(), otherUser.getBath()) &&
+                isComplementary(currentUser.getWalk(), otherUser.getWalk());
+    }
+
+    // 두 요소를 비교하여 보완 가능 여부 확인
+    private boolean isComplementary(String currentLevel, String otherLevel) {
+        int currentValue = mapToInt(currentLevel);
+        int otherValue = mapToInt(otherLevel);
+
+        return currentValue < otherValue; // 상대방이 높은 능력을 가졌는지 확인
+    }
+
+    // 수준 문자열을 정수로 매핑
+    private int mapToInt(String level) {
+        switch (level) {
+            case "서투름":
+            case "하급":
+                return 0;
+            case "보통":
+            case "중급":
+                return 1;
+            case "수월":
+            case "상급":
+                return 2;
+            default:
+                return -1; // 예상치 못한 값 처리
+        }
+    }
+
+    // 사용자 간 도움 정도 계산
+    private int calculateHelpfulness(User currentUser, User otherUser) {
+        return mapToInt(otherUser.getTalk()) +
+                mapToInt(otherUser.getEat()) +
+                mapToInt(otherUser.getToilet()) +
+                mapToInt(otherUser.getBath()) +
+                mapToInt(otherUser.getWalk());
+    }
+
+    public User findUserByKakaoId(String kakaoId) {
+        Optional<User> user = userRepository.findByKakaoId(kakaoId);
+        if (user.isPresent()) {
+            return user.get();
+        }
+
+        throw new KakaoIdNotFoundException("Kakao ID가 존재하지 않습니다: " + kakaoId);
     }
 }

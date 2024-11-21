@@ -48,6 +48,33 @@ public class GlobalHandleException {
                 .body(new ErrorResponseDTO(ErrorCode.CHAT_NOT_FOUND));
     }
 
+    @ExceptionHandler(NotValidAddressException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleNotValidAddressException(final NotValidAddressException e) {
+        return ResponseEntity
+                .status(ErrorCode.NOT_VALID_ADDRESS.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.NOT_VALID_ADDRESS));
+    }
+
+    @ExceptionHandler(KakaoIdNotFoundException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleKakaoIdNotFoundException(final KakaoIdNotFoundException e) {
+        return ResponseEntity
+                .status(ErrorCode.USER_NOT_FOUND.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.USER_NOT_FOUND));
+    }
+
+    @ExceptionHandler(UserMustNotCaregiverException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleUserMustNotCaregiverException(final UserMustNotCaregiverException e) {
+        return ResponseEntity
+                .status(ErrorCode.USER_MUST_NOT_CAREGIVER.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.USER_MUST_NOT_CAREGIVER));
+    }
+
+    @ExceptionHandler(UserMustCaregiverException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleUserMustCaregiverException(final UserMustCaregiverException e) {
+        return ResponseEntity
+                .status(ErrorCode.USER_MUST_CAREGIVER.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.USER_MUST_CAREGIVER));
+    }
     /**
      * 입력값 검증
      */

@@ -61,8 +61,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers(
                                 "/login", "/error", "/register", "/kakao/login", "/reissue",
-                                "/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**",
-                                "/kakao-login", "/kakao-code", "/test", "/chat/**"
+                                "/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**"
+                                , "/kakao-code", "/test", "/chat/**"
                         ).permitAll()
                         .anyRequest().authenticated());
 
@@ -76,7 +76,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // Frontend의 Origin을 추가
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://carely-backend.site/")); // Frontend의 Origin을 추가
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With"));
         configuration.setExposedHeaders(Arrays.asList("accessToken", "refreshToken"));

@@ -8,10 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 @Getter
@@ -52,6 +49,16 @@ public class User extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String aiSummary;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<JoinGroup> joinGroups = new HashSet<>();
+
+    @OneToMany(mappedBy = "volunteer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Volunteer> volunteers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Like> likes = new HashSet<>();
+
+
     private String talk;
     private String eat;
     private String toilet;
@@ -62,8 +69,8 @@ public class User extends BaseEntity {
     // 회원가입
     @Builder(builderMethodName = "userBuilder")
     public User(String kakaoId, UserType userType, String role, String username, Integer age, String phoneNum,
-                     String city, String address, String detailAddress, Boolean locationAuthentication, Boolean shareLocation,
-                     String talk, String eat, String toilet, String bath, String walk, String story
+                String city, String address, String detailAddress, Boolean locationAuthentication, Boolean shareLocation,
+                String talk, String eat, String toilet, String bath, String walk, String story
     ) {
         this.kakaoId = kakaoId;
         this.userType = userType;
@@ -122,4 +129,18 @@ public class User extends BaseEntity {
     public void updateStory(String story) {
         this.story = story;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(id, user.id); // ID로 비교
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
 }

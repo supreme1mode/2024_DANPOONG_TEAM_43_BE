@@ -10,6 +10,8 @@ public enum ErrorCode {
      * 400
      */
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
+    NOT_VALID_ADDRESS(HttpStatus.BAD_REQUEST, "잘못된 주소입니다."),
+    NOT_WRITER(HttpStatus.BAD_REQUEST, "작성자가 아닙니다."),
 
     /**
      * 401
@@ -18,20 +20,32 @@ public enum ErrorCode {
     INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 액세스 토큰입니다."),
     TOKEN_MISSING(HttpStatus.UNAUTHORIZED, "요청 헤더에 토큰이 없습니다."),
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 리프레시 토큰입니다."),
+    USER_MUST_CAREGIVER(HttpStatus.UNAUTHORIZED, "요청하는 유저가 간병인이어야 합니다."),
+    USER_MUST_NOT_CAREGIVER(HttpStatus.UNAUTHORIZED, "요청하는 유저가 자원봉사자 혹은 요양보호사여야 합니다."),
 
     /**
      * 404
      */
+    GROUP_NOT_FOUND(HttpStatus.NOT_FOUND, "그룹을 찾을 수 없습니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
     TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "데이터베이스에서 토큰을 찾을 수 없습니다."),
     VOLUNTEER_NOT_FOUND(HttpStatus.NOT_FOUND, "자원봉사 요청을 찾을 수 없습니다."),
     CHAT_NOT_FOUND(HttpStatus.NOT_FOUND, "채팅 메세지를 찾을 수 없습니다."),
+    NOT_IN_GROUP(HttpStatus.NOT_FOUND, "가입된 적이 없는 유저입니다."),
+    LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "그룹을 찜하지 않은 유저입니다."),
+
+    /**
+     *  406
+     * */
+    ALREADY_EXISTS_GUESTBOOK(HttpStatus.NOT_ACCEPTABLE, "이미 해당 활동에 대한 방명록이 존재합니다."),
+
 
     /**
      * 409
      */
     DUPLICATE_USERNAME(HttpStatus.CONFLICT, "중복된 카카오 아이디입니다."),
     ALREADY_IN_GROUP(HttpStatus.CONFLICT, "이미 가입되어 있는 유저입니다."),
+    ALREADY_LIKE_GROUP(HttpStatus.CONFLICT, "이미 찜한 그룹입니다."),
 
     /**
      * 500

@@ -5,8 +5,10 @@ import com.carely.backend.code.SuccessCode;
 import com.carely.backend.controller.docs.UserAPI;
 import com.carely.backend.domain.RefreshEntity;
 import com.carely.backend.domain.User;
+import com.carely.backend.domain.enums.UserType;
 import com.carely.backend.dto.response.ResponseDTO;
 import com.carely.backend.dto.user.*;
+import com.carely.backend.exception.UserMustNotCaregiverException;
 import com.carely.backend.jwt.JWTUtil;
 import com.carely.backend.repository.RefreshRepository;
 import com.carely.backend.service.UserService;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -192,6 +195,7 @@ public class UserController implements UserAPI {
         }
     }
 
+
     // 회원 탈퇴
     @DeleteMapping("/delete-user")
     public ResponseEntity<ResponseDTO> deleteUser() {
@@ -201,6 +205,38 @@ public class UserController implements UserAPI {
                 .status(SuccessCode.SUCCESS_DELETE_USER.getStatus().value())
                 .body(new ResponseDTO<>(SuccessCode.SUCCESS_DELETE_USER, null));
 
+    }
+
+    @GetMapping("/caregiver/recommend-users")
+    public ResponseEntity<ResponseDTO>  recommendUsers() {
+        String kakaoId = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        User currentUser = userService.findUserByKakaoId(kakaoId);
+
+        if(!currentUser.getUserType().equals(UserType.CAREGIVER))
+            throw new UserMustNotCaregiverException("");
+
+        List<RecommandUserDTO.Res> res = userService.recommendUsers(currentUser);
+
+        return ResponseEntity
+                .status(SuccessCode.SUCCESS_RETRIEVE_USER.getStatus().value())
+                .body(new ResponseDTO<>(SuccessCode.SUCCESS_RETRIEVE_USER, res));
+    }
+
+    @GetMapping("/non-caregiver/recommend-users")
+    public ResponseEntity<ResponseDTO>  recommandCaregiver() {
+        String kakaoId = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        User currentUser = userService.findUserByKakaoId(kakaoId);
+
+        if(currentUser.getUserType().equals(UserType.CAREGIVER))
+            throw new UserMustNotCaregiverException("");
+
+        List<RecommandUserDTO.Res> res = userService.recommendCaregivers(currentUser);
+
+        return ResponseEntity
+                .status(SuccessCode.SUCCESS_RETRIEVE_USER.getStatus().value())
+                .body(new ResponseDTO<>(SuccessCode.SUCCESS_RETRIEVE_USER, res));
     }
 
     private void addRefreshEntity(String refresh, String username) {
