@@ -70,4 +70,5 @@ public class Volunteer extends BaseEntity {
     }
 
     public void updateVolunteerGuestBook() {this.hasGuestBook = true;}
+    public void deleteVolunteerGuestBook() {this.hasGuestBook = false;}
 }

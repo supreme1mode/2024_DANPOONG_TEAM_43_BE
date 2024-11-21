@@ -2,6 +2,7 @@ package com.carely.backend.controller;
 
 
 import com.carely.backend.code.SuccessCode;
+import com.carely.backend.controller.docs.GuestBookAPI;
 import com.carely.backend.dto.guestBook.RequestGuestBookDTO;
 import com.carely.backend.dto.guestBook.ResponseGuestBookDTO;
 import com.carely.backend.dto.response.ResponseDTO;
@@ -18,7 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping(("/guestbook"))
 @RequiredArgsConstructor
-public class GuestBookController {
+public class GuestBookController implements GuestBookAPI {
     private final GuestBookService guestBookService;
 
     @PostMapping("/{id}")
@@ -57,5 +58,12 @@ public class GuestBookController {
                 .body(new ResponseDTO<>(SuccessCode.SUCCESS_RETRIEVE_GUESTBOOK, responseGuestBookDTOList));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResponseDTO<?>> deleteGuestBook(@Valid @AuthenticationPrincipal CustomUserDetails user, @PathVariable Long id) {
+        guestBookService.deleteGuestBook(user.getUsername(), id);
 
+        return ResponseEntity
+                .status(SuccessCode.SUCCESS_DELETE_GUESTBOOK.getStatus().value())
+                .body(new ResponseDTO<>(SuccessCode.SUCCESS_DELETE_GUESTBOOK, null));
+    }
   }
