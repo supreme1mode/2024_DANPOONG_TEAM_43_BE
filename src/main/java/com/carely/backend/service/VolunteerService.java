@@ -24,6 +24,7 @@ public class VolunteerService {
     private final VolunteerRepository volunteerRepository;
     private final UserRepository userRepository;
     private final ChatMessageRepository chatMessageRepository;
+    private final CertificateService certificateService;
 
     public CreateVolunteerDTO.Res createVolunteer(CreateVolunteerDTO dto) {
         // 자원봉사자 및 간병인 조회
@@ -92,6 +93,7 @@ public class VolunteerService {
 
         Volunteer savedVolunteer = volunteerRepository.save(volunteer);
         System.out.println(savedVolunteer.getIsApproved());
+        certificateService.createVolunteerSession(volunteer);
         return CreateVolunteerDTO.Res.toDTO(savedVolunteer);
 
     }
