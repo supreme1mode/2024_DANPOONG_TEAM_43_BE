@@ -6,6 +6,7 @@ import com.carely.backend.domain.Volunteer;
 import com.carely.backend.dto.guestBook.RequestGuestBookDTO;
 import com.carely.backend.dto.guestBook.ResponseGuestBookDTO;
 import com.carely.backend.exception.AlreadyExistsGuestBookException;
+import com.carely.backend.exception.NotWriterException;
 import com.carely.backend.exception.UserNotFoundException;
 import com.carely.backend.exception.VolunteerNotFoundException;
 import com.carely.backend.repository.GuestBookRepository;
@@ -140,6 +141,23 @@ public class GuestBookService {
             }
         }
         return responseGuestBookDTOList;
+
+    }
+
+    public void deleteGuestBook(String username, Long id) {
+        User user_volunteer = userRepository.findByKakaoId(username)
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
+
+        Volunteer volunteer = volunteerRepository.findById(id).orElseThrow(() -> new VolunteerNotFoundException("존재하지 않음."));
+        if (volunteer.getVolunteer().equals(user_volunteer)) {
+            volunteer.deleteVolunteerGuestBook();
+            guestBookRepository.deleteByVolunteerSectionId(id);
+        }
+        else {
+            throw new NotWriterException("작성자가 아닌 글은 지울 수 없습니다.");
+        }
+        
+        
 
     }
 }
