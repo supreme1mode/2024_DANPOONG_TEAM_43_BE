@@ -24,6 +24,7 @@ public enum ErrorCode {
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 리프레시 토큰입니다."),
     USER_MUST_CAREGIVER(HttpStatus.UNAUTHORIZED, "요청하는 유저가 간병인이어야 합니다."),
     USER_MUST_NOT_CAREGIVER(HttpStatus.UNAUTHORIZED, "요청하는 유저가 자원봉사자 혹은 요양보호사여야 합니다."),
+    USER_NOT_MATCH(HttpStatus.UNAUTHORIZED, "자격증의 정보가 가입한 회원정보와 일치하지 않습니다."),
 
     /**
      * 404

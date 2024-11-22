@@ -41,7 +41,7 @@ public class GuestBookController implements GuestBookAPI {
     }
 
     @GetMapping("/myHome")
-    public ResponseEntity<ResponseDTO<?>> getGuestBookMyHome(@AuthenticationPrincipal CustomUserDetails user){
+    public ResponseEntity<ResponseDTO<?>> getGuestBookMyHome(@Valid @AuthenticationPrincipal CustomUserDetails user){
         List<ResponseGuestBookDTO> responseGuestBookDTOList = guestBookService.getGuestBookMyHome(user.getUsername());
 
         return ResponseEntity
@@ -50,7 +50,7 @@ public class GuestBookController implements GuestBookAPI {
     }
 
     @GetMapping("/caregiverHome")
-    public ResponseEntity<ResponseDTO<?>> getGuestBookCaregiverHome(@AuthenticationPrincipal CustomUserDetails user) {
+    public ResponseEntity<ResponseDTO<?>> getGuestBookCaregiverHome(@Valid @AuthenticationPrincipal CustomUserDetails user) {
         List<ResponseGuestBookDTO> responseGuestBookDTOList = guestBookService.getGuestBookCaregiverHome(user.getUsername());
 
         return ResponseEntity

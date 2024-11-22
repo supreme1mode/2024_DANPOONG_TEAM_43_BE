@@ -44,6 +44,8 @@ public class User extends BaseEntity {
     private UserType userType;
     // 내 위치 공유 여부
     private Boolean shareLocation;
+    //자격증 인증 여부
+    private Boolean certificateCheck = false;
 
     // ai 요약
     @Column(columnDefinition = "TEXT")
@@ -88,6 +90,7 @@ public class User extends BaseEntity {
         this.bath = bath;
         this.walk = walk;
         this.story = story;
+        this.certificateCheck = false;
     }
 
     // 로그인
@@ -140,6 +143,10 @@ public class User extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public void updateCertificateCheck() {
+        this.certificateCheck = true;
     }
 
 }
