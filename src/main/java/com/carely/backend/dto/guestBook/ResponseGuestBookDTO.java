@@ -15,6 +15,7 @@ public class ResponseGuestBookDTO {
     private String writer;
     private String profileName;
     private UserType userType;
+    private Long userId;
     //private String volunteerName;
     //private UserType volunteerUserType;
     private Integer durationHours;
@@ -25,13 +26,14 @@ public class ResponseGuestBookDTO {
     private String careDate;
     private String content;
 
-    public static ResponseGuestBookDTO entityToDto(GuestBookEntity guestBookEntity, String home, String writer, String profileName, UserType userType) {
+    public static ResponseGuestBookDTO entityToDto(GuestBookEntity guestBookEntity, String home, String writer, String profileName, UserType userType, Long id) {
         return ResponseGuestBookDTO.builder()
                 .sectionId(guestBookEntity.getVolunteerSection().getId())
                 .home(home)
                 .writer(writer)
                 .profileName(profileName)
                 .userType(userType)
+                .userId(id)
                 .careDate(guestBookEntity.getVolunteerSection().getEndTime().toString())
                 .durationHours(guestBookEntity.getVolunteerSection().getDurationHours())
                 .content(guestBookEntity.getContent())

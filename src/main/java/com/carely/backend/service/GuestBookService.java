@@ -64,19 +64,22 @@ public class GuestBookService {
             String home;
             String profileName;
             UserType userType;
+            Long userId;
             if (volunteer.getVolunteer().equals(user_volunteer)) {
                 home = volunteer.getCaregiver().getUsername() + "님의 집";
                 writer = "내가 남긴 방명록";
                 profileName = volunteer.getCaregiver().getUsername();
                 userType = volunteer.getCaregiver().getUserType();
+                userId = volunteer.getCaregiver().getId();
             } else {
                 home = "내 집";
                 writer = volunteer.getVolunteer().getUsername() + "님의 방명록";
                 profileName = volunteer.getVolunteer().getUsername();
                 userType = volunteer.getVolunteer().getUserType();
+                userId = volunteer.getVolunteer().getId();
             }
                 if (volunteer.getHasGuestBook()) {
-                    responseGuestBookDTOList.add(ResponseGuestBookDTO.entityToDto(guestBookRepository.findByVolunteerSectionId(volunteer.getId()), home, writer, profileName, userType));
+                    responseGuestBookDTOList.add(ResponseGuestBookDTO.entityToDto(guestBookRepository.findByVolunteerSectionId(volunteer.getId()), home, writer, profileName, userType, userId));
                 } else if (volunteer.getCaregiver().equals(user_volunteer)) {
                     continue;
                 } else {
@@ -85,6 +88,7 @@ public class GuestBookService {
                             .writer(writer)
                             .profileName(profileName)
                             .userType(userType)
+                            .userId(userId)
                             .careDate(volunteer.getDate().toString())
                             .content(null)
                             .sectionId(volunteer.getId())
@@ -108,20 +112,23 @@ public class GuestBookService {
                 String home;
                 String profileName;
                 UserType userType;
+                Long userId;
                 if (volunteer.getVolunteer().equals(user_volunteer)) {
                     home = volunteer.getCaregiver().getUsername()+ "님의 집";
                     writer = "내가 남긴 방명록";
                     profileName = volunteer.getCaregiver().getUsername();
                     userType = volunteer.getCaregiver().getUserType();
+                    userId = volunteer.getCaregiver().getId();
                 }
                 else {
                     home = "내 집";
                     writer = volunteer.getVolunteer().getUsername()+"님의 방명록";
                     profileName = volunteer.getVolunteer().getUsername();
                     userType = volunteer.getVolunteer().getUserType();
+                    userId = volunteer.getVolunteer().getId();
                 }
             if (volunteer.getCaregiver().equals(user_volunteer) && volunteer.getHasGuestBook()) {
-                responseGuestBookDTOList.add(ResponseGuestBookDTO.entityToDto(guestBookRepository.findByVolunteerSectionId(volunteer.getId()), home, writer, profileName, userType));
+                responseGuestBookDTOList.add(ResponseGuestBookDTO.entityToDto(guestBookRepository.findByVolunteerSectionId(volunteer.getId()), home, writer, profileName, userType, userId));
             }
         }
         return responseGuestBookDTOList;
@@ -139,27 +146,31 @@ public class GuestBookService {
             String home;
             String profileName;
             UserType userType;
+            Long userId;
             if (volunteer.getVolunteer().equals(user_volunteer)) {
                 home = volunteer.getCaregiver().getUsername()+ "님의 집";
                 writer = "내가 남긴 방명록";
                 profileName = volunteer.getCaregiver().getUsername();
                 userType = volunteer.getCaregiver().getUserType();
+                userId = volunteer.getCaregiver().getId();
             }
             else {
                 home = "내 집";
                 writer = volunteer.getVolunteer().getUsername()+"님의 방명록";
                 profileName = volunteer.getVolunteer().getUsername();
                 userType = volunteer.getVolunteer().getUserType();
+                userId = volunteer.getVolunteer().getId();
             }
 
             if (volunteer.getVolunteer().equals(user_volunteer) && volunteer.getHasGuestBook()) {
-                responseGuestBookDTOList.add(ResponseGuestBookDTO.entityToDto(guestBookRepository.findByVolunteerSectionId(volunteer.getId()), home, writer, profileName, userType));
+                responseGuestBookDTOList.add(ResponseGuestBookDTO.entityToDto(guestBookRepository.findByVolunteerSectionId(volunteer.getId()), home, writer, profileName, userType, userId));
             } else {
                 responseGuestBookDTOList.add(ResponseGuestBookDTO.builder()
                         .home(home)
                         .writer(writer)
                         .profileName(profileName)
                         .userType(userType)
+                        .userId(userId)
                         .careDate(volunteer.getDate().toString())
                         .content(null)
                         .sectionId(volunteer.getId())
