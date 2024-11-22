@@ -20,8 +20,13 @@ configurations {
 }
 
 repositories {
-	mavenCentral()
+	mavenCentral() // 기본 Maven Central
+	google()       // Google Maven Repository 추가
+	maven {
+		url "https://maven.google.com"
+	}
 }
+
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -37,6 +42,8 @@ dependencies {
 
 	// swagger
 	implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.1.0'
+	implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
+	implementation 'io.swagger.core.v3:swagger-annotations:2.2.12'
 
 	// JWT
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
@@ -54,6 +61,9 @@ dependencies {
 
 	// s3
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
+	// OCR
+	implementation 'com.google.cloud:google-cloud-vision:3.17.0'
 
 }
 

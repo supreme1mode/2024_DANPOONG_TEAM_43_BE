@@ -73,6 +73,12 @@ public enum SuccessCode {
     SUCCESS_RETRIEVE_GUESTBOOK(HttpStatus.OK, "방명록을 성공적으로 조회했습니다."),
 
 
+    /**
+     * OCR
+     * */
+    SUCCESS_OCR(HttpStatus.OK, "성공적으로 서류 검출을 진행했습니다."),
+
+
     ;
     private final HttpStatus status;
     private final String message;
