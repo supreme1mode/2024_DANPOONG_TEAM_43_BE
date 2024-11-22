@@ -1,6 +1,12 @@
 package com.carely.backend.service.ocr;
 
+import com.carely.backend.domain.User;
 import com.carely.backend.dto.ocr.OCRResponseDto;
+import com.carely.backend.exception.UserNotFoundException;
+import com.carely.backend.exception.UserNotMatchException;
+import com.carely.backend.repository.UserRepository;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,12 +22,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
+@RequiredArgsConstructor
 public class OCRService {
+    private final UserRepository userRepository;
 
     @Value("${google.vision.api-key}")
     private String apiKey;
 
-    public OCRResponseDto extractText(MultipartFile imageFile) {
+    @Transactional
+    public OCRResponseDto extractText(MultipartFile imageFile, String username) {
+        User user = userRepository.findByKakaoId(username)
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
+
         try {
             // 이미지 파일을 Base64로 인코딩
             byte[] imageBytes = imageFile.getBytes();
@@ -64,13 +76,14 @@ public class OCRService {
             String extractedText = parseResponse(jsonResponse);
 
             // 텍스트에서 필요한 정보 추출
-            return extractFields(extractedText);
+            return extractFields(extractedText, user);
 
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
+
 
     // JSON 응답에서 텍스트 추출
     private String parseResponse(String jsonResponse) {
@@ -91,7 +104,7 @@ public class OCRService {
     }
 
     // 정규식을 사용하여 필드 추출
-    private OCRResponseDto extractFields(String ocrResult) {
+    private OCRResponseDto extractFields(String ocrResult, User user) {
         // 정규식 패턴
         String namePattern = "성명\\s*(\\S+)";
         String dobPattern = "생년월일\\s*([\\d]{4}년\\s*[\\d]{2}월\\s*[\\d]{2}일)";
@@ -100,14 +113,19 @@ public class OCRService {
         String acquisitionDatePattern = "취 득 일 자\\s*([\\d]{4}년\\s*[\\d]{2}월\\s*[\\d]{2}일)";
         String subjectPattern = "취득과목\\s*([\\S ]+)";
 
-        return OCRResponseDto.builder()
-                .name(extractByPattern(ocrResult, namePattern))
-                .birth(extractByPattern(ocrResult, dobPattern))
-                .certificateNum(extractByPattern(ocrResult, regNumberPattern))
-                .certificateType(extractByPattern(ocrResult, categoryPattern))
-                .certificateDate(extractByPattern(ocrResult, acquisitionDatePattern))
-                .certificateName(extractByPattern(ocrResult, subjectPattern))
-                .build();
+        if (user.getUsername().equals(extractByPattern(ocrResult, namePattern))){
+            return OCRResponseDto.builder()
+                    .name(extractByPattern(ocrResult, namePattern))
+                    .birth(extractByPattern(ocrResult, dobPattern))
+                    .certificateNum(extractByPattern(ocrResult, regNumberPattern))
+                    .certificateType(extractByPattern(ocrResult, categoryPattern))
+                    .certificateDate(extractByPattern(ocrResult, acquisitionDatePattern))
+                    .certificateName(extractByPattern(ocrResult, subjectPattern))
+                    .build();
+        }
+        else {
+            throw new UserNotMatchException("자격증의 정보가 가입한 회원정보와 일치하지 않습니다.");
+        }
     }
 
     // 정규식 기반으로 텍스트 추출

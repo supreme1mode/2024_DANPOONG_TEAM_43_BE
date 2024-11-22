@@ -62,6 +62,13 @@ public class GlobalHandleException {
                 .body(new ErrorResponseDTO(ErrorCode.USER_NOT_FOUND));
     }
 
+    @ExceptionHandler(UserNotMatchException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleUserNotMatchException(final UserNotMatchException e) {
+        return ResponseEntity
+                .status(ErrorCode.USER_NOT_MATCH.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.USER_NOT_MATCH));
+    }
+
     @ExceptionHandler(UserMustNotCaregiverException.class)
     protected ResponseEntity<ErrorResponseDTO> handleUserMustNotCaregiverException(final UserMustNotCaregiverException e) {
         return ResponseEntity
