@@ -63,7 +63,7 @@ public class VolunteerService {
     }
 
     @Transactional
-    public CreateVolunteerDTO.Res updateApproval(Long volunteerId, Long messageId, String roomId, String kakaoId) {
+    public CreateVolunteerDTO.Res updateApproval(Long volunteerId, Long messageId, String roomId, String kakaoId) throws Exception {
         User user = userRepository.findByKakaoId(kakaoId)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 

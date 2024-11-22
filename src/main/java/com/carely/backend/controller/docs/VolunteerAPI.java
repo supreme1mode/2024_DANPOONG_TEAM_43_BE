@@ -13,7 +13,7 @@ public interface VolunteerAPI {
 
     @Operation(summary = "자원봉사 승인하기", description = "간병인이 채팅방에서 자원봉사를 승인합니다.")
     public ResponseEntity<?> approveVolunteer(@PathVariable("volunteerId") Long volunteerId,
-                                              @RequestBody() UpdateVolunteerApprovalDTO updateVolunteerApprovalDTO);
+                                              @RequestBody() UpdateVolunteerApprovalDTO updateVolunteerApprovalDTO) throws Exception;
 
     @Operation(summary = "자원봉사 상세보기", description = "자원봉사자, 혹은 요양보호사가 간병인에게 요청한 자원봉사를 조회합니다.")
     public ResponseEntity<?> getVolunteerInfo(@PathVariable("volunteerId") Long volunteerId) ;

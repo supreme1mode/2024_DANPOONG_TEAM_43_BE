@@ -70,7 +70,7 @@ public class VolunteerController implements VolunteerAPI {
 
     @PatchMapping("/approval/{volunteerId}")
     public ResponseEntity<?> approveVolunteer(@PathVariable("volunteerId") Long volunteerId,
-                                             @RequestBody() UpdateVolunteerApprovalDTO updateVolunteerApprovalDTO) {
+                                             @RequestBody() UpdateVolunteerApprovalDTO updateVolunteerApprovalDTO) throws Exception {
 
         String kakaoId = SecurityContextHolder.getContext().getAuthentication().getName();
         CreateVolunteerDTO.Res res = volunteerService.updateApproval(volunteerId, updateVolunteerApprovalDTO.getMessageId(), updateVolunteerApprovalDTO.getRoomId(), kakaoId);
