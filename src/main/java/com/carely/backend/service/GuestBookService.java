@@ -78,16 +78,7 @@ public class GuestBookService {
                 if (volunteer.getHasGuestBook()) {
                     responseGuestBookDTOList.add(ResponseGuestBookDTO.entityToDto(guestBookRepository.findByVolunteerSectionId(volunteer.getId()), home, writer, profileName, userType));
                 } else if (volunteer.getCaregiver().equals(user_volunteer)) {
-                    responseGuestBookDTOList.add(ResponseGuestBookDTO.builder()
-                            .home(home)
-                            .writer(writer)
-                            .profileName(profileName)
-                            .userType(userType)
-                            .careDate(volunteer.getDate().toString())
-                            .content("작성된 방명록이 없습니다.")
-                            .sectionId(volunteer.getId())
-                            .durationHours(volunteer.getDurationHours())
-                            .build());
+                    continue;
                 } else {
                     responseGuestBookDTOList.add(ResponseGuestBookDTO.builder()
                             .home(home)
@@ -95,7 +86,7 @@ public class GuestBookService {
                             .profileName(profileName)
                             .userType(userType)
                             .careDate(volunteer.getDate().toString())
-                            .content("방명록을 작성해보세요!")
+                            .content(null)
                             .sectionId(volunteer.getId())
                             .durationHours(volunteer.getDurationHours())
                             .build());
@@ -131,17 +122,6 @@ public class GuestBookService {
                 }
             if (volunteer.getCaregiver().equals(user_volunteer) && volunteer.getHasGuestBook()) {
                 responseGuestBookDTOList.add(ResponseGuestBookDTO.entityToDto(guestBookRepository.findByVolunteerSectionId(volunteer.getId()), home, writer, profileName, userType));
-            } else {
-                responseGuestBookDTOList.add(ResponseGuestBookDTO.builder()
-                        .home(home)
-                        .writer(writer)
-                        .profileName(profileName)
-                        .userType(userType)
-                        .careDate(volunteer.getDate().toString())
-                        .content("작성된 방명록이 없습니다.")
-                        .sectionId(volunteer.getId())
-                        .durationHours(volunteer.getDurationHours())
-                        .build());
             }
         }
         return responseGuestBookDTOList;
@@ -181,7 +161,7 @@ public class GuestBookService {
                         .profileName(profileName)
                         .userType(userType)
                         .careDate(volunteer.getDate().toString())
-                        .content("방명록을 작성해보세요!")
+                        .content(null)
                         .sectionId(volunteer.getId())
                         .durationHours(volunteer.getDurationHours())
                         .build());
