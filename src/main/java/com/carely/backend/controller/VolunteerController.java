@@ -73,7 +73,7 @@ public class VolunteerController implements VolunteerAPI {
                                              @RequestBody() UpdateVolunteerApprovalDTO updateVolunteerApprovalDTO) {
 
         String kakaoId = SecurityContextHolder.getContext().getAuthentication().getName();
-        CreateVolunteerDTO.Res res = volunteerService.updateApproval(volunteerId, updateVolunteerApprovalDTO.getMessageId(), kakaoId);
+        CreateVolunteerDTO.Res res = volunteerService.updateApproval(volunteerId, updateVolunteerApprovalDTO.getMessageId(), updateVolunteerApprovalDTO.getRoomId(), kakaoId);
 
         ChatRoomEntity chatRoom = chatService.findRoomById(updateVolunteerApprovalDTO.getRoomId());
 

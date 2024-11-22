@@ -89,6 +89,20 @@ public class GlobalHandleException {
                 .status(ErrorCode.NOT_ELIGIBLE_CAREGIVER.getStatus().value())
                 .body(new ErrorResponseDTO(ErrorCode.NOT_ELIGIBLE_CAREGIVER));
     }
+
+    @ExceptionHandler(AlreadyApprovedException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleAlreadyApprovedException(final AlreadyApprovedException e) {
+        return ResponseEntity
+                .status(ErrorCode.ALREADY_APPROVED.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.ALREADY_APPROVED));
+    }
+
+    @ExceptionHandler(NotMatchChatroomException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleNotMatchChatroomException(final NotMatchChatroomException e) {
+        return ResponseEntity
+                .status(ErrorCode.NOT_MATCH_CHATROOM.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.NOT_MATCH_CHATROOM));
+    }
     /**
      * 입력값 검증
      */
