@@ -16,6 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+
 public interface OcrAPI {
 
     @Operation(summary = "OCR 검증하기", description = "파일을 올리면 검증된 결과가 나옵니다.")
@@ -38,17 +41,16 @@ public interface OcrAPI {
                                     "}")
                     )
             ),
-            @ApiResponse(responseCode = "409", description = "데이터베이스에 중복된 유저 이름이 있는 경우",
+            @ApiResponse(responseCode = "401", description = "회원 정보와 자격증 정보가 일치하지 않을 경우",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponseDTO.class),
                             examples = @ExampleObject(value = "{\n" +
-                                    "  \"status\": 409,\n" +
-                                    "  \"error\": \"CONFLICT\",\n" +
-                                    "  \"code\": \"DUPLICATE_USERNAME\",\n" +
-                                    "  \"message\": \"중복된 유저 이름입니다.\"\n" +
+                                    "  \"status\": 401,\n" +
+                                    "  \"code\": \"USER_NOT_MATCH\",\n" +
+                                    "  \"message\": \"자격증의 정보가 가입한 회원정보와 일치하지 않습니다.\"\n" +
                                     "}")
                     )
             )
     })
-    ResponseEntity<ResponseDTO<?>> extractText(@Valid @RequestPart("file") MultipartFile file, @AuthenticationPrincipal CustomUserDetails user);
+    ResponseEntity<ResponseDTO<?>> extractText(@Valid @RequestPart("file") MultipartFile file, @AuthenticationPrincipal CustomUserDetails user) throws IOException;
 }

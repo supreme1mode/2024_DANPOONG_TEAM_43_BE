@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -30,57 +31,57 @@ public class OCRService {
     private String apiKey;
 
     @Transactional
-    public OCRResponseDto extractText(MultipartFile imageFile, String username) {
+    public OCRResponseDto extractText(MultipartFile imageFile, String username) throws IOException {
         User user = userRepository.findByKakaoId(username)
                 .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
 
-        try {
-            // 이미지 파일을 Base64로 인코딩
-            byte[] imageBytes = imageFile.getBytes();
-            String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+        // 이미지 파일을 Base64로 인코딩
+        byte[] imageBytes = imageFile.getBytes();
+        String base64Image = Base64.getEncoder().encodeToString(imageBytes);
 
-            // Google Vision API URL
-            String visionApiUrl = "https://vision.googleapis.com/v1/images:annotate?key=" + apiKey;
+        // Google Vision API URL
+        String visionApiUrl = "https://vision.googleapis.com/v1/images:annotate?key=" + apiKey;
 
-            // 요청 본문 생성
-            JSONObject image = new JSONObject();
-            image.put("content", base64Image);
+        // 요청 본문 생성
+        JSONObject image = new JSONObject();
+        image.put("content", base64Image);
 
-            JSONObject feature = new JSONObject();
-            feature.put("type", "TEXT_DETECTION");
+        JSONObject feature = new JSONObject();
+        feature.put("type", "TEXT_DETECTION");
 
-            JSONObject request = new JSONObject();
-            request.put("image", image);
-            request.put("features", new JSONArray().put(feature));
+        JSONObject request = new JSONObject();
+        request.put("image", image);
+        request.put("features", new JSONArray().put(feature));
 
-            JSONObject requestBody = new JSONObject();
-            requestBody.put("requests", new JSONArray().put(request));
+        JSONObject requestBody = new JSONObject();
+        requestBody.put("requests", new JSONArray().put(request));
 
-            // HTTP 요청 전송
-            URL url = new URL(visionApiUrl);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-            connection.setDoOutput(true);
+        // HTTP 요청 전송
+        URL url = new URL(visionApiUrl);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("POST");
+        connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+        connection.setDoOutput(true);
 
-            try (OutputStream os = connection.getOutputStream()) {
-                os.write(requestBody.toString().getBytes("UTF-8"));
-            }
+        try (OutputStream os = connection.getOutputStream()) {
+            os.write(requestBody.toString().getBytes("UTF-8"));
+        }
 
-            // 응답 처리
-            InputStream responseStream = connection.getInputStream();
-            byte[] responseBytes = responseStream.readAllBytes();
-            String jsonResponse = new String(responseBytes, "UTF-8");
+        // 응답 처리
+        InputStream responseStream = connection.getInputStream();
+        byte[] responseBytes = responseStream.readAllBytes();
+        String jsonResponse = new String(responseBytes, "UTF-8");
 
-            // JSON에서 텍스트 추출
-            String extractedText = parseResponse(jsonResponse);
+        // JSON에서 텍스트 추출
+        String extractedText = parseResponse(jsonResponse);
 
-            // 텍스트에서 필요한 정보 추출
-            return extractFields(extractedText, user);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+        // 텍스트에서 필요한 정보 추출
+        OCRResponseDto ocrResponseDto =  extractFields(extractedText, user);
+        if (ocrResponseDto.getName().equals(user.getUsername())) {
+            return ocrResponseDto;
+        }
+        else {
+            throw new UserNotMatchException("유저 안 맞음");
         }
     }
 
@@ -113,19 +114,14 @@ public class OCRService {
         String acquisitionDatePattern = "취 득 일 자\\s*([\\d]{4}년\\s*[\\d]{2}월\\s*[\\d]{2}일)";
         String subjectPattern = "취득과목\\s*([\\S ]+)";
 
-        if (user.getUsername().equals(extractByPattern(ocrResult, namePattern))){
-            return OCRResponseDto.builder()
-                    .name(extractByPattern(ocrResult, namePattern))
-                    .birth(extractByPattern(ocrResult, dobPattern))
-                    .certificateNum(extractByPattern(ocrResult, regNumberPattern))
-                    .certificateType(extractByPattern(ocrResult, categoryPattern))
-                    .certificateDate(extractByPattern(ocrResult, acquisitionDatePattern))
-                    .certificateName(extractByPattern(ocrResult, subjectPattern))
-                    .build();
-        }
-        else {
-            throw new UserNotMatchException("자격증의 정보가 가입한 회원정보와 일치하지 않습니다.");
-        }
+        return OCRResponseDto.builder()
+                .name(extractByPattern(ocrResult, namePattern))
+                .birth(extractByPattern(ocrResult, dobPattern))
+                .certificateNum(extractByPattern(ocrResult, regNumberPattern))
+                .certificateType(extractByPattern(ocrResult, categoryPattern))
+                .certificateDate(extractByPattern(ocrResult, acquisitionDatePattern))
+                .certificateName(extractByPattern(ocrResult, subjectPattern))
+                .build();
     }
 
     // 정규식 기반으로 텍스트 추출

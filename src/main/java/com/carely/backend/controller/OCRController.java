@@ -14,6 +14,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
 @RestController
 @RequestMapping("/certificates")
 public class OCRController implements OcrAPI {
@@ -25,7 +27,7 @@ public class OCRController implements OcrAPI {
     }
 
     @PostMapping(value = "/extract", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ResponseDTO<?>> extractText(@Valid @RequestPart("file") MultipartFile file, @AuthenticationPrincipal CustomUserDetails user) {
+    public ResponseEntity<ResponseDTO<?>> extractText(@Valid @RequestPart("file") MultipartFile file, @AuthenticationPrincipal CustomUserDetails user) throws IOException {
         OCRResponseDto result = ocrService.extractText(file, user.getUsername());
         return ResponseEntity
                 .status(SuccessCode.SUCCESS_OCR.getStatus().value())
