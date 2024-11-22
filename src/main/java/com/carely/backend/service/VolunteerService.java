@@ -62,22 +62,30 @@ public class VolunteerService {
     }
 
     @Transactional
-    public CreateVolunteerDTO.Res updateApproval(Long volunteerId, Long messageId, String kakaoId) {
+    public CreateVolunteerDTO.Res updateApproval(Long volunteerId, Long messageId, String roomId, String kakaoId) {
         User user = userRepository.findByKakaoId(kakaoId)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
         Volunteer volunteer = volunteerRepository.findById(volunteerId)
                 .orElseThrow(() -> new VolunteerNotFoundException("자원봉사 요청을 찾을 수 없습니다."));
 
+        chatMessageRepository.findById(messageId);
+        ChatMessageEntity chat = chatMessageRepository.findById(messageId)
+                .orElseThrow(() -> new ChatMessageNotFoundException("채팅 메세지를 찾을 수 없습니다."));
+
+        // 채팅방 id와 채팅의 roomId가 일치하지 않는다면
+        if(!chat.getRoomId().equals(roomId))
+            throw new NotMatchChatroomException("");
+
         // volunteer 대상자가 아니라면
         if(!Objects.equals(volunteer.getVolunteer().getId(), user.getId()))
             throw new NotEligibleCaregiver("");
 
-        volunteer.updateVolunteerApproval();
+        // 이미 승인된 처리라면
+        if(volunteer.getIsApproved())
+            throw new AlreadyApprovedException("");
 
-        chatMessageRepository.findById(messageId);
-        ChatMessageEntity chat = chatMessageRepository.findById(messageId)
-                .orElseThrow(() -> new ChatMessageNotFoundException("채팅 메세지를 찾을 수 없습니다."));
+        volunteer.updateVolunteerApproval();
 
         chat.updateVolunteerApproval();
         chatMessageRepository.save(chat);

@@ -13,6 +13,7 @@ public enum ErrorCode {
     NOT_VALID_ADDRESS(HttpStatus.BAD_REQUEST, "잘못된 주소입니다."),
     NOT_WRITER(HttpStatus.BAD_REQUEST, "작성자가 아닙니다."),
     NOT_ELIGIBLE_CAREGIVER(HttpStatus.BAD_REQUEST, "약속 요청을 받은 대상자가 아닙나다."),
+    NOT_MATCH_CHATROOM(HttpStatus.BAD_REQUEST, "채팅방에 해당하지 않는 채팅 메세지입니다. 채팅방 id를 다시 확인하세요."),
 
     /**
      * 401
@@ -40,6 +41,7 @@ public enum ErrorCode {
      * */
     ALREADY_EXISTS_GUESTBOOK(HttpStatus.NOT_ACCEPTABLE, "이미 해당 활동에 대한 방명록이 존재합니다."),
     ALREADY_EXISTS_MEMO(HttpStatus.NOT_ACCEPTABLE, "이미 해당 활동에 대한 메모가 존재합니다."),
+    ALREADY_APPROVED(HttpStatus.NOT_ACCEPTABLE, "이미 승인된 약속입니다."),
 
 
     /**
