@@ -15,5 +15,7 @@ public interface GuestBookRepository extends JpaRepository<GuestBookEntity, Long
     List<GuestBookEntity> findByCaregiver(User caregiver);
     List<GuestBookEntity> findByVolunteer(User volunteer);
 
+    void deleteByVolunteerSectionId(Long volunteerSectionId);
+
 
 }

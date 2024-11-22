@@ -71,6 +71,7 @@ public enum SuccessCode {
     SUCCESS_CREATE_GUESTBOOK(HttpStatus.OK, "방명록을 성공적으로 생성했습니다."),
     //SUCCESS_APPROVAL(HttpStatus.OK, "자원봉사 요청을 성공적으로 승인했습니다."),
     SUCCESS_RETRIEVE_GUESTBOOK(HttpStatus.OK, "방명록을 성공적으로 조회했습니다."),
+    SUCCESS_DELETE_GUESTBOOK(HttpStatus.OK, "방명록을 성공적으로 삭제했습니다."),
 
 
     /**
