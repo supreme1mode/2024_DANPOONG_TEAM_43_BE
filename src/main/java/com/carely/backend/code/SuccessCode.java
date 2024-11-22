@@ -20,7 +20,6 @@ public enum SuccessCode {
     SUCCESS_LOCATION_VERIFICATION(HttpStatus.OK, "성공적으로 위치 인증했습니다."),
     SUCCESS_DELETE_USER(HttpStatus.OK, "성공적으로 유저가 삭제되었습니다."),
 
-
     /**
      * 로그인
      */

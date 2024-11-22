@@ -12,6 +12,7 @@ public enum ErrorCode {
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
     NOT_VALID_ADDRESS(HttpStatus.BAD_REQUEST, "잘못된 주소입니다."),
     NOT_WRITER(HttpStatus.BAD_REQUEST, "작성자가 아닙니다."),
+    NOT_ELIGIBLE_CAREGIVER(HttpStatus.BAD_REQUEST, "약속 요청을 받은 대상자가 아닙나다."),
 
     /**
      * 401
