@@ -12,8 +12,11 @@ import com.carely.backend.repository.ChatMessageRepository;
 import com.carely.backend.repository.UserRepository;
 import com.carely.backend.repository.VolunteerRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -59,9 +62,16 @@ public class VolunteerService {
     }
 
     @Transactional
-    public CreateVolunteerDTO.Res updateApproval(Long volunteerId, Long messageId) {
+    public CreateVolunteerDTO.Res updateApproval(Long volunteerId, Long messageId, String kakaoId) {
+        User user = userRepository.findByKakaoId(kakaoId)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
         Volunteer volunteer = volunteerRepository.findById(volunteerId)
                 .orElseThrow(() -> new VolunteerNotFoundException("자원봉사 요청을 찾을 수 없습니다."));
+
+        // volunteer 대상자가 아니라면
+        if(!Objects.equals(volunteer.getVolunteer().getId(), user.getId()))
+            throw new NotEligibleCaregiver("");
 
         volunteer.updateVolunteerApproval();
 

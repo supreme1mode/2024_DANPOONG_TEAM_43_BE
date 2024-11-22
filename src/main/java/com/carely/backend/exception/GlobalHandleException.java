@@ -82,6 +82,13 @@ public class GlobalHandleException {
                 .status(ErrorCode.ALREADY_EXISTS_MEMO.getStatus().value())
                 .body(new ErrorResponseDTO(ErrorCode.ALREADY_EXISTS_MEMO));
     }
+
+    @ExceptionHandler(NotEligibleCaregiver.class)
+    protected ResponseEntity<ErrorResponseDTO> handleNotEligibleCaregiver(final NotEligibleCaregiver e) {
+        return ResponseEntity
+                .status(ErrorCode.NOT_ELIGIBLE_CAREGIVER.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.NOT_ELIGIBLE_CAREGIVER));
+    }
     /**
      * 입력값 검증
      */
