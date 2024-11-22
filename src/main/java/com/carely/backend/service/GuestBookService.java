@@ -3,6 +3,7 @@ package com.carely.backend.service;
 import com.carely.backend.domain.GuestBookEntity;
 import com.carely.backend.domain.User;
 import com.carely.backend.domain.Volunteer;
+import com.carely.backend.domain.enums.UserType;
 import com.carely.backend.dto.guestBook.RequestGuestBookDTO;
 import com.carely.backend.dto.guestBook.ResponseGuestBookDTO;
 import com.carely.backend.exception.AlreadyExistsGuestBookException;
@@ -59,36 +60,49 @@ public class GuestBookService {
         List<Volunteer> volunteers = volunteerRepository.findByVolunteerOrCaregiver(user_volunteer);
         List<ResponseGuestBookDTO> responseGuestBookDTOList = new ArrayList<>();
         for (Volunteer volunteer : volunteers) {
-            if (volunteer.getHasGuestBook()) {
-                responseGuestBookDTOList.add(ResponseGuestBookDTO.entityToDto(guestBookRepository.findByVolunteerSectionId(volunteer.getId())));
+            String writer;
+            String home;
+            String profileName;
+            UserType userType;
+            if (volunteer.getVolunteer().equals(user_volunteer)) {
+                home = volunteer.getCaregiver().getUsername() + "님의 집";
+                writer = "내가 남긴 방명록";
+                profileName = volunteer.getCaregiver().getUsername();
+                userType = volunteer.getCaregiver().getUserType();
+            } else {
+                home = "내 집";
+                writer = volunteer.getVolunteer().getUsername() + "님의 방명록";
+                profileName = volunteer.getVolunteer().getUsername();
+                userType = volunteer.getVolunteer().getUserType();
             }
-            else if (volunteer.getCaregiver().equals(user_volunteer)) {
-                responseGuestBookDTOList.add(ResponseGuestBookDTO.builder()
-                        .caregiverName(volunteer.getCaregiver().getUsername())
-                        .volunteerName(volunteer.getVolunteer().getUsername())
-                        .caregiverAge(volunteer.getCaregiver().getAge())
-                        .caregiverAddress(volunteer.getCaregiver().getAddress())
-                        .careDate(volunteer.getDate().toString())
-                        .content("작성된 방명록이 없습니다.")
-                        .sectionId(volunteer.getId())
-                        .durationHours(volunteer.getDurationHours())
-                        .build());
+                if (volunteer.getHasGuestBook()) {
+                    responseGuestBookDTOList.add(ResponseGuestBookDTO.entityToDto(guestBookRepository.findByVolunteerSectionId(volunteer.getId()), home, writer, profileName, userType));
+                } else if (volunteer.getCaregiver().equals(user_volunteer)) {
+                    responseGuestBookDTOList.add(ResponseGuestBookDTO.builder()
+                            .home(home)
+                            .writer(writer)
+                            .profileName(profileName)
+                            .userType(userType)
+                            .careDate(volunteer.getDate().toString())
+                            .content("작성된 방명록이 없습니다.")
+                            .sectionId(volunteer.getId())
+                            .durationHours(volunteer.getDurationHours())
+                            .build());
+                } else {
+                    responseGuestBookDTOList.add(ResponseGuestBookDTO.builder()
+                            .home(home)
+                            .writer(writer)
+                            .profileName(profileName)
+                            .userType(userType)
+                            .careDate(volunteer.getDate().toString())
+                            .content("방명록을 작성해보세요!")
+                            .sectionId(volunteer.getId())
+                            .durationHours(volunteer.getDurationHours())
+                            .build());
+                }
             }
-            else {
-                responseGuestBookDTOList.add(ResponseGuestBookDTO.builder()
-                        .caregiverName(volunteer.getCaregiver().getUsername())
-                        .volunteerName(volunteer.getVolunteer().getUsername())
-                        .caregiverAge(volunteer.getCaregiver().getAge())
-                        .caregiverAddress(volunteer.getCaregiver().getAddress())
-                        .careDate(volunteer.getDate().toString())
-                        .content("방명록을 작성해보세요!")
-                        .sectionId(volunteer.getId())
-                        .durationHours(volunteer.getDurationHours())
-                        .build());
-            }
+            return responseGuestBookDTOList;
         }
-        return responseGuestBookDTOList;
-    }
 
 
     public List<ResponseGuestBookDTO> getGuestBookMyHome(String user) {
@@ -99,14 +113,30 @@ public class GuestBookService {
         List<ResponseGuestBookDTO> responseGuestBookDTOList = new ArrayList<>();
 
         for (Volunteer volunteer: volunteerList) {
+                String writer;
+                String home;
+                String profileName;
+                UserType userType;
+                if (volunteer.getVolunteer().equals(user_volunteer)) {
+                    home = volunteer.getCaregiver().getUsername()+ "님의 집";
+                    writer = "내가 남긴 방명록";
+                    profileName = volunteer.getCaregiver().getUsername();
+                    userType = volunteer.getCaregiver().getUserType();
+                }
+                else {
+                    home = "내 집";
+                    writer = volunteer.getVolunteer().getUsername()+"님의 방명록";
+                    profileName = volunteer.getVolunteer().getUsername();
+                    userType = volunteer.getVolunteer().getUserType();
+                }
             if (volunteer.getCaregiver().equals(user_volunteer) && volunteer.getHasGuestBook()) {
-                responseGuestBookDTOList.add(ResponseGuestBookDTO.entityToDto(guestBookRepository.findByVolunteerSectionId(volunteer.getId())));
+                responseGuestBookDTOList.add(ResponseGuestBookDTO.entityToDto(guestBookRepository.findByVolunteerSectionId(volunteer.getId()), home, writer, profileName, userType));
             } else {
                 responseGuestBookDTOList.add(ResponseGuestBookDTO.builder()
-                        .caregiverName(volunteer.getCaregiver().getUsername())
-                        .volunteerName(volunteer.getVolunteer().getUsername())
-                        .caregiverAge(volunteer.getCaregiver().getAge())
-                        .caregiverAddress(volunteer.getCaregiver().getAddress())
+                        .home(home)
+                        .writer(writer)
+                        .profileName(profileName)
+                        .userType(userType)
                         .careDate(volunteer.getDate().toString())
                         .content("작성된 방명록이 없습니다.")
                         .sectionId(volunteer.getId())
@@ -125,14 +155,31 @@ public class GuestBookService {
         List<ResponseGuestBookDTO> responseGuestBookDTOList = new ArrayList<>();
 
         for (Volunteer volunteer: volunteerList) {
+            String writer;
+            String home;
+            String profileName;
+            UserType userType;
+            if (volunteer.getVolunteer().equals(user_volunteer)) {
+                home = volunteer.getCaregiver().getUsername()+ "님의 집";
+                writer = "내가 남긴 방명록";
+                profileName = volunteer.getCaregiver().getUsername();
+                userType = volunteer.getCaregiver().getUserType();
+            }
+            else {
+                home = "내 집";
+                writer = volunteer.getVolunteer().getUsername()+"님의 방명록";
+                profileName = volunteer.getVolunteer().getUsername();
+                userType = volunteer.getVolunteer().getUserType();
+            }
+
             if (volunteer.getVolunteer().equals(user_volunteer) && volunteer.getHasGuestBook()) {
-                responseGuestBookDTOList.add(ResponseGuestBookDTO.entityToDto(guestBookRepository.findByVolunteerSectionId(volunteer.getId())));
+                responseGuestBookDTOList.add(ResponseGuestBookDTO.entityToDto(guestBookRepository.findByVolunteerSectionId(volunteer.getId()), home, writer, profileName, userType));
             } else {
                 responseGuestBookDTOList.add(ResponseGuestBookDTO.builder()
-                        .caregiverName(volunteer.getCaregiver().getUsername())
-                        .volunteerName(volunteer.getVolunteer().getUsername())
-                        .caregiverAge(volunteer.getCaregiver().getAge())
-                        .caregiverAddress(volunteer.getCaregiver().getAddress())
+                        .home(home)
+                        .writer(writer)
+                        .profileName(profileName)
+                        .userType(userType)
                         .careDate(volunteer.getDate().toString())
                         .content("방명록을 작성해보세요!")
                         .sectionId(volunteer.getId())
