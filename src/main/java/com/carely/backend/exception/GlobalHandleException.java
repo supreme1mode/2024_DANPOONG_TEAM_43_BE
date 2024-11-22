@@ -75,6 +75,34 @@ public class GlobalHandleException {
                 .status(ErrorCode.USER_MUST_CAREGIVER.getStatus().value())
                 .body(new ErrorResponseDTO(ErrorCode.USER_MUST_CAREGIVER));
     }
+
+    @ExceptionHandler(AlreadyExistsMemoException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleAlreadyExistsMemoException(final AlreadyExistsMemoException e) {
+        return ResponseEntity
+                .status(ErrorCode.ALREADY_EXISTS_MEMO.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.ALREADY_EXISTS_MEMO));
+    }
+
+    @ExceptionHandler(NotEligibleCaregiver.class)
+    protected ResponseEntity<ErrorResponseDTO> handleNotEligibleCaregiver(final NotEligibleCaregiver e) {
+        return ResponseEntity
+                .status(ErrorCode.NOT_ELIGIBLE_CAREGIVER.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.NOT_ELIGIBLE_CAREGIVER));
+    }
+
+    @ExceptionHandler(AlreadyApprovedException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleAlreadyApprovedException(final AlreadyApprovedException e) {
+        return ResponseEntity
+                .status(ErrorCode.ALREADY_APPROVED.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.ALREADY_APPROVED));
+    }
+
+    @ExceptionHandler(NotMatchChatroomException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleNotMatchChatroomException(final NotMatchChatroomException e) {
+        return ResponseEntity
+                .status(ErrorCode.NOT_MATCH_CHATROOM.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.NOT_MATCH_CHATROOM));
+    }
     /**
      * 입력값 검증
      */

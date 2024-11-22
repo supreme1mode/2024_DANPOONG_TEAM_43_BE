@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -70,7 +71,9 @@ public class VolunteerController implements VolunteerAPI {
     @PatchMapping("/approval/{volunteerId}")
     public ResponseEntity<?> approveVolunteer(@PathVariable("volunteerId") Long volunteerId,
                                              @RequestBody() UpdateVolunteerApprovalDTO updateVolunteerApprovalDTO) {
-        CreateVolunteerDTO.Res res = volunteerService.updateApproval(volunteerId, updateVolunteerApprovalDTO.getMessageId());
+
+        String kakaoId = SecurityContextHolder.getContext().getAuthentication().getName();
+        CreateVolunteerDTO.Res res = volunteerService.updateApproval(volunteerId, updateVolunteerApprovalDTO.getMessageId(), updateVolunteerApprovalDTO.getRoomId(), kakaoId);
 
         ChatRoomEntity chatRoom = chatService.findRoomById(updateVolunteerApprovalDTO.getRoomId());
 

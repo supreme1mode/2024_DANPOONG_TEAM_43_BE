@@ -20,7 +20,6 @@ public enum SuccessCode {
     SUCCESS_LOCATION_VERIFICATION(HttpStatus.OK, "성공적으로 위치 인증했습니다."),
     SUCCESS_DELETE_USER(HttpStatus.OK, "성공적으로 유저가 삭제되었습니다."),
 
-
     /**
      * 로그인
      */
@@ -33,7 +32,11 @@ public enum SuccessCode {
     SUCCESS_CREATE_CHATROOM(HttpStatus.CREATED, "채팅방이 성공적으로 생성되었습니다."),
     SUCCESS_FIND_CHATROOM(HttpStatus.OK, "모든 채팅방을 조회했습니다."),
 
-
+    /**
+     * Memo
+     */
+    SUCCESS_CREATE_MEMO(HttpStatus.OK, "메모를 성공적으로 작성했습니다."),
+    SUCCESS_RETRIEVE_MEMO(HttpStatus.OK, "성공적으로 메모를 조회했습니다."),
 
     /**
      * 그룹
