@@ -67,7 +67,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/login", "/error", "/register", "/kakao/login", "/reissue",
                                 "/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**"
-                                , "/kakao-code", "/test", "/chat/**"
+                                , "/kakao-code", "/test", "/chat/**", "/certificates/extract"
                         ).permitAll()
                         .anyRequest().authenticated());
 

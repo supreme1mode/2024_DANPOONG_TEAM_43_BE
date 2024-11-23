@@ -32,8 +32,6 @@ public class OCRService {
 
     @Transactional
     public OCRResponseDto extractText(MultipartFile imageFile, String username) throws IOException {
-        User user = userRepository.findByKakaoId(username)
-                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
 
         // 이미지 파일을 Base64로 인코딩
         byte[] imageBytes = imageFile.getBytes();
@@ -76,8 +74,9 @@ public class OCRService {
         String extractedText = parseResponse(jsonResponse);
 
         // 텍스트에서 필요한 정보 추출
-        OCRResponseDto ocrResponseDto =  extractFields(extractedText, user);
-        if (ocrResponseDto.getName().equals(user.getUsername())) {
+        OCRResponseDto ocrResponseDto =  extractFields(extractedText);
+        System.out.println(ocrResponseDto.getName());
+        if (ocrResponseDto.getName().equals(username)) {
             return ocrResponseDto;
         }
         else {
@@ -105,15 +104,15 @@ public class OCRService {
     }
 
     // 정규식을 사용하여 필드 추출
-    private OCRResponseDto extractFields(String ocrResult, User user) {
+    private OCRResponseDto extractFields(String ocrResult) {
         // 정규식 패턴
-        String namePattern = "성명\\s*(\\S+)";
+        String namePattern = "성\\s명\\s*(\\S+)";
         String dobPattern = "생년월일\\s*([\\d]{4}년\\s*[\\d]{2}월\\s*[\\d]{2}일)";
         String regNumberPattern = "등록 번호\\s*([A-Z0-9]+)";
         String categoryPattern = "자격종목\\s*(\\S+)";
         String acquisitionDatePattern = "취 득 일 자\\s*([\\d]{4}년\\s*[\\d]{2}월\\s*[\\d]{2}일)";
         String subjectPattern = "취득과목\\s*([\\S ]+)";
-
+        System.out.println(ocrResult);
         return OCRResponseDto.builder()
                 .name(extractByPattern(ocrResult, namePattern))
                 .birth(extractByPattern(ocrResult, dobPattern))

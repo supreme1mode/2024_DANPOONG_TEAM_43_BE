@@ -6,6 +6,7 @@ import com.carely.backend.dto.ocr.OCRCreateDTO;
 import com.carely.backend.dto.ocr.OCRResponseDto;
 import com.carely.backend.dto.response.ResponseDTO;
 import com.carely.backend.dto.user.CustomUserDetails;
+import com.carely.backend.dto.user.RegisterDTO;
 import com.carely.backend.service.ocr.OCRService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -19,7 +20,7 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/certificates")
-public class OCRController implements OcrAPI {
+public class OCRController  {
 
     private final OCRService ocrService;
 
@@ -27,8 +28,18 @@ public class OCRController implements OcrAPI {
         this.ocrService = ocrService;
     }
 
-    @PostMapping(value = "/extract", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ResponseDTO<?>> extractText(@Valid @RequestPart("file") MultipartFile file, @RequestBody OCRCreateDTO ocrCreateDTO) throws IOException {
+//    @PostMapping(value = "/extract", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+//    public ResponseEntity<ResponseDTO<?>> extractText(
+//            @RequestPart("file") MultipartFile file,
+//            @RequestPart("ocrCreateDTO") @Valid OCRCreateDTO ocrCreateDTO) throws IOException {
+//        OCRResponseDto result = ocrService.extractText(file, ocrCreateDTO.getUsername());
+//        return ResponseEntity
+//                .status(SuccessCode.SUCCESS_OCR.getStatus().value())
+//                .body(new ResponseDTO<>(SuccessCode.SUCCESS_OCR, result));
+//    }
+
+    @PostMapping(value = "/extract", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseDTO> extractText(@RequestPart("file") MultipartFile file, @RequestPart("ocrCreateDTO") OCRCreateDTO ocrCreateDTO) throws IOException {
         OCRResponseDto result = ocrService.extractText(file, ocrCreateDTO.getUsername());
         return ResponseEntity
                 .status(SuccessCode.SUCCESS_OCR.getStatus().value())
