@@ -3,24 +3,28 @@ package com.carely.backend.service;
 import com.carely.backend.domain.Volunteer;
 import com.carely.backend.domain.enums.UserType;
 import com.carely.backend.dto.certificate.volunteerDTO;
+import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.*;
 
 import org.web3j.abi.FunctionEncoder;
-import org.web3j.abi.datatypes.Function;
-import org.web3j.abi.datatypes.Utf8String;
+import org.web3j.abi.FunctionReturnDecoder;
+import org.web3j.abi.datatypes.*;
 import org.web3j.abi.datatypes.generated.Uint256;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
+import org.web3j.protocol.core.DefaultBlockParameterName;
+import org.web3j.protocol.core.methods.request.Transaction;
+import org.web3j.protocol.core.methods.response.EthCall;
 import org.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.RawTransactionManager;
+import org.web3j.tx.ReadonlyTransactionManager;
 import org.web3j.tx.gas.StaticGasProvider;
 
 @Service
@@ -52,8 +56,11 @@ public class CertificateService {
     }
 
     public void createVolunteerSession(volunteerDTO volunteer) throws Exception {
-        //String volunteerType = determineVolunteerType(volunteer);
+        // 개인키로 Credentials 객체를 생성하여 주소를 추출합니다.
+        Credentials credentials = Credentials.create(ganacheProperties.getPrivateKey());
+        String userAddress = credentials.getAddress(); // 개인키에서 주소를 추출
 
+        // 봉사 세션 생성
         Function function = new Function(
                 "createVolunteerSession",
                 Arrays.asList(
@@ -61,7 +68,8 @@ public class CertificateService {
                         new Utf8String(volunteer.getUsername()),
                         new Uint256(BigInteger.valueOf(volunteer.getVolunteerHours())),
                         new Utf8String(volunteer.getDate().toString()),
-                        new Utf8String(volunteer.getVolunteerType())
+                        new Utf8String(volunteer.getVolunteerType()),
+                        new Address(userAddress)  // 올바른 이더리움 주소를 전달
                 ),
                 Collections.emptyList()
         );
@@ -69,6 +77,57 @@ public class CertificateService {
         String transactionResult = sendTransaction(function);
         log.info("Transaction Result: {}", transactionResult);
     }
+
+
+
+
+
+
+
+    public List<Map<String, Object>> getVolunteerSessionsByUserId(String userId) throws Exception {
+        Function function = new Function(
+                "getVolunteerSessionsByUserId",
+                List.of(new Utf8String(userId)),
+                List.of(
+                )
+        );
+
+        String encodedFunction = FunctionEncoder.encode(function);
+        EthCall response = web3j.ethCall(
+                Transaction.createEthCallTransaction(null, ganacheProperties.getContractKey(), encodedFunction),
+                DefaultBlockParameterName.LATEST
+        ).send();
+
+        if (response.hasError()) {
+            throw new RuntimeException("Error fetching sessions: " + response.getError().getMessage());
+        }
+
+        List<Type> decoded = FunctionReturnDecoder.decode(response.getValue(), function.getOutputParameters());
+
+        List<Uint256> ids = (List<Uint256>) decoded.get(0).getValue();
+        List<Utf8String> usernames = (List<Utf8String>) decoded.get(1).getValue();
+        List<Uint256> volunteerHours = (List<Uint256>) decoded.get(2).getValue();
+        List<Utf8String> dates = (List<Utf8String>) decoded.get(3).getValue();
+        List<Utf8String> types = (List<Utf8String>) decoded.get(4).getValue();
+
+        List<Map<String, Object>> sessions = new ArrayList<>();
+        for (int i = 0; i < ids.size(); i++) {
+            Map<String, Object> session = new HashMap<>();
+            session.put("userId", userId);
+            session.put("sessionId", ids.get(i).getValue().toString());
+            session.put("username", usernames.get(i).getValue());
+            session.put("volunteerHours", volunteerHours.get(i).getValue());
+            session.put("date", dates.get(i).getValue());
+            session.put("volunteerType", types.get(i).getValue());
+            sessions.add(session);
+        }
+
+        return sessions;
+    }
+
+
+
+
 
     public void determineVolunteerType(Volunteer volunteer) throws Exception {
         String userType = null;

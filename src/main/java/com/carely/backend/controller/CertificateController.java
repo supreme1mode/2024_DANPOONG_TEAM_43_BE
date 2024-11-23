@@ -8,6 +8,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/certificates")
 @RequiredArgsConstructor
@@ -23,6 +27,16 @@ public class CertificateController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(500).body("Error occurred: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/api/sessions/{userId}")
+    public ResponseEntity<List<Map<String, Object>>> getSessionsByUserId(@PathVariable String userId) {
+        try {
+            List<Map<String, Object>> sessions = certificateService.getVolunteerSessionsByUserId(userId);
+            return ResponseEntity.ok(sessions);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Collections.singletonList(Map.of("error", e.getMessage())));
         }
     }
 }
