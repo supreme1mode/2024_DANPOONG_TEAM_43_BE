@@ -28,7 +28,7 @@ public class OCRController implements OcrAPI {
     }
 
     @PostMapping(value = "/extract", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseDTO<?>> extractText(@Valid @RequestPart("file") MultipartFile file, @RequestBody OCRCreateDTO ocrCreateDTO) throws IOException {
+    public ResponseEntity<ResponseDTO<?>> extractText(@Valid @RequestPart("file") MultipartFile file, @RequestPart(value = "ocrCreateDTO") OCRCreateDTO ocrCreateDTO) throws IOException {
         OCRResponseDto result = ocrService.extractText(file, ocrCreateDTO.getUsername());
         return ResponseEntity
                 .status(SuccessCode.SUCCESS_OCR.getStatus().value())
