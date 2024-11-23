@@ -33,8 +33,8 @@ public class OpenAIService {
                         "오늘, 시간 등 시간을 특정할 수 있는 용어는 빼서 존댓말로 요약해. " +
                         "비슷한 카테고리에서 이전보다 기존 문장보다 새로운 문장에서 개선이 이루어졌다면(식사량 증가 등) 개선된 내용을 위주로 존댓말로 작성해줘. " +
                         "최대한 중복을 배제해. 꼭 '부드러운 존댓말' 문장으로 제시한 정보 외에 유추나 추가 내용은 작성하지 마." +
-                        "전체 요약(all), 체온 및 건강 상태(healthy), 식사 및 약물 복용(eat), 추가적인 건강 상태(additionalHealth), 정서 및 사회적 상호작용(social), 배뇨 상태(voiding) 총 6가지 카테고리를 \n\n 두개의 개행문자로 분리해서 가져와줘." +
-                        "수식어 넣지 말고 그냥 문장으로만 작성해줘. 전체 요약(all): 처럼 하지 마.")
+                        "전체 요약(all), 체온 및 건강 상태(healthy), 식사 및 약물 복용(eat), 추가적인 건강 상태(additionalHealth), 정서 및 사회적 상호작용(social), 배뇨 및 배변 상태(voiding) 총 6가지 카테고리를 \n\n 두개의 개행문자로 분리해서 가져와줘." +
+                        "수식어 넣지 말고 그냥 문장으로만 작성해줘. 전체 요약(all): 처럼 하지 마. 배변, 변비 활동 등의 내용은 꼭 'voiding'에 추가해줘.")
                 .build();
         CompletionRequestDTO requestDto = CompletionRequestDTO.builder()
                 .model(model)

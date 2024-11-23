@@ -63,11 +63,11 @@ public class MemoService {
                 .additionalHealth(aiSummaryMap.get("additionalHealth"))
                 .social(aiSummaryMap.get("social"))
                 .eat(aiSummaryMap.get("eat"))
+                .voiding(aiSummaryMap.get("voiding"))
                 .build();
 
         Memo newMemo = memoRepository.save(memo);
         volunteer.updateVolunteerMemo();
-        System.out.println(volunteer.getHasMemo());
 
         return MemoResponseDTO.List.toDTO(newMemo);
     }
