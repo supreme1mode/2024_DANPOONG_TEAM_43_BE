@@ -24,6 +24,11 @@ public class RecommandUserDTO {
         private double longitude;
         @Setter
         private double km;
+        private String talk;
+        private String eat;
+        private String toilet;
+        private String bath;
+        private String walk;
 
         public static RecommandUserDTO.Res toDTO(User user, long timeTogether,  Double latitude, Double longittude) {
             Res res =  Res.builder()
@@ -32,6 +37,11 @@ public class RecommandUserDTO {
                     .username(user.getUsername())
                     .userType(user.getUserType())
                     .timeTogether(timeTogether)
+                    .talk(user.getTalk())
+                    .eat(user.getEat())
+                    .toilet(user.getEat())
+                    .bath(user.getBath())
+                    .walk(user.getWalk())
                     .build();
 
             getLocation(res);
