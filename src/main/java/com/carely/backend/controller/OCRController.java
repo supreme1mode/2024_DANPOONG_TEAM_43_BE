@@ -2,6 +2,7 @@ package com.carely.backend.controller;
 
 import com.carely.backend.code.SuccessCode;
 import com.carely.backend.controller.docs.OcrAPI;
+import com.carely.backend.dto.ocr.OCRCreateDTO;
 import com.carely.backend.dto.ocr.OCRResponseDto;
 import com.carely.backend.dto.response.ResponseDTO;
 import com.carely.backend.dto.user.CustomUserDetails;
@@ -27,8 +28,8 @@ public class OCRController implements OcrAPI {
     }
 
     @PostMapping(value = "/extract", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ResponseDTO<?>> extractText(@Valid @RequestPart("file") MultipartFile file, @AuthenticationPrincipal CustomUserDetails user) throws IOException {
-        OCRResponseDto result = ocrService.extractText(file, user.getUsername());
+    public ResponseEntity<ResponseDTO<?>> extractText(@Valid @RequestPart("file") MultipartFile file, @RequestBody OCRCreateDTO ocrCreateDTO) throws IOException {
+        OCRResponseDto result = ocrService.extractText(file, ocrCreateDTO.getUsername());
         return ResponseEntity
                 .status(SuccessCode.SUCCESS_OCR.getStatus().value())
                 .body(new ResponseDTO<>(SuccessCode.SUCCESS_OCR, result));
