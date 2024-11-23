@@ -19,8 +19,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -91,7 +93,27 @@ public class MemoService {
         List<Volunteer> volunteers = volunteerRepository.findByVolunteerAndHasMemoFalse(writer);
 
         return volunteers.stream()
-                .map(volunteer -> GetVolunteerInfoDTO.toDTO(volunteer, volunteer.getVolunteer()))
+                .map(volunteer -> {
+                    // Memo 조회 로직
+                    Memo lastMemo = volunteer.getMemos().stream()
+                            .sorted(Comparator.comparing(Memo::getCreatedAt).reversed())
+                            .findFirst()
+                            .orElse(null); // Memo가 없으면 null 반환
+
+                    String memeAll = "";
+                    if(lastMemo != null)
+                     memeAll = lastMemo.getAll();
+
+                    // DTO 생성 시 null 처리를 추가
+                    return GetVolunteerInfoDTO.toDTO(
+                            volunteer,
+                            volunteer.getVolunteer(),
+                            volunteer.getCaregiver(),
+                            memeAll // Memo 자체를 전달
+                    );
+                })
                 .collect(Collectors.toList());
     }
+
+
 }
