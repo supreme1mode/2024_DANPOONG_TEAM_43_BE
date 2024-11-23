@@ -67,6 +67,7 @@ public class MemoService {
 
         Memo newMemo = memoRepository.save(memo);
         volunteer.updateVolunteerMemo();
+        System.out.println(volunteer.getHasMemo());
 
         return MemoResponseDTO.List.toDTO(newMemo);
     }
@@ -94,25 +95,26 @@ public class MemoService {
 
         return volunteers.stream()
                 .map(volunteer -> {
-                    // Memo 조회 로직
-                    Memo lastMemo = volunteer.getMemos().stream()
-                            .sorted(Comparator.comparing(Memo::getCreatedAt).reversed())
-                            .findFirst()
-                            .orElse(null); // Memo가 없으면 null 반환
+                    // Caregiver 조회
+                    User receiver = volunteer.getCaregiver();
 
-                    String memeAll = "";
-                    if(lastMemo != null)
-                     memeAll = lastMemo.getAll();
+                    // Memo 리스트 조회 및 최신 Memo의 getAll() 값 가져오기
+                    String memoAll = receiver.getMemos().stream() // receiver의 Memo 리스트
+                            .sorted(Comparator.comparing(Memo::getCreatedAt).reversed()) // 최신순 정렬
+                            .findFirst() // 가장 최근 Memo 선택
+                            .map(Memo::getAll) // getAll() 값 가져오기
+                            .orElse(""); // Memo가 없으면 ""
 
-                    // DTO 생성 시 null 처리를 추가
+                    // DTO 생성
                     return GetVolunteerInfoDTO.toDTO(
                             volunteer,
                             volunteer.getVolunteer(),
-                            volunteer.getCaregiver(),
-                            memeAll // Memo 자체를 전달
+                            receiver,
+                            memoAll // 가장 최근 Memo의 getAll() 값 또는 ""
                     );
                 })
                 .collect(Collectors.toList());
+
     }
 
 

@@ -69,9 +69,6 @@ public class Volunteer extends BaseEntity {
     @JoinColumn(name = "caregiver_id")
     private User caregiver;
 
-    @OneToMany(mappedBy = "volunteer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Memo> memos = new ArrayList<>();
-
     // 승인 처리
     public void updateVolunteerApproval() {
         this.isApproved = true;

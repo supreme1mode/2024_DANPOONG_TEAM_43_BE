@@ -40,9 +40,4 @@ public class Memo extends BaseEntity {
     private String social;
     @Column(columnDefinition = "TEXT")
     private String voiding;
-
-    // Volunteer와의 관계 설정
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "volunteer_id")
-    private Volunteer volunteer;
 }
