@@ -5,6 +5,7 @@ import com.carely.backend.domain.enums.UserType;
 import com.carely.backend.dto.certificate.volunteerDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
@@ -26,19 +27,28 @@ import org.web3j.tx.gas.StaticGasProvider;
 @Slf4j
 public class CertificateService {
     protected final Web3j web3j;
-    protected final String contractAddress = "0x80f728e27AA6B83B7304F024A4a64B1Da37edD2a";
     protected final RawTransactionManager txManager;
     protected final StaticGasProvider gasProvider;
 
+    private final GanacheProperties ganacheProperties;
+
     @Autowired
-    public CertificateService(Web3j web3j) {
+    public CertificateService(Web3j web3j, GanacheProperties ganacheProperties) {
+        this.ganacheProperties = ganacheProperties;
+        log.info("Loaded Contract Key: {}", ganacheProperties.getContractKey());
+        log.info("Loaded Private Key: {}", ganacheProperties.getPrivateKey());
         this.web3j = Web3j.build(new HttpService("http://127.0.0.1:7545")); // Ganache 노드 URL
-        Credentials credentials = Credentials.create("0x130a3322bdcacb9bb8be47a2da848fe5affb732a8b783af5cbb1dad895d46cb6"); // 프라이빗 키
+        Credentials credentials = Credentials.create(ganacheProperties.getPrivateKey()); // 프라이빗 키
         this.txManager = new RawTransactionManager(web3j, credentials);
         this.gasProvider = new StaticGasProvider(
-                new BigInteger("20000000000"), // 가스 가격
-                new BigInteger("6000000")      // 가스 한도
+                new BigInteger("1000000000"), // 가스 가격 (1 Gwei)
+                new BigInteger("3000000")    // 가스 한도
         );
+        System.out.println("Account Address: " + credentials.getAddress());
+        System.out.println("Gas Price: " + gasProvider.getGasPrice());
+        System.out.println("Gas Limit: " + gasProvider.getGasLimit());
+
+
     }
 
     public void createVolunteerSession(volunteerDTO volunteer) throws Exception {
@@ -87,7 +97,7 @@ public class CertificateService {
             EthSendTransaction transactionResponse = txManager.sendTransaction(
                     gasProvider.getGasPrice(),
                     gasProvider.getGasLimit(),
-                    contractAddress,
+                    ganacheProperties.getContractKey(),
                     encodedFunction,
                     BigInteger.ZERO
             );
@@ -106,7 +116,5 @@ public class CertificateService {
             throw e;
         }
     }
-
-
 
 }
