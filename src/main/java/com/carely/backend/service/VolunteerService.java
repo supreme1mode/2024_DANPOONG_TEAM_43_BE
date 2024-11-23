@@ -99,19 +99,12 @@ public class VolunteerService {
         // 블록체인 함수 호출
 
 
-        try {
-            certificateService.determineVolunteerType(volunteer);
-            throw new RuntimeException("블록체인 호출 성공");
-            //System.out.println("블록체인 호출 완료");
-        } catch (Exception e) {
-            System.err.println("블록체인 호출 실패: " + e.getMessage());
-            throw new RuntimeException("블록체인 호출 실패", e);
-        }
+        certificateService.determineVolunteerType(volunteer);
 
-        //System.out.println(volunteer.getIsApproved());
+        System.out.println(volunteer.getIsApproved());
         //certificateService.createVolunteerSession(volunteer);
 
-        //return CreateVolunteerDTO.Res.toDTO(volunteer);
+        return CreateVolunteerDTO.Res.toDTO(volunteer);
 
     }
 

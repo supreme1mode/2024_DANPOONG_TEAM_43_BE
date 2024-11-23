@@ -65,7 +65,7 @@ public class CertificateService {
 
         if (volunteer.getVolunteer().getUserType().equals(UserType.VOLUNTEER)) {
             userType = UserType.VOLUNTEER.name();
-        } else if (volunteer.getVolunteer().getUserType().equals(UserType.CARE_WORKER) && !volunteer.getVolunteer().getCertificateCheck()) {
+        } else if (volunteer.getVolunteer().getUserType().equals(UserType.CARE_WORKER) && (!volunteer.getVolunteer().getCertificateCheck())) {
             userType =  UserType.VOLUNTEER.name();
         } else {
             userType =  UserType.CARE_WORKER.name();
@@ -80,36 +80,33 @@ public class CertificateService {
     }
 
     protected String sendTransaction(Function function) throws Exception {
-        String encodedFunction = FunctionEncoder.encode(function); // 함수 인코딩
-        System.out.println("Encoded Function: " + encodedFunction); // 인코딩된 함수 출력
+        String encodedFunction = FunctionEncoder.encode(function);
+        System.out.println("Encoded Function: " + encodedFunction);
 
         try {
             EthSendTransaction transactionResponse = txManager.sendTransaction(
-                    gasProvider.getGasPrice(), // 가스 가격
-                    gasProvider.getGasLimit(), // 가스 한도
-                    contractAddress, // 스마트 컨트랙트 주소
-                    encodedFunction, // 인코딩된 함수
-                    BigInteger.ZERO // 이더 전송 금액 (0 ETH)
+                    gasProvider.getGasPrice(),
+                    gasProvider.getGasLimit(),
+                    contractAddress,
+                    encodedFunction,
+                    BigInteger.ZERO
             );
 
-            // 트랜잭션 결과 출력
             System.out.println("Transaction Response: " + transactionResponse);
-
-            // 트랜잭션 오류 확인
             if (transactionResponse.hasError()) {
-                System.err.println("Transaction failed: " + transactionResponse.getError().getMessage());
+                System.err.println("Transaction Error: " + transactionResponse.getError().getMessage());
                 throw new RuntimeException(transactionResponse.getError().getMessage());
             }
 
-            // 성공적인 트랜잭션 해시 반환
-            System.out.println("Transaction successful. Hash: " + transactionResponse.getTransactionHash());
+            System.out.println("Transaction Successful. Hash: " + transactionResponse.getTransactionHash());
             return transactionResponse.getTransactionHash();
         } catch (Exception e) {
             System.err.println("Error during transaction execution: " + e.getMessage());
-            e.printStackTrace(); // 예외 스택 트레이스 출력
-            throw e; // 예외 다시 던지기
+            e.printStackTrace();
+            throw e;
         }
     }
+
 
 
 }
