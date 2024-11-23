@@ -26,6 +26,7 @@ import java.time.ZonedDateTime;
 @RestController
 @RequestMapping("/volunteer")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000")  // Allow only from localhost:3000
 public class VolunteerController implements VolunteerAPI {
     private final VolunteerService volunteerService;
     private final ChatService chatService;
