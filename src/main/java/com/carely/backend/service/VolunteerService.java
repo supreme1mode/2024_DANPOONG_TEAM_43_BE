@@ -78,7 +78,7 @@ public class VolunteerService {
             throw new NotMatchChatroomException("");
 
         // volunteer 대상자가 아니라면
-        if(!Objects.equals(volunteer.getVolunteer().getId(), user.getId()))
+        if(!Objects.equals(volunteer.getCaregiver().getId(), user.getId()))
             throw new NotEligibleCaregiver("");
 
         // 이미 승인된 처리라면
@@ -100,6 +100,6 @@ public class VolunteerService {
         Volunteer volunteer = volunteerRepository.findById(volunteerId)
                 .orElseThrow(() -> new VolunteerNotFoundException("자원봉사 요청을 찾을 수 없습니다."));
 
-        return GetVolunteerInfoDTO.toDTO(volunteer, volunteer.getVolunteer());
+        return GetVolunteerInfoDTO.Vol.toDTO(volunteer, volunteer.getVolunteer());
     }
 }
