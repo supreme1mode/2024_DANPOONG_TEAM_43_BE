@@ -5,6 +5,7 @@ import com.carely.backend.domain.ChatMessageEntity;
 import com.carely.backend.domain.User;
 import com.carely.backend.domain.Volunteer;
 import com.carely.backend.domain.enums.UserType;
+import com.carely.backend.dto.certificate.volunteerDTO;
 import com.carely.backend.dto.volunteer.CreateVolunteerDTO;
 import com.carely.backend.dto.volunteer.GetVolunteerInfoDTO;
 import com.carely.backend.exception.*;
@@ -12,10 +13,14 @@ import com.carely.backend.repository.ChatMessageRepository;
 import com.carely.backend.repository.UserRepository;
 import com.carely.backend.repository.VolunteerRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 @Service
@@ -90,11 +95,23 @@ public class VolunteerService {
 
         chat.updateVolunteerApproval();
         chatMessageRepository.save(chat);
+        //callExternalApi(volunteer);
+        // 블록체인 함수 호출
 
-        Volunteer savedVolunteer = volunteerRepository.save(volunteer);
-        System.out.println(savedVolunteer.getIsApproved());
-        certificateService.createVolunteerSession(volunteer);
-        return CreateVolunteerDTO.Res.toDTO(savedVolunteer);
+
+        try {
+            certificateService.determineVolunteerType(volunteer);
+            throw new RuntimeException("블록체인 호출 성공");
+            //System.out.println("블록체인 호출 완료");
+        } catch (Exception e) {
+            System.err.println("블록체인 호출 실패: " + e.getMessage());
+            throw new RuntimeException("블록체인 호출 실패", e);
+        }
+
+        //System.out.println(volunteer.getIsApproved());
+        //certificateService.createVolunteerSession(volunteer);
+
+        //return CreateVolunteerDTO.Res.toDTO(volunteer);
 
     }
 
@@ -103,5 +120,28 @@ public class VolunteerService {
                 .orElseThrow(() -> new VolunteerNotFoundException("자원봉사 요청을 찾을 수 없습니다."));
 
         return GetVolunteerInfoDTO.toDTO(volunteer, volunteer.getVolunteer());
+    }
+
+    private void callExternalApi(Volunteer volunteer) {
+        // 호출할 외부 API URL
+        String apiUrl = "http://localhost:8080/api/certificates/volunteer-session";
+
+        // 요청 데이터 생성
+        Map<String, Object> requestData = new HashMap<>();
+        requestData.put("volunteerId", volunteer.getId());
+        requestData.put("username", volunteer.getVolunteer().getUsername());
+        requestData.put("durationHours", volunteer.getDurationHours());
+        requestData.put("date", volunteer.getDate().toString());
+        requestData.put("volunteerType", volunteer.getVolunteer().getUserType().name());
+
+        // RestTemplate로 HTTP 요청 전송
+        RestTemplate restTemplate = new RestTemplate();
+        try {
+            ResponseEntity<String> response = restTemplate.postForEntity(apiUrl, requestData, String.class);
+            System.out.println("External API Response: " + response.getBody());
+        } catch (Exception e) {
+            System.err.println("Failed to call external API: " + e.getMessage());
+            throw new RuntimeException("External API 호출 실패", e);
+        }
     }
 }
