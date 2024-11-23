@@ -55,6 +55,7 @@ public class GetGroupDTO {
         private Integer headCount; // 인원수
         private Boolean isLiked;
         private Boolean isWriter;
+        private UserType userType;
         // private String groupImage;
 
         public static Detail toDTO(Group e, Boolean isLiked, String userId) {
@@ -70,6 +71,7 @@ public class GetGroupDTO {
                     .headCount(e.getJoinGroups() != null ? e.getJoinGroups().size() : 0) // JoinGroup을 사용한 인원수 계산
                     .isLiked(isLiked)
                     .isWriter(isWriter)
+                    .userType(e.getUserType())
                  //    .groupImage(e.getGroupImage())
                     .build();
         }
