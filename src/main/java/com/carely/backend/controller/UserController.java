@@ -48,7 +48,7 @@ public class UserController implements UserAPI {
                 .body(new ResponseDTO<>(SuccessCode.SUCCESS_REGISTER, res));
     }
 
-    @PostMapping("/kakao-code")
+    @GetMapping("/kakao-code")
     public ResponseEntity<?> kakaoCallback(@RequestParam("code") String code, HttpServletResponse response) throws IOException {
 
         Map<String, String> info = kakaoLoginService.getKakaoUserInfo(code);
