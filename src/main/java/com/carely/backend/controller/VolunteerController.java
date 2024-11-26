@@ -26,6 +26,7 @@ import java.time.ZonedDateTime;
 @RestController
 @RequestMapping("/volunteer")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000")  // Allow only from localhost:3000
 public class VolunteerController implements VolunteerAPI {
     private final VolunteerService volunteerService;
     private final ChatService chatService;
@@ -91,7 +92,6 @@ public class VolunteerController implements VolunteerAPI {
 //            if (chatRoom.isBlocked()) {
 //                throw new IllegalArgumentException("This room is blocked.");
 //            }
-
             // 변경된 메시지를 저장 -> 웹소켓으로 브로드캐스트
             chatMessage = chatService.saveChatMessage(chatMessage);
             messagingTemplate.convertAndSend("/topic/" + chatMessage.getRoomId(), chatMessage);

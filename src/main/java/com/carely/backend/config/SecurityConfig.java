@@ -67,7 +67,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/login", "/error", "/register", "/kakao/login", "/reissue",
                                 "/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**"
-                                , "/kakao-code", "/test", "/chat/**", "/certificates/extract"
+                                , "/kakao-code", "/test", "/chat/**", "/certificates/extract", "/test/"
                         ).permitAll()
                         .anyRequest().authenticated());
 
@@ -81,8 +81,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://carely-backend.site/")); // Frontend의 Origin을 추가
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://carely-backend.site/", "https://carely-seven.vercel.app/")); // Frontend의 Origin을 추가
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With"));
         configuration.setExposedHeaders(Arrays.asList("accessToken", "refreshToken"));
         configuration.setAllowCredentials(true);

@@ -19,8 +19,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -61,6 +63,7 @@ public class MemoService {
                 .additionalHealth(aiSummaryMap.get("additionalHealth"))
                 .social(aiSummaryMap.get("social"))
                 .eat(aiSummaryMap.get("eat"))
+                .voiding(aiSummaryMap.get("voiding"))
                 .build();
 
         Memo newMemo = memoRepository.save(memo);
@@ -91,7 +94,28 @@ public class MemoService {
         List<Volunteer> volunteers = volunteerRepository.findByVolunteerAndHasMemoFalse(writer);
 
         return volunteers.stream()
-                .map(volunteer -> GetVolunteerInfoDTO.toDTO(volunteer, volunteer.getVolunteer()))
+                .map(volunteer -> {
+                    // Caregiver 조회
+                    User receiver = volunteer.getCaregiver();
+
+                    // Memo 리스트 조회 및 최신 Memo의 getAll() 값 가져오기
+                    String memoAll = receiver.getMemos().stream() // receiver의 Memo 리스트
+                            .sorted(Comparator.comparing(Memo::getCreatedAt).reversed()) // 최신순 정렬
+                            .findFirst() // 가장 최근 Memo 선택
+                            .map(Memo::getAll) // getAll() 값 가져오기
+                            .orElse(""); // Memo가 없으면 ""
+
+                    // DTO 생성
+                    return GetVolunteerInfoDTO.toDTO(
+                            volunteer,
+                            volunteer.getVolunteer(),
+                            receiver,
+                            memoAll // 가장 최근 Memo의 getAll() 값 또는 ""
+                    );
+                })
                 .collect(Collectors.toList());
+
     }
+
+
 }

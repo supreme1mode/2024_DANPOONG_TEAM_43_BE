@@ -66,6 +66,14 @@ public class User extends BaseEntity {
     private String walk;
     private String story;
 
+    // 위도
+    private Double latitude;
+    // 경도
+    private Double longitude;
+
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Memo> memos = new ArrayList<>();
+
     // 회원가입
     @Builder(builderMethodName = "userBuilder")
     public User(String kakaoId, UserType userType, String role, String username, Integer age, String phoneNum,

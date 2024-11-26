@@ -52,6 +52,11 @@ public class UserService {
             throw new DuplicateUsernameException("중복된 아이디가 존재합니다.");
         }
 
+        Map<String, Double> location = getLocation(address);
+        // 위도, 경도 설정
+        Double latitude = location.get("latitude");
+        Double longitude = location.get("longitude");
+
         // user 생성
         User user = User.builder()
                 .kakaoId(kakaoId)
@@ -71,9 +76,16 @@ public class UserService {
                 .story(registerDTO.getStory())
                 .shareLocation(registerDTO.getShareLocation())
                 .role("ROLE_USER")
+                .latitude(latitude)
+                .longitude(longitude)
                 .build();
 
         return RegisterDTO.Res.toDTO(userRepository.save(user));
+    }
+
+    private Map<String, Double> getLocation(String address) {
+        KakaoAddressService kakaoAddressService = new KakaoAddressService();
+        return kakaoAddressService.getLocationFromAddress(address);
     }
 
     public MyPageDTO.DetailRes getMypage(String kakaoId) {
@@ -168,7 +180,7 @@ public class UserService {
         List<User> users = userRepository.findByCityAndUserTypeIn(city, userTypes);
 
         return users.stream()
-                .map(user -> new MapUserDTO().toDTO(user, calculateTotalDuration(user, superUser), latitude, longittude))
+                .map(user -> new MapUserDTO().toDTO(user, calculateTotalDuration(user, superUser)))
                 .collect(Collectors.toList()); // 빈 리스트도 collect로 반환
     }
 
@@ -176,7 +188,7 @@ public class UserService {
         List<User> users = userRepository.findByCity(city);
 
         return users.stream()
-                .map(user -> new MapUserDTO().toDTO(user, calculateTotalDuration(user, superUser),  latitude, longittude))
+                .map(user -> new MapUserDTO().toDTO(user, calculateTotalDuration(user, superUser)))
                 .collect(Collectors.toList()); // 빈 리스트도 collect로 반환
     }
 
@@ -193,16 +205,11 @@ public class UserService {
         User viewer = userRepository.findByKakaoId(kakaoId)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
-        KakaoAddressService kakaoAddressService = new KakaoAddressService();
-        Map<String, Double> userAddress = kakaoAddressService.getLocationFromAddress(viewer.getAddress());
-        Double latitude = userAddress.get("latitude");
-        Double longitude = userAddress.get("longitude");
-
         List<User> users = userRepository.findAll();
 
         return users.stream()
                 .filter(user -> !user.getKakaoId().equals(kakaoId))  // 본인 제외
-                .map(user -> new MapUserDTO().toDTO(user, calculateTotalDuration(user, viewer), latitude, longitude))
+                .map(user -> new MapUserDTO().toDTO(user, calculateTotalDuration(user, viewer)))
                 .collect(Collectors.toList());  // 빈 리스트도 collect로 반환
     }
 
@@ -211,25 +218,17 @@ public class UserService {
         User viewer = userRepository.findByKakaoId(kakaoId)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
-        KakaoAddressService kakaoAddressService = new KakaoAddressService();
-        Map<String, Double> userAddress = kakaoAddressService.getLocationFromAddress(viewer.getAddress());
-        Double latitude = userAddress.get("latitude");
-        Double longitude = userAddress.get("longitude");
-
         List<User> users = userRepository.findByUserTypeIn(userTypes);
 
         return users.stream()
                 .filter(user -> !user.getKakaoId().equals(kakaoId))  // 본인 제외
-                .map(user -> new MapUserDTO().toDTO(user, calculateTotalDuration(user, viewer), latitude, longitude))
+                .map(user -> new MapUserDTO().toDTO(user, calculateTotalDuration(user, viewer)))
                 .collect(Collectors.toList());  // 빈 리스트도 collect로 반환
     }
 
     // 간병인 리스트 추천
     public List<RecommandUserDTO.Res> recommendCaregivers(User currentUser) {
-        KakaoAddressService kakaoAddressService = new KakaoAddressService();
-        Map<String, Double> userAddress = kakaoAddressService.getLocationFromAddress(currentUser.getAddress());
-        Double latitude = userAddress.get("latitude");
-        Double longitude = userAddress.get("longitude");
+
         // 같은 city에 있는 간병인만 조회
         List<User> allCaregivers = userRepository.findByUserType(UserType.CAREGIVER);
         System.out.println(currentUser.getAddress());
@@ -260,17 +259,13 @@ public class UserService {
         return selectedCaregivers.stream()
                 .map(user -> {
                     Long totalDuration = calculateTotalDuration(user, currentUser);
-                    return RecommandUserDTO.Res.toDTO(user, totalDuration, latitude, latitude);
+                    return RecommandUserDTO.Res.toDTO(user, totalDuration);
                 })
                 .collect(Collectors.toList());
     }
 
     // 자원봉사 리스트 조회
     public List<RecommandUserDTO.Res> recommendUsers(User currentUser) {
-        KakaoAddressService kakaoAddressService = new KakaoAddressService();
-        Map<String, Double> userAddress = kakaoAddressService.getLocationFromAddress(currentUser.getAddress());
-        Double latitude = userAddress.get("latitude");
-        Double longitude = userAddress.get("longitude");
 
         // 같은 city에 있는 모든 사용자 조회
         List<User> allUsers = userRepository.findAll();
@@ -306,7 +301,7 @@ public class UserService {
         return selectedUsers.stream()
                 .map(user -> {
                     Long totalDuration = calculateTotalDuration(user, currentUser);
-                    return RecommandUserDTO.Res.toDTO(user, totalDuration, latitude, longitude);
+                    return RecommandUserDTO.Res.toDTO(user, totalDuration);
                 })
                 .collect(Collectors.toList());
     }
