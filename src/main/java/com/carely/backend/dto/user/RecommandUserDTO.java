@@ -30,7 +30,7 @@ public class RecommandUserDTO {
         private String bath;
         private String walk;
 
-        public static RecommandUserDTO.Res toDTO(User user, long timeTogether,  Double latitude, Double longittude) {
+        public static RecommandUserDTO.Res toDTO(User user, long timeTogether) {
             Res res =  Res.builder()
                     .userId(user.getId())
                     .address(user.getAddress())
@@ -42,24 +42,12 @@ public class RecommandUserDTO {
                     .toilet(user.getEat())
                     .bath(user.getBath())
                     .walk(user.getWalk())
+                    .latitude(user.getLatitude())
+                    .longitude(user.getLongitude())
                     .build();
 
-            getLocation(res);
-            res.setKm(calculateDistance(res.getLatitude(), res.getLatitude(), latitude, latitude));
+            res.setKm(calculateDistance(res.getLatitude(), res.getLongitude(), user.getLatitude(), user.getLongitude()));
             return res;
-        }
-
-        private static void getLocation(Res mapUserDTO) {
-            KakaoAddressService kakaoAddressService = new KakaoAddressService();
-            Map<String, Double> location = kakaoAddressService.getLocationFromAddress(mapUserDTO.getAddress());
-
-            // 위도, 경도 설정
-            Double latitude = location.get("latitude");
-            Double longitude = location.get("longitude");
-
-            mapUserDTO.setLatitude(latitude != null ? latitude : 0.0); // 기본값 0.0 사용
-            mapUserDTO.setLongitude(longitude != null ? longitude : 0.0); // 기본값 0.0 사용
-
         }
 
         // 거리 계산

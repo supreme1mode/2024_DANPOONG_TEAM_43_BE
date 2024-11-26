@@ -49,7 +49,7 @@ public class MapUserDTO {
     @Setter
     private Double km;
 
-    public MapUserDTO toDTO(User user, Long togetherTime,  Double latitude, Double longittude) {
+    public MapUserDTO toDTO(User user, Long togetherTime) {
         MapUserDTO mapUserDTO =  MapUserDTO.builder()
                 .userId(user.getId())
                 .username(user.getUsername())
@@ -64,24 +64,12 @@ public class MapUserDTO {
                 .address(user.getAddress())
                 .detailAddress(user.getDetailAddress())
                 .togetherTime(togetherTime)
+                .longitude(user.getLongitude())
+                .latitude(user.getLatitude())
                 .build();
 
-        getLocation(mapUserDTO);
-        mapUserDTO.setKm(calculateDistance(mapUserDTO.getLatitude(), mapUserDTO.getLatitude(), latitude, latitude));
+        mapUserDTO.setKm(calculateDistance(mapUserDTO.getLatitude(), mapUserDTO.getLongitude(), user.getLatitude(), user.getLongitude()));
         return mapUserDTO;
-    }
-
-    private void getLocation(MapUserDTO mapUserDTO) {
-        KakaoAddressService kakaoAddressService = new KakaoAddressService();
-        Map<String, Double> location = kakaoAddressService.getLocationFromAddress(mapUserDTO.getAddress());
-
-        // 위도, 경도 설정
-        Double latitude = location.get("latitude");
-        Double longitude = location.get("longitude");
-
-        mapUserDTO.setLatitude(latitude != null ? latitude : 0.0); // 기본값 0.0 사용
-        mapUserDTO.setLongitude(longitude != null ? longitude : 0.0); // 기본값 0.0 사용
-
     }
 
     // 거리 계산
