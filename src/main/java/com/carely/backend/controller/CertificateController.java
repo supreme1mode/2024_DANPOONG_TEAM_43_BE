@@ -1,9 +1,11 @@
 package com.carely.backend.controller;
 
+import com.carely.backend.code.SuccessCode;
 import com.carely.backend.domain.User;
 import com.carely.backend.dto.certificate.CertificateDTO;
 import com.carely.backend.dto.certificate.VolunteerListDTO;
 import com.carely.backend.dto.certificate.volunteerDTO;
+import com.carely.backend.dto.response.ResponseDTO;
 import com.carely.backend.repository.UserRepository;
 import com.carely.backend.service.CertificateService;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +23,6 @@ import java.util.*;
 public class CertificateController {
 
     private final CertificateService certificateService;
-    private final UserRepository userRepository;
 
     @PostMapping("/volunteer-session")
     public ResponseEntity<String> createVolunteerSession(@RequestBody volunteerDTO volunteer) {
@@ -45,25 +46,16 @@ public class CertificateController {
     }
 
     @PostMapping("/issue/{userId}")
-    public ResponseEntity<String> issueCertificate(@PathVariable Long userId) throws Exception {
+    public ResponseEntity<ResponseDTO<?>> issueCertificate(@PathVariable Long userId) throws Exception {
         // UUID 생성
         String certificateId = UUID.randomUUID().toString();
-
-        // username을 userRepository에서 조회
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isEmpty()) {
-            return ResponseEntity.badRequest().body("User not found for userId: " + userId);
-        }
-        String username = userOptional.get().getUsername();
-
-        // 현재 날짜 생성
-        String issueDate = LocalDate.now().toString();
-
         // 서비스 호출
-        String transactionHash = certificateService.issueCertificate(certificateId, userId, username, issueDate);
+        CertificateDTO certificateDTO = certificateService.issueCertificate(certificateId, userId);
 
         // 응답 반환
-        return ResponseEntity.ok("Certificate issued successfully. Transaction Hash: " + transactionHash);
+        return ResponseEntity
+                .status(SuccessCode.SUCCESS_ISSUE_CERTIFICATE.getStatus().value())
+                .body(new ResponseDTO<>(SuccessCode.SUCCESS_ISSUE_CERTIFICATE, certificateDTO));
     }
 
 
@@ -80,14 +72,6 @@ public class CertificateController {
             return ResponseEntity.badRequest().body(null);
         }
     }
-
-
-    @GetMapping("/userId/{userId}")
-    public ResponseEntity<CertificateDTO> getCertificateByUserId(@PathVariable String userId) {
-        ResponseEntity certificate = certificateService.getCertificateByUserId(userId);
-        return certificate;
-    }
-
 
     @GetMapping("/total-volunteer-hours")
     public ResponseEntity<Integer> getTotalVolunteerHours(@RequestParam String userId) {

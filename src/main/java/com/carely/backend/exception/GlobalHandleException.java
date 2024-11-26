@@ -44,15 +44,15 @@ public class GlobalHandleException {
     @ExceptionHandler(NoCertificateUserException.class)
     protected ResponseEntity<ErrorResponseDTO> handleNoCertificateUserException(final NoCertificateUserException e) {
         return ResponseEntity
-                .status(ErrorCode.CERTIFICATE_FAIL.getStatus().value())
-                .body(new ErrorResponseDTO(ErrorCode.CERTIFICATE_FAIL));
+                .status(ErrorCode.HAS_NOT_CERTIFICATE.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.HAS_NOT_CERTIFICATE));
     }
 
     @ExceptionHandler(AlreadyHasCertificateException.class)
     protected ResponseEntity<ErrorResponseDTO> handleAlreadyHasCertificateException(final AlreadyHasCertificateException e) {
         return ResponseEntity
-                .status(ErrorCode.CERTIFICATE_FAIL.getStatus().value())
-                .body(new ErrorResponseDTO(ErrorCode.CERTIFICATE_FAIL));
+                .status(ErrorCode.ALREADY_HAS_CERTIFICATE.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.ALREADY_HAS_CERTIFICATE));
     }
 
     @ExceptionHandler(TotalTimeNotEnoughException.class)

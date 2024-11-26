@@ -37,6 +37,8 @@ public enum ErrorCode {
     NOT_IN_GROUP(HttpStatus.NOT_FOUND, "가입된 적이 없는 유저입니다."),
     LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "그룹을 찜하지 않은 유저입니다."),
     CERTIFICATE_FAIL(HttpStatus.NOT_FOUND, "자격증 인증에 실패했습니다."),
+    HAS_NOT_CERTIFICATE(HttpStatus.NOT_FOUND, "자격증이 존재하지 않는 유저입니다."),
+
 
     /**
      *  406

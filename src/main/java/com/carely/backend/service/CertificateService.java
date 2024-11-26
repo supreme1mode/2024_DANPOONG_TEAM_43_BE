@@ -1,17 +1,18 @@
 package com.carely.backend.service;
 
+import com.carely.backend.domain.User;
 import com.carely.backend.domain.Volunteer;
 import com.carely.backend.domain.enums.UserType;
 import com.carely.backend.dto.certificate.CertificateDTO;
 import com.carely.backend.dto.certificate.VolunteerListDTO;
-import com.carely.backend.dto.certificate.VolunteerSessionStruct;
 import com.carely.backend.dto.certificate.volunteerDTO;
-import com.carely.backend.exception.AlreadyExistsGuestBookException;
 import com.carely.backend.exception.AlreadyHasCertificateException;
 import com.carely.backend.exception.NoCertificateUserException;
 import com.carely.backend.exception.TotalTimeNotEnoughException;
+import com.carely.backend.exception.UserNotFoundException;
+import com.carely.backend.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import lombok.SneakyThrows;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisHash;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.time.LocalDate;
 import java.util.*;
 
 import org.web3j.abi.FunctionEncoder;
@@ -35,7 +37,6 @@ import org.web3j.protocol.core.methods.request.Transaction;
 import org.web3j.protocol.core.methods.response.EthCall;
 import org.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.web3j.protocol.http.HttpService;
-import org.web3j.tuples.generated.Tuple6;
 import org.web3j.tx.RawTransactionManager;
 import org.web3j.tx.gas.StaticGasProvider;
 
@@ -44,13 +45,16 @@ import org.web3j.tx.gas.StaticGasProvider;
 @RedisHash("VolunteerSession")
 public class CertificateService {
     protected final Web3j web3j;
+
+    private final UserRepository userRepository;
     protected final RawTransactionManager txManager;
     protected final StaticGasProvider gasProvider;
 
     private final RemixIDEProperties remixIDEProperties;
 
     @Autowired
-    public CertificateService(RemixIDEProperties remixIDEProperties) {
+    public CertificateService(UserRepository userRepository, RemixIDEProperties remixIDEProperties) {
+        this.userRepository = userRepository;
         this.remixIDEProperties = remixIDEProperties;
         log.info("Loaded Contract Key: {}", remixIDEProperties.getContractKey());
         log.info("Loaded Private Key: {}", remixIDEProperties.getPrivateKey());
@@ -156,43 +160,68 @@ public class CertificateService {
     }
 
     @Transactional
-    public String issueCertificate(String certificateId, Long userId, String username, String issueDate) throws Exception {
-        // 총 봉사 시간을 계산
-        boolean hasCertificate = checkIfCertificateExists(userId.toString());
-        if (hasCertificate) {
-            throw new AlreadyHasCertificateException("이미 자격증 존재");
-        }
-        int totalVolunteerHours = 0;
-        totalVolunteerHours = calculateTotalVolunteerHours(userId.toString());
+    public CertificateDTO issueCertificate(String certificateId, Long userId) throws Exception {
+        // 사용자 정보 확인
+        User user_volunteer = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
 
-        log.info("Calculated total volunteer hours for user {}: {}", userId, totalVolunteerHours);
-        if (totalVolunteerHours < 80) {
-            throw new TotalTimeNotEnoughException("시간 부족");
+        if (!checkIfCertificateExists(userId.toString())) {
+            log.info("Certificate already exists for userId: {}", userId);
+            throw new AlreadyHasCertificateException("이미 자격증이 발급된 사용자입니다.");
         }
-        System.out.println(certificateId);
-        // Solidity 함수 호출을 위한 Function 객체 생성
+
+        // 총 봉사 시간 계산
+        int totalHours = calculateTotalVolunteerHours(userId.toString());
+        if (totalHours < 80) {
+            throw new TotalTimeNotEnoughException("총 봉사 시간이 80시간 이상이어야 자격증을 발급할 수 있습니다. 현재 시간: " + totalHours);
+        }
+
+        // 발급일자
+        String issueDate = LocalDate.now().toString();
+
+        // Solidity 함수 호출 정의
         Function function = new Function(
                 "issueCertificate",
                 Arrays.asList(
-                        new Utf8String(certificateId),  // Certificate ID
-                        new Utf8String(userId.toString()),         // 사용자 ID
-                        new Utf8String(username),       // 사용자 이름
-                        new Utf8String(issueDate)   // 발급일
-                        //new Uint256(BigInteger.valueOf(totalVolunteerHours)) // 총 봉사 시간
-
+                        new Utf8String(certificateId),
+                        new Utf8String(userId.toString()),
+                        new Utf8String(user_volunteer.getUsername()),
+                        new Utf8String(issueDate)
                 ),
-                Collections.emptyList() // 반환값이 없음s
+                Arrays.asList(
+                        new TypeReference<Utf8String>() {}, // certificateId
+                        new TypeReference<Utf8String>() {}, // userId
+                        new TypeReference<Utf8String>() {}, // username
+                        new TypeReference<Uint256>() {},   // totalHours
+                        new TypeReference<Utf8String>() {}  // issueDate
+                )
         );
 
-        // 트랜잭션 전송
-        String transactionHash = null;
-        transactionHash = sendTransaction(function);
-        log.info("Certificate issued successfully. Transaction Hash: {}", transactionHash);
-        return transactionHash; // 트랜잭션 해시 반환
+        String encodedFunction = FunctionEncoder.encode(function);
+        EthCall response = web3j.ethCall(
+                Transaction.createEthCallTransaction(null, remixIDEProperties.getContractKey(), encodedFunction),
+                DefaultBlockParameterName.LATEST
+        ).send();
+
+        // 결과 디코딩
+        List<Type> decoded = FunctionReturnDecoder.decode(response.getValue(), function.getOutputParameters());
+        if (decoded.isEmpty() || response.getValue().equals("0x")) {
+            throw new RuntimeException("자격증 발급 중 오류가 발생했습니다.");
+        }
+
+        // 반환 데이터 매핑
+        return CertificateDTO.builder()
+                .certificateId(decoded.get(0).getValue().toString())
+                .userId(decoded.get(1).getValue().toString())
+                .username(decoded.get(2).getValue().toString())
+                .totalHours(((BigInteger) decoded.get(3).getValue()).intValue())
+                .issueDate(decoded.get(4).getValue().toString())
+                .build();
     }
 
 
-    private boolean checkIfCertificateExists(String userId) {
+
+    private boolean checkIfCertificateExists(String userId) throws IOException {
         // Solidity 함수 호출을 위한 Function 객체 생성
         Function function = new Function(
                 "userHasCertificate",
@@ -203,20 +232,13 @@ public class CertificateService {
         // 함수 호출 및 결과 디코딩
         String encodedFunction = FunctionEncoder.encode(function);
         EthCall response = null;
-        try {
-            response = web3j.ethCall(
-                    Transaction.createEthCallTransaction(null, remixIDEProperties.getContractKey(), encodedFunction),
-                    DefaultBlockParameterName.LATEST
-            ).send();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        if (response.hasError()) {
-            throw new RuntimeException("Error checking certificate existence: " + response.getError().getMessage());
-        }
+        response = web3j.ethCall(
+                Transaction.createEthCallTransaction(null, remixIDEProperties.getContractKey(), encodedFunction),
+                DefaultBlockParameterName.LATEST
+        ).send();
 
         List<Type> decoded = FunctionReturnDecoder.decode(response.getValue(), function.getOutputParameters());
+        System.out.println(decoded.get(0).getValue());
         return ((Bool) decoded.get(0)).getValue();
     }
 
@@ -372,64 +394,5 @@ public class CertificateService {
             throw e;
         }
     }
-
-    public ResponseEntity<CertificateDTO> getCertificateByUserId(String userId) {
-        try {
-            // Solidity 함수 정의
-            Function function = new Function(
-                    "getCertificateByUserId",
-                    Collections.singletonList(new Utf8String(userId)), // 입력값: userId
-                    Arrays.asList(
-                            new TypeReference<Utf8String>() {}, // certificateId
-                            new TypeReference<Utf8String>() {}, // userId
-                            new TypeReference<Utf8String>() {}, // username
-                            new TypeReference<Uint256>() {},   // totalHours
-                            new TypeReference<Utf8String>() {}  // issueDate
-                    )
-            );
-
-            // Solidity 함수 호출
-            String encodedFunction = FunctionEncoder.encode(function);
-            EthCall response = web3j.ethCall(
-                    Transaction.createEthCallTransaction(null, remixIDEProperties.getContractKey(), encodedFunction),
-                    DefaultBlockParameterName.LATEST
-            ).send();
-
-            // 응답 확인
-            if (response.hasError()) {
-                throw new RuntimeException("Error fetching certificate: " + response.getError().getMessage());
-            }
-
-            // 결과 디코딩
-            List<Type> decoded = FunctionReturnDecoder.decode(response.getValue(), function.getOutputParameters());
-            if (decoded.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-            }
-
-            // 디코딩된 값 매핑
-            String certificateId = decoded.get(0).getValue().toString();
-            String decodedUserId = decoded.get(1).getValue().toString();
-            String username = decoded.get(2).getValue().toString();
-            BigInteger totalHours = (BigInteger) decoded.get(3).getValue();
-            String issueDate = decoded.get(4).getValue().toString();
-
-            // CertificateDTO 생성 및 반환
-            CertificateDTO dto = CertificateDTO.builder()
-                    .certificateId(certificateId)
-                    .userId(decodedUserId)
-                    .username(username)
-                    .totalHours(totalHours.intValue()) // BigInteger -> int 변환
-                    .issueDate(issueDate)
-                    .build();
-
-            return ResponseEntity.ok(dto);
-
-        } catch (RuntimeException e) {
-            // 예외 처리
-            throw new NoCertificateUserException("자격증이 존재하지 않는 유저입니다.");
-        } catch (Exception e) {
-            // 기타 예외 처리
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
     }
-}
+

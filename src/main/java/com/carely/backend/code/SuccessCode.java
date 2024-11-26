@@ -73,6 +73,14 @@ public enum SuccessCode {
     SUCCESS_RETRIEVE_GUESTBOOK(HttpStatus.OK, "방명록을 성공적으로 조회했습니다."),
     SUCCESS_DELETE_GUESTBOOK(HttpStatus.OK, "방명록을 성공적으로 삭제했습니다."),
 
+    /**
+     *
+     * Certificate
+     * */
+    SUCCESS_ISSUE_CERTIFICATE(HttpStatus.OK, "자격증을 성공적으로 발급하였습니다."),
+    SUCCESS_RETRIEVE_VOLUNTEER_LIST(HttpStatus.OK, "봉사 활동 목록을 성공적으로 조회하였습니다."),
+    SUCCESS_RETRIEVE_CARE_WORKER_LIST(HttpStatus.OK, "요양보호 활동 목록을 성공적으로 조회하였습니다."),
+
 
     /**
      * OCR
