@@ -41,6 +41,14 @@ public class GlobalHandleException {
                 .body(new ErrorResponseDTO(ErrorCode.VOLUNTEER_NOT_FOUND));
     }
 
+    @ExceptionHandler(CertificateNotValidException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleCertificationNotValidException(final CertificateNotValidException e) {
+        return ResponseEntity
+                .status(ErrorCode.CERTIFICATE_FAIL.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.CERTIFICATE_FAIL));
+    }
+
+
     @ExceptionHandler(ChatMessageNotFoundException.class)
     protected ResponseEntity<ErrorResponseDTO> handleChatMessageNotFoundException(final ChatMessageNotFoundException e) {
         return ResponseEntity

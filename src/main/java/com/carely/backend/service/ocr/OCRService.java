@@ -1,15 +1,21 @@
 package com.carely.backend.service.ocr;
 
 import com.carely.backend.domain.User;
+import com.carely.backend.dto.certificate.CertificateDTO;
 import com.carely.backend.dto.ocr.OCRResponseDto;
+import com.carely.backend.exception.CertificateNotValidException;
 import com.carely.backend.exception.UserNotFoundException;
 import com.carely.backend.exception.UserNotMatchException;
 import com.carely.backend.repository.UserRepository;
+import com.carely.backend.service.CertificateService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,12 +32,13 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class OCRService {
     private final UserRepository userRepository;
+    private final CertificateService certificateService;
 
     @Value("${google.vision.api-key}")
     private String apiKey;
 
     @Transactional
-    public OCRResponseDto extractText(MultipartFile imageFile, String username) throws IOException {
+    public OCRResponseDto extractText(MultipartFile imageFile, String username) throws Exception {
 
         // 이미지 파일을 Base64로 인코딩
         byte[] imageBytes = imageFile.getBytes();
@@ -74,10 +81,20 @@ public class OCRService {
         String extractedText = parseResponse(jsonResponse);
 
         // 텍스트에서 필요한 정보 추출
-        OCRResponseDto ocrResponseDto =  extractFields(extractedText);
+        OCRResponseDto ocrResponseDto = extractFields(extractedText);
         System.out.println(ocrResponseDto.getName());
         if (ocrResponseDto.getName().equals(username)) {
-            return ocrResponseDto;
+// 자격증 인증 서비스 호출
+            ResponseEntity<CertificateDTO> responseEntity = certificateService.getCertificateById(ocrResponseDto.getCertificateNum());
+
+            if (responseEntity.getStatusCode() == HttpStatus.OK) {
+                System.out.println("자격증 인증 성공");
+
+                return ocrResponseDto;
+            } else {
+                throw new CertificateNotValidException("자격증 인증 실패");
+            }
+
         }
         else {
             throw new UserNotMatchException("유저 안 맞음");

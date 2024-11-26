@@ -2,11 +2,16 @@ package com.carely.backend.service;
 
 import com.carely.backend.domain.Volunteer;
 import com.carely.backend.domain.enums.UserType;
+import com.carely.backend.dto.certificate.CertificateDTO;
+import com.carely.backend.dto.certificate.VolunteerListDTO;
+import com.carely.backend.dto.certificate.VolunteerSessionStruct;
 import com.carely.backend.dto.certificate.volunteerDTO;
-import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisHash;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
@@ -14,6 +19,7 @@ import java.util.*;
 
 import org.web3j.abi.FunctionEncoder;
 import org.web3j.abi.FunctionReturnDecoder;
+import org.web3j.abi.TypeReference;
 import org.web3j.abi.datatypes.*;
 import org.web3j.abi.datatypes.generated.Uint256;
 import org.web3j.crypto.Credentials;
@@ -24,11 +30,11 @@ import org.web3j.protocol.core.methods.response.EthCall;
 import org.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.RawTransactionManager;
-import org.web3j.tx.ReadonlyTransactionManager;
 import org.web3j.tx.gas.StaticGasProvider;
 
 @Service
 @Slf4j
+@RedisHash("VolunteerSession")
 public class CertificateService {
     protected final Web3j web3j;
     protected final RawTransactionManager txManager;
@@ -78,18 +84,11 @@ public class CertificateService {
         log.info("Transaction Result: {}", transactionResult);
     }
 
-
-
-
-
-
-
-    public List<Map<String, Object>> getVolunteerSessionsByUserId(String userId) throws Exception {
+    public List<VolunteerListDTO> getVolunteerSessionsByUserId(String userId) throws Exception {
         Function function = new Function(
                 "getVolunteerSessionsByUserId",
                 List.of(new Utf8String(userId)),
-                List.of(
-                )
+                List.of(new TypeReference<DynamicArray<VolunteerSessionStruct>>() {})
         );
 
         String encodedFunction = FunctionEncoder.encode(function);
@@ -103,27 +102,128 @@ public class CertificateService {
         }
 
         List<Type> decoded = FunctionReturnDecoder.decode(response.getValue(), function.getOutputParameters());
-
-        List<Uint256> ids = (List<Uint256>) decoded.get(0).getValue();
-        List<Utf8String> usernames = (List<Utf8String>) decoded.get(1).getValue();
-        List<Uint256> volunteerHours = (List<Uint256>) decoded.get(2).getValue();
-        List<Utf8String> dates = (List<Utf8String>) decoded.get(3).getValue();
-        List<Utf8String> types = (List<Utf8String>) decoded.get(4).getValue();
-
-        List<Map<String, Object>> sessions = new ArrayList<>();
-        for (int i = 0; i < ids.size(); i++) {
-            Map<String, Object> session = new HashMap<>();
-            session.put("userId", userId);
-            session.put("sessionId", ids.get(i).getValue().toString());
-            session.put("username", usernames.get(i).getValue());
-            session.put("volunteerHours", volunteerHours.get(i).getValue());
-            session.put("date", dates.get(i).getValue());
-            session.put("volunteerType", types.get(i).getValue());
+        DynamicArray<VolunteerSessionStruct> sessionsStruct = (DynamicArray<VolunteerSessionStruct>) decoded.get(0);
+        List<VolunteerListDTO> sessions = new ArrayList<>();
+        for (VolunteerSessionStruct sessionStruct : sessionsStruct.getValue()) {
+            VolunteerListDTO session = VolunteerListDTO.builder()
+                    .userId(sessionStruct.userId)
+                    .username(sessionStruct.username)
+                    .volunteerHours(sessionStruct.volunteerHours.intValue())
+                    .date(sessionStruct.date)
+                    .volunteerType(sessionStruct.volunteerType)
+                    .userAddress(sessionStruct.userAddress)
+                    .build();
             sessions.add(session);
         }
 
         return sessions;
     }
+
+    public String issueCertificate(String certificateId, Long userId, String username, String issueDate) throws Exception {
+        // 총 봉사 시간을 계산
+        int totalVolunteerHours = calculateTotalVolunteerHours(userId.toString());
+        log.info("Calculated total volunteer hours for user {}: {}", userId, totalVolunteerHours);
+        if (totalVolunteerHours < 80) {
+            throw new RuntimeException("Total volunteer hours must be at least 80. Current: " + totalVolunteerHours);
+        }
+        // Solidity 함수 호출을 위한 Function 객체 생성
+        Function function = new Function(
+                "issueCertificate",
+                Arrays.asList(
+                        new Utf8String(certificateId),  // Certificate ID
+                        new Utf8String(userId.toString()),         // 사용자 ID
+                        new Utf8String(username),       // 사용자 이름
+                        new Utf8String(issueDate)   // 발급일
+                        //new Uint256(BigInteger.valueOf(totalVolunteerHours)) // 총 봉사 시간
+
+                ),
+                Collections.emptyList() // 반환값이 없음s
+        );
+
+        // 트랜잭션 전송
+        String transactionHash = sendTransaction(function);
+        log.info("Certificate issued successfully. Transaction Hash: {}", transactionHash);
+        return transactionHash; // 트랜잭션 해시 반환
+    }
+
+    public ResponseEntity<CertificateDTO> getCertificateById(String certificateId) throws Exception {
+        // Define the Solidity function call
+        Function function = new Function(
+                "getCertificateById",
+                Collections.singletonList(new Utf8String(certificateId)), // Input parameter
+                Arrays.asList(
+                        new TypeReference<Utf8String>() {}, // Certificate ID
+                        new TypeReference<Utf8String>() {}, // User ID
+                        new TypeReference<Utf8String>() {}, // Username
+                        new TypeReference<Uint256>() {},   // Total Hours
+                        new TypeReference<Utf8String>() {}  // Issue Date
+                )
+        );
+
+        // Encode the function for the smart contract call
+        String encodedFunction = FunctionEncoder.encode(function);
+
+        // Make the call to the contract
+        EthCall response = web3j.ethCall(
+                Transaction.createEthCallTransaction(null, ganacheProperties.getContractKey(), encodedFunction),
+                DefaultBlockParameterName.LATEST
+        ).send();
+
+        // Check for errors in the response
+        if (response.hasError()) {
+            throw new RuntimeException("Error fetching certificate: " + response.getError().getMessage());
+        }
+
+        // Debugging: Print the raw response
+        System.out.println("Raw Response: " + response.getValue());
+
+        // Decode the response
+        List<Type> decoded = FunctionReturnDecoder.decode(response.getValue(), function.getOutputParameters());
+        for (Type<?> type : decoded) {
+            System.out.println("Decoded Value: " + type.getValue());
+        }
+
+        // Map decoded values to variables
+        String decodedCertificateId = decoded.get(0).getValue().toString();
+        String decodedUserId = decoded.get(1).getValue().toString();
+        String decodedUsername = decoded.get(2).getValue().toString();
+        BigInteger decodedTotalHours = (BigInteger) decoded.get(3).getValue();
+        String decodedIssueDate = decoded.get(4).getValue().toString();
+
+        // Build and return the DTO
+        return ResponseEntity.status(HttpStatus.OK).body(CertificateDTO.builder()
+                .certificateId(decodedCertificateId)
+                .userId(decodedUserId)
+                .username(decodedUsername)
+                .totalHours(decodedTotalHours.intValue()) // Convert BigInteger to int
+                .issueDate(decodedIssueDate)
+                .build());
+    }
+
+
+    public int calculateTotalVolunteerHours(String userId) throws Exception {
+        // Solidity 함수 호출을 위한 Function 객체 생성
+        Function function = new Function(
+                "calculateTotalVolunteerHours",
+                Collections.singletonList(new Utf8String(userId)), // 사용자 ID
+                Collections.singletonList(new TypeReference<Uint256>() {}) // 반환값: 총 봉사 시간
+        );
+
+        // 함수 호출 및 결과 디코딩
+        String encodedFunction = FunctionEncoder.encode(function);
+        EthCall response = web3j.ethCall(
+                Transaction.createEthCallTransaction(null, ganacheProperties.getContractKey(), encodedFunction),
+                DefaultBlockParameterName.LATEST
+        ).send();
+
+        if (response.hasError()) {
+            throw new RuntimeException("Error calculating total hours: " + response.getError().getMessage());
+        }
+
+        List<Type> decoded = FunctionReturnDecoder.decode(response.getValue(), function.getOutputParameters());
+        return ((Uint256) decoded.get(0)).getValue().intValue();
+    }
+
 
 
 

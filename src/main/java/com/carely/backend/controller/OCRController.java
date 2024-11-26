@@ -39,7 +39,7 @@ public class OCRController  {
 //    }
 
     @PostMapping(value = "/extract", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseDTO> extractText(@RequestPart("file") MultipartFile file, @RequestPart("ocrCreateDTO") OCRCreateDTO ocrCreateDTO) throws IOException {
+    public ResponseEntity<ResponseDTO> extractText(@RequestPart("file") MultipartFile file, @RequestPart("ocrCreateDTO") OCRCreateDTO ocrCreateDTO) throws Exception {
         OCRResponseDto result = ocrService.extractText(file, ocrCreateDTO.getUsername());
         return ResponseEntity
                 .status(SuccessCode.SUCCESS_OCR.getStatus().value())
