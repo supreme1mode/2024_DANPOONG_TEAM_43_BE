@@ -44,6 +44,10 @@ public enum ErrorCode {
     ALREADY_EXISTS_GUESTBOOK(HttpStatus.NOT_ACCEPTABLE, "이미 해당 활동에 대한 방명록이 존재합니다."),
     ALREADY_EXISTS_MEMO(HttpStatus.NOT_ACCEPTABLE, "이미 해당 활동에 대한 메모가 존재합니다."),
     ALREADY_APPROVED(HttpStatus.NOT_ACCEPTABLE, "이미 승인된 약속입니다."),
+    ALREADY_HAS_CERTIFICATE(HttpStatus.NOT_ACCEPTABLE, "이미 자격증이 존재하여 발급할 수 없습니다."),
+    TOTAL_TIME_NOT_ENOUGH(HttpStatus.NOT_ACCEPTABLE, "실습 시간이 충분하지 않아 자격증을 발급할 수 없습니다."),
+
+
 
 
     /**

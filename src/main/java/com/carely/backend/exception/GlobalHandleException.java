@@ -41,6 +41,27 @@ public class GlobalHandleException {
                 .body(new ErrorResponseDTO(ErrorCode.VOLUNTEER_NOT_FOUND));
     }
 
+    @ExceptionHandler(NoCertificateUserException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleNoCertificateUserException(final NoCertificateUserException e) {
+        return ResponseEntity
+                .status(ErrorCode.CERTIFICATE_FAIL.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.CERTIFICATE_FAIL));
+    }
+
+    @ExceptionHandler(AlreadyHasCertificateException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleAlreadyHasCertificateException(final AlreadyHasCertificateException e) {
+        return ResponseEntity
+                .status(ErrorCode.CERTIFICATE_FAIL.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.CERTIFICATE_FAIL));
+    }
+
+    @ExceptionHandler(TotalTimeNotEnoughException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleTotalTimeNotEnoughException(final TotalTimeNotEnoughException e) {
+        return ResponseEntity
+                .status(ErrorCode.TOTAL_TIME_NOT_ENOUGH.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.TOTAL_TIME_NOT_ENOUGH));
+    }
+
     @ExceptionHandler(CertificateNotValidException.class)
     protected ResponseEntity<ErrorResponseDTO> handleCertificationNotValidException(final CertificateNotValidException e) {
         return ResponseEntity

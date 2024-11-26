@@ -14,8 +14,13 @@ public class Web3jConnectionTester implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        Web3ClientVersion clientVersion = web3j.web3ClientVersion().send();
-        System.out.println("Connected to Ethereum client version: " + clientVersion.getWeb3ClientVersion());
+        try {
+            Web3ClientVersion clientVersion = web3j.web3ClientVersion().send();
+            System.out.println("Connected to Ethereum client version: " + clientVersion.getWeb3ClientVersion());
+        } catch (Exception e) {
+            System.err.println("Failed to connect to Ethereum client: " + e.getMessage());
+        }
     }
 }
+
 

@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties(prefix = "ganache")
-public class GanacheProperties {
+public class RemixIDEProperties {
     private String contractKey;
     private String privateKey;
 

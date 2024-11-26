@@ -45,37 +45,32 @@ public class CertificateController {
     }
 
     @PostMapping("/issue/{userId}")
-    public ResponseEntity<String> issueCertificate(@PathVariable Long userId) {
-        try {
-            // UUID 생성
-            String certificateId = UUID.randomUUID().toString();
+    public ResponseEntity<String> issueCertificate(@PathVariable Long userId) throws Exception {
+        // UUID 생성
+        String certificateId = UUID.randomUUID().toString();
 
-            // username을 userRepository에서 조회
-            Optional<User> userOptional = userRepository.findById(userId);
-            if (userOptional.isEmpty()) {
-                return ResponseEntity.badRequest().body("User not found for userId: " + userId);
-            }
-            String username = userOptional.get().getUsername();
-
-            // 현재 날짜 생성
-            String issueDate = LocalDate.now().toString();
-
-            // 서비스 호출
-            String transactionHash = certificateService.issueCertificate(certificateId, userId, username, issueDate);
-
-            // 응답 반환
-            return ResponseEntity.ok("Certificate issued successfully. Transaction Hash: " + transactionHash);
-        } catch (Exception e) {
-            log.error("Error issuing certificate: {}", e.getMessage(), e);
-            return ResponseEntity.badRequest().body("Failed to issue certificate: " + e.getMessage());
+        // username을 userRepository에서 조회
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.badRequest().body("User not found for userId: " + userId);
         }
+        String username = userOptional.get().getUsername();
+
+        // 현재 날짜 생성
+        String issueDate = LocalDate.now().toString();
+
+        // 서비스 호출
+        String transactionHash = certificateService.issueCertificate(certificateId, userId, username, issueDate);
+
+        // 응답 반환
+        return ResponseEntity.ok("Certificate issued successfully. Transaction Hash: " + transactionHash);
     }
 
 
     /**
      * 자격증 조회 API
      */
-    @GetMapping("/{certificateId}")
+    @GetMapping("/certificate/{certificateId}")
     public ResponseEntity<CertificateDTO> getCertificateById(@PathVariable String certificateId) {
         try {
             ResponseEntity certificate = certificateService.getCertificateById(certificateId);
@@ -85,6 +80,14 @@ public class CertificateController {
             return ResponseEntity.badRequest().body(null);
         }
     }
+
+
+    @GetMapping("/userId/{userId}")
+    public ResponseEntity<CertificateDTO> getCertificateByUserId(@PathVariable String userId) {
+        ResponseEntity certificate = certificateService.getCertificateByUserId(userId);
+        return certificate;
+    }
+
 
     @GetMapping("/total-volunteer-hours")
     public ResponseEntity<Integer> getTotalVolunteerHours(@RequestParam String userId) {

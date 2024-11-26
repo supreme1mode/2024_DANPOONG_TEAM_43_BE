@@ -9,6 +9,6 @@ import org.web3j.protocol.http.HttpService;
 public class Web3jConfig {
     @Bean
     public Web3j web3j() {
-        return Web3j.build(new HttpService("http://127.0.0.1:7545")); // Ganache의 URL
+        return Web3j.build(new HttpService("http://13.124.232.105:7545")); // Ganache의 URL
     }
 }
