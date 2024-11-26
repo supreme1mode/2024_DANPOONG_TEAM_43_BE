@@ -83,6 +83,8 @@ public class RegisterDTO {
         private Boolean locationAuthentication;
 
         private Boolean shareLocation;
+        private Double latitude;
+        private Double longitude;
 
 
         public static Res toDTO(User user) {
@@ -98,6 +100,8 @@ public class RegisterDTO {
                     .detailAddress(user.getDetailAddress())
                     .locationAuthentication(user.getLocationAuthentication())
                     .shareLocation(user.getShareLocation())
+                    .latitude(user.getLatitude())
+                    .longitude(user.getLongitude())
                     .build();
         }
     }
