@@ -1,11 +1,11 @@
-package com.carely.backend.service;
+package com.carely.backend.service.certificate;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties(prefix = "ganache")
-public class RemixIDEProperties {
+public class GanacheProperties {
     private String contractKey;
     private String privateKey;
 

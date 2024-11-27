@@ -40,7 +40,7 @@ public class GroupController implements GroupAPI {
     public ResponseEntity<ResponseDTO> getGroupList() {
         String kakaoId = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        List<GetGroupDTO.List> res = groupService.getGroupList(kakaoId);
+        List<GetGroupDTO.GroupList> res = groupService.getGroupList(kakaoId);
 
         return ResponseEntity
                 .status(SuccessCode.SUCCESS_REGISTER_GROUP.getStatus().value())

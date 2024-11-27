@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Getter
 public class GetGroupDTO {
     private Long groupId;
@@ -20,24 +22,54 @@ public class GetGroupDTO {
         private String city;
         private String description;
         private Integer headCount; // 인원수
-        private UserType userType;
-        private Boolean isLiked;
-        private Boolean isWriter;
+        // private UserType userType;
+        // private Boolean isLiked;
+        // private Boolean isWriter;
         // private String groupImage;
 
-        public static List toDTO(Group e, Boolean isLiked, String userId) {
-            Boolean isWriter = e.getOwnerId().equals(userId);
-
+        public static List toDTO(Group e) {
             return List.builder()
                     .groupId(e.getId())
                     .groupName(e.getGroupName())
                     .city(e.getCity())
                     .description(e.getDescription())
                     .headCount(e.getJoinGroups() != null ? e.getJoinGroups().size() : 0) // JoinGroup을 사용한 인원수 계산
-                    .userType(e.getUserType())
-                    .isLiked(isLiked)
-                    .isWriter(isWriter)
+                    // .userType(e.getUserType())
+                    // .isLiked(isLiked)
+                    // .isWriter(isWriter)
                    //  .groupImage(e.getGroupImage())
+                    .build();
+        }
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class GroupList {
+        private Long groupId;
+        private String groupName;
+        private String city;
+        private String description;
+        private Integer headCount; // 인원수
+        private LocalDateTime lastNews;
+        // private UserType userType;
+        // private Boolean isLiked;
+        // private Boolean isWriter;
+        // private String groupImage;
+
+        public static GroupList toDTO(Group e, LocalDateTime lastNews) {
+            return GroupList.builder()
+                    .groupId(e.getId())
+                    .groupName(e.getGroupName())
+                    .city(e.getCity())
+                    .description(e.getDescription())
+                    .headCount(e.getJoinGroups() != null ? e.getJoinGroups().size() : 0) // JoinGroup을 사용한 인원수 계산
+                    // .userType(e.getUserType())
+                    // .isLiked(isLiked)
+                    // .isWriter(isWriter)
+                    //  .groupImage(e.getGroupImage())
+                    .lastNews(lastNews)
                     .build();
         }
     }
@@ -53,14 +85,13 @@ public class GetGroupDTO {
         private String description;
         private String schedule;
         private Integer headCount; // 인원수
-        private Boolean isLiked;
-        private Boolean isWriter;
-        private UserType userType;
+        // private Boolean isLiked;
+        // private Boolean isWriter;
+        // private UserType userType;
+
         // private String groupImage;
 
-        public static Detail toDTO(Group e, Boolean isLiked, String userId) {
-            Boolean isWriter = e.getOwnerId().equals(userId);
-
+        public static Detail toDTO(Group e) {
 
             return Detail.builder()
                     .groupId(e.getId())
@@ -69,9 +100,9 @@ public class GetGroupDTO {
                     .description(e.getDescription())
                     .schedule(e.getSchedule())
                     .headCount(e.getJoinGroups() != null ? e.getJoinGroups().size() : 0) // JoinGroup을 사용한 인원수 계산
-                    .isLiked(isLiked)
-                    .isWriter(isWriter)
-                    .userType(e.getUserType())
+                    // .isLiked(isLiked)
+                    // .isWriter(isWriter)
+                  //  .userType(e.getUserType())
                  //    .groupImage(e.getGroupImage())
                     .build();
         }

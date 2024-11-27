@@ -29,12 +29,17 @@ public class Group extends BaseEntity {
     private String schedule;
     private String ownerId;
 
-    @Enumerated(EnumType.STRING)
-    private UserType userType;
+//    @Enumerated(EnumType.STRING)
+//    private UserType userType;
 
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<JoinGroup> joinGroups = new HashSet<>();
 
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<News> news = new HashSet<>();
+
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Like> likes = new HashSet<>();
+
+
 }

@@ -1,4 +1,4 @@
-package com.carely.backend.service;
+package com.carely.backend.service.certificate;
 
 import com.carely.backend.domain.User;
 import com.carely.backend.domain.Volunteer;
@@ -9,12 +9,9 @@ import com.carely.backend.dto.certificate.volunteerDTO;
 import com.carely.backend.exception.*;
 import com.carely.backend.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisHash;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -49,19 +46,19 @@ public class CertificateService {
     protected final RawTransactionManager txManager;
     protected final StaticGasProvider gasProvider;
 
-    private final RemixIDEProperties remixIDEProperties;
+    private final GanacheProperties ganacheProperties;
 
     @Autowired
-    public CertificateService(UserRepository userRepository, RemixIDEProperties remixIDEProperties) {
+    public CertificateService(UserRepository userRepository, GanacheProperties ganacheProperties) {
         this.userRepository = userRepository;
-        this.remixIDEProperties = remixIDEProperties;
-        log.info("Loaded Contract Key: {}", remixIDEProperties.getContractKey());
-        log.info("Loaded Private Key: {}", remixIDEProperties.getPrivateKey());
+        this.ganacheProperties = ganacheProperties;
+        log.info("Loaded Contract Key: {}", ganacheProperties.getContractKey());
+        log.info("Loaded Private Key: {}", ganacheProperties.getPrivateKey());
 
         // Web3j 초기화
         this.web3j = Web3j.build(new HttpService("http://13.124.232.105:7545")); // 명시적으로 설정
 
-        Credentials credentials = Credentials.create(remixIDEProperties.getPrivateKey()); // 프라이빗 키
+        Credentials credentials = Credentials.create(ganacheProperties.getPrivateKey()); // 프라이빗 키
         this.txManager = new RawTransactionManager(web3j, credentials);
         this.gasProvider = new StaticGasProvider(
                 new BigInteger("1000000000"), // 가스 가격 (1 Gwei)
@@ -72,7 +69,7 @@ public class CertificateService {
     @Transactional
     public void createVolunteerSession(volunteerDTO volunteer) throws Exception {
         // 개인키로 Credentials 객체를 생성하여 주소를 추출합니다.
-        Credentials credentials = Credentials.create(remixIDEProperties.getPrivateKey());
+        Credentials credentials = Credentials.create(ganacheProperties.getPrivateKey());
         String userAddress = credentials.getAddress(); // 개인키에서 주소를 추출
 
         // 봉사 세션 생성
@@ -100,18 +97,12 @@ public class CertificateService {
                 "getVolunteerSessionsByUserId",
                 List.of(new Utf8String(userId)), // 함수 입력값
                 List.of(
-                        new TypeReference<DynamicArray<Utf8String>>() {
-                        },  // userIds
-                        new TypeReference<DynamicArray<Utf8String>>() {
-                        },  // usernames
-                        new TypeReference<DynamicArray<Uint256>>() {
-                        },     // volunteerHours
-                        new TypeReference<DynamicArray<Utf8String>>() {
-                        },  // dates
-                        new TypeReference<DynamicArray<Utf8String>>() {
-                        },  // volunteerTypes
-                        new TypeReference<DynamicArray<Address>>() {
-                        }      // userAddresses
+                        new TypeReference<DynamicArray<Utf8String>>() {},  // userIds
+                        new TypeReference<DynamicArray<Utf8String>>() {},  // usernames
+                        new TypeReference<DynamicArray<Uint256>>() {},     // volunteerHours
+                        new TypeReference<DynamicArray<Utf8String>>() {},  // dates
+                        new TypeReference<DynamicArray<Utf8String>>() {},  // volunteerTypes
+                        new TypeReference<DynamicArray<Address>>() {}      // userAddresses
                 )
         );
 
@@ -120,7 +111,7 @@ public class CertificateService {
         EthCall response = null;
         try {
             response = web3j.ethCall(
-                    Transaction.createEthCallTransaction(null, remixIDEProperties.getContractKey(), encodedFunction),
+                    Transaction.createEthCallTransaction(null, ganacheProperties.getContractKey(), encodedFunction),
                     DefaultBlockParameterName.LATEST
             ).send();
         } catch (IOException e) {
@@ -212,7 +203,7 @@ public class CertificateService {
 
         String encodedGetFunction = FunctionEncoder.encode(getCertificateFunction);
         EthCall getResponse = web3j.ethCall(
-                Transaction.createEthCallTransaction(null, remixIDEProperties.getContractKey(), encodedGetFunction),
+                Transaction.createEthCallTransaction(null, ganacheProperties.getContractKey(), encodedGetFunction),
                 DefaultBlockParameterName.LATEST
         ).send();
 
@@ -244,7 +235,7 @@ public class CertificateService {
         String encodedFunction = FunctionEncoder.encode(function);
         EthCall response = null;
         response = web3j.ethCall(
-                Transaction.createEthCallTransaction(null, remixIDEProperties.getContractKey(), encodedFunction),
+                Transaction.createEthCallTransaction(null, ganacheProperties.getContractKey(), encodedFunction),
                 DefaultBlockParameterName.LATEST
         ).send();
 
@@ -261,7 +252,7 @@ public class CertificateService {
     }
 
 
-    public ResponseEntity<CertificateDTO> getCertificateById(String certificateId) throws Exception {
+    public CertificateDTO getCertificateById(String certificateId) throws Exception {
         // Define the Solidity function call
         Function function = new Function(
                 "getCertificateById",
@@ -286,7 +277,7 @@ public class CertificateService {
         try {
             // Make the call to the contract
             EthCall response = web3j.ethCall(
-                    Transaction.createEthCallTransaction(null, remixIDEProperties.getContractKey(), encodedFunction),
+                    Transaction.createEthCallTransaction(null, ganacheProperties.getContractKey(), encodedFunction),
                     DefaultBlockParameterName.LATEST
             ).send();
 
@@ -312,28 +303,16 @@ public class CertificateService {
             String decodedIssueDate = decoded.get(4).getValue().toString();
 
             // Build and return the DTO
-            return ResponseEntity.status(HttpStatus.OK).body(CertificateDTO.builder()
+            return CertificateDTO.builder()
                     .certificateId(decodedCertificateId)
                     .userId(decodedUserId)
                     .username(decodedUsername)
                     .totalHours(decodedTotalHours.intValue()) // Convert BigInteger to int
                     .issueDate(decodedIssueDate)
-                    .build());
+                    .build();
 
         } catch (RuntimeException e) {
-            // Handle revert errors and provide meaningful response
-            if (e.getMessage().contains("Certificate not found")) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(CertificateDTO.builder()
-                                .certificateId(null)
-                                .userId(null)
-                                .username(null)
-                                .totalHours(0)
-                                .issueDate(null)
-                                .build());
-            } else {
-                throw e; // Rethrow unexpected errors
-            }
+            throw new CertificateNotValidException("존재하지 않음");
         }
     }
 
@@ -352,7 +331,7 @@ public class CertificateService {
         EthCall response = null;
         try {
             response = web3j.ethCall(
-                    Transaction.createEthCallTransaction(null, remixIDEProperties.getContractKey(), encodedFunction),
+                    Transaction.createEthCallTransaction(null, ganacheProperties.getContractKey(), encodedFunction),
                     DefaultBlockParameterName.LATEST
             ).send();
         } catch (IOException e) {
@@ -403,7 +382,7 @@ public class CertificateService {
         EthCall response;
         try {
             response = web3j.ethCall(
-                    Transaction.createEthCallTransaction(null, remixIDEProperties.getContractKey(), encodedFunction),
+                    Transaction.createEthCallTransaction(null, ganacheProperties.getContractKey(), encodedFunction),
                     DefaultBlockParameterName.LATEST
             ).send();
         } catch (IOException e) {
@@ -462,33 +441,6 @@ public class CertificateService {
     }
 
 
-    @Transactional
-    public void determineVolunteerType(Volunteer volunteer) throws Exception {
-        String userType = null;
-
-        // 자원봉사자면 그냥 자원봉사
-        if (volunteer.getVolunteer().getUserType().equals(UserType.VOLUNTEER)) {
-            userType = UserType.VOLUNTEER.name();
-
-            //만약에 요양보호사이면서, 자격증 검사도 받았으면.
-        } else if (volunteer.getVolunteer().getUserType().equals(UserType.CARE_WORKER) && (volunteer.getVolunteer().getCertificateCheck())) {
-            userType = UserType.CARE_WORKER.name();
-        }
-
-        // 만약에 요양보호사인데 자격증 검증이 아직이라면...
-        else if (volunteer.getVolunteer().getUserType().equals(UserType.CARE_WORKER) && (!volunteer.getVolunteer().getCertificateCheck())) {
-            userType = UserType.VOLUNTEER.name();
-        }
-
-        createVolunteerSession(volunteerDTO.builder()
-                .userId(volunteer.getVolunteer().getId().toString())
-                .username(volunteer.getVolunteer().getUsername())
-                .date(volunteer.getDate().toString())
-                .volunteerHours(volunteer.getDurationHours())
-                .volunteerType(userType)
-                .build());
-    }
-
     protected String sendTransaction(Function function) throws Exception {
         String encodedFunction = FunctionEncoder.encode(function);
         System.out.println("Encoded Function: " + encodedFunction);
@@ -497,7 +449,7 @@ public class CertificateService {
             EthSendTransaction transactionResponse = txManager.sendTransaction(
                     gasProvider.getGasPrice(),
                     gasProvider.getGasLimit(),
-                    remixIDEProperties.getContractKey(),
+                    ganacheProperties.getContractKey(),
                     encodedFunction,
                     BigInteger.ZERO
             );
@@ -541,7 +493,7 @@ public class CertificateService {
         try {
             // 스마트 컨트랙트 호출
             EthCall response = web3j.ethCall(
-                    Transaction.createEthCallTransaction(null, remixIDEProperties.getContractKey(), encodedFunction),
+                    Transaction.createEthCallTransaction(null, ganacheProperties.getContractKey(), encodedFunction),
                     DefaultBlockParameterName.LATEST
             ).send();
 
@@ -593,6 +545,33 @@ public class CertificateService {
 
         // 최대 시도 횟수를 초과한 경우 예외 처리
         throw new RuntimeException("Transaction receipt was not generated after " + attempts + " attempts");
+    }
+
+    @Transactional
+    public void determineVolunteerType(Volunteer volunteer) throws Exception {
+        String userType = null;
+
+        // 자원봉사자면 그냥 자원봉사
+        if (volunteer.getVolunteer().getUserType().equals(UserType.VOLUNTEER)) {
+            userType = UserType.VOLUNTEER.name();
+
+            //만약에 요양보호사이면서, 자격증 검사도 받았으면.
+        } else if (volunteer.getVolunteer().getUserType().equals(UserType.CARE_WORKER) && (volunteer.getVolunteer().getCertificateCheck())) {
+            userType = UserType.CARE_WORKER.name();
+        }
+
+        // 만약에 요양보호사인데 자격증 검증이 아직이라면...
+        else if (volunteer.getVolunteer().getUserType().equals(UserType.CARE_WORKER) && (!volunteer.getVolunteer().getCertificateCheck())) {
+            userType = UserType.VOLUNTEER.name();
+        }
+
+        createVolunteerSession(volunteerDTO.builder()
+                .userId(volunteer.getVolunteer().getId().toString())
+                .username(volunteer.getVolunteer().getUsername())
+                .date(volunteer.getDate().toString())
+                .volunteerHours(volunteer.getDurationHours())
+                .volunteerType(userType)
+                .build());
     }
 
 

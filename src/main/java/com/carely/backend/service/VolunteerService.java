@@ -5,13 +5,13 @@ import com.carely.backend.domain.ChatMessageEntity;
 import com.carely.backend.domain.User;
 import com.carely.backend.domain.Volunteer;
 import com.carely.backend.domain.enums.UserType;
-import com.carely.backend.dto.certificate.volunteerDTO;
 import com.carely.backend.dto.volunteer.CreateVolunteerDTO;
 import com.carely.backend.dto.volunteer.GetVolunteerInfoDTO;
 import com.carely.backend.exception.*;
 import com.carely.backend.repository.ChatMessageRepository;
 import com.carely.backend.repository.UserRepository;
 import com.carely.backend.repository.VolunteerRepository;
+import com.carely.backend.service.certificate.CertificateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,7 +21,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor

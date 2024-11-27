@@ -1,4 +1,4 @@
-package com.carely.backend.service;
+package com.carely.backend.service.certificate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;

@@ -27,22 +27,11 @@ public class OCRController  {
     public OCRController(OCRService ocrService) {
         this.ocrService = ocrService;
     }
-
-//    @PostMapping(value = "/extract", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-//    public ResponseEntity<ResponseDTO<?>> extractText(
-//            @RequestPart("file") MultipartFile file,
-//            @RequestPart("ocrCreateDTO") @Valid OCRCreateDTO ocrCreateDTO) throws IOException {
-//        OCRResponseDto result = ocrService.extractText(file, ocrCreateDTO.getUsername());
-//        return ResponseEntity
-//                .status(SuccessCode.SUCCESS_OCR.getStatus().value())
-//                .body(new ResponseDTO<>(SuccessCode.SUCCESS_OCR, result));
-//    }
-
     @PostMapping(value = "/extract", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseDTO> extractText(@RequestPart("file") MultipartFile file, @RequestPart("ocrCreateDTO") OCRCreateDTO ocrCreateDTO) throws Exception {
-        OCRResponseDto result = ocrService.extractText(file, ocrCreateDTO.getUsername());
+    public ResponseEntity<ResponseDTO<?>> extractText(@RequestPart("file") MultipartFile file, @RequestPart("ocrCreateDTO") OCRCreateDTO ocrCreateDTO) throws Exception {
+        ocrService.extractText(file, ocrCreateDTO.getUsername());
         return ResponseEntity
                 .status(SuccessCode.SUCCESS_OCR.getStatus().value())
-                .body(new ResponseDTO<>(SuccessCode.SUCCESS_OCR, result));
+                .body(new ResponseDTO<>(SuccessCode.SUCCESS_OCR, null));
     }
 }

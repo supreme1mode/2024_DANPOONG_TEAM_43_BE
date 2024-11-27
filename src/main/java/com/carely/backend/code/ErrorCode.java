@@ -40,6 +40,7 @@ public enum ErrorCode {
     CERTIFICATE_FAIL(HttpStatus.NOT_FOUND, "자격증 인증에 실패했습니다."),
     HAS_NOT_CERTIFICATE(HttpStatus.NOT_FOUND, "자격증이 존재하지 않는 유저입니다."),
 
+    NEWS_NOT_FOUND(HttpStatus.NOT_FOUND, "소식을 찾을 수 없습니다."),
 
     /**
      *  406

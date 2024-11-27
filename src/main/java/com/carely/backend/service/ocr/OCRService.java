@@ -3,28 +3,23 @@ package com.carely.backend.service.ocr;
 import com.carely.backend.domain.User;
 import com.carely.backend.dto.certificate.CertificateDTO;
 import com.carely.backend.dto.ocr.OCRResponseDto;
-import com.carely.backend.exception.CertificateNotValidException;
-import com.carely.backend.exception.UserNotFoundException;
 import com.carely.backend.exception.UserNotMatchException;
 import com.carely.backend.repository.UserRepository;
-import com.carely.backend.service.CertificateService;
+import com.carely.backend.service.certificate.CertificateService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Base64;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,7 +33,7 @@ public class OCRService {
     private String apiKey;
 
     @Transactional
-    public OCRResponseDto extractText(MultipartFile imageFile, String username) throws Exception {
+    public void extractText(MultipartFile imageFile, String username) throws Exception {
 
         // 이미지 파일을 Base64로 인코딩
         byte[] imageBytes = imageFile.getBytes();
@@ -85,14 +80,13 @@ public class OCRService {
         System.out.println(ocrResponseDto.getName());
         if (ocrResponseDto.getName().equals(username)) {
 // 자격증 인증 서비스 호출
-            ResponseEntity<CertificateDTO> responseEntity = certificateService.getCertificateById(ocrResponseDto.getCertificateNum());
+            CertificateDTO certificateDTO = certificateService.getCertificateById(ocrResponseDto.getCertificateNum());
 
-            if (responseEntity.getStatusCode() == HttpStatus.OK) {
-                System.out.println("자격증 인증 성공");
+            if (Objects.equals(certificateDTO.getCertificateId(), ocrResponseDto.getCertificateNum()) && Objects.equals(certificateDTO.getUsername(), ocrResponseDto.getName())) {
+                // 자격증 검증 성공
+                User user = userRepository.getReferenceById(Long.valueOf(certificateDTO.getUserId()));
+                user.updateCertificateCheck();
 
-                return ocrResponseDto;
-            } else {
-                throw new CertificateNotValidException("자격증 인증 실패");
             }
 
         }

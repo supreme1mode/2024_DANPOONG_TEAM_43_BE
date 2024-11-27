@@ -1,26 +1,24 @@
 package com.carely.backend.controller;
 
 import com.carely.backend.code.SuccessCode;
-import com.carely.backend.domain.User;
+import com.carely.backend.controller.docs.CertificateAPI;
 import com.carely.backend.dto.certificate.CertificateDTO;
 import com.carely.backend.dto.certificate.VolunteerListDTO;
 import com.carely.backend.dto.certificate.volunteerDTO;
 import com.carely.backend.dto.response.ResponseDTO;
-import com.carely.backend.repository.UserRepository;
-import com.carely.backend.service.CertificateService;
+import com.carely.backend.service.certificate.CertificateService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.*;
 
 @RestController
 @RequestMapping("/api/certificates")
 @RequiredArgsConstructor
 @Slf4j
-public class CertificateController {
+public class CertificateController implements CertificateAPI {
 
     private final CertificateService certificateService;
 
@@ -45,7 +43,7 @@ public class CertificateController {
     }
 
     @GetMapping("/sessions/{volunteerType}/{userId}")
-    public ResponseEntity<ResponseDTO<?>> getSessionsByUserId(@PathVariable String volunteerType, @PathVariable String userId) {
+    public ResponseEntity<ResponseDTO<?>> getSessionsByUserAndTypeId(@PathVariable String volunteerType, @PathVariable String userId) {
         List<VolunteerListDTO> sessions = certificateService.getVolunteerSessionsByUserIdAndType(volunteerType, userId);
         return ResponseEntity
                 .status(SuccessCode.SUCCESS_RETRIEVE_ACTIVITY_LIST.getStatus().value())
@@ -71,14 +69,11 @@ public class CertificateController {
      * 자격증 조회 API
      */
     @GetMapping("/certificate/{certificateId}")
-    public ResponseEntity<CertificateDTO> getCertificateById(@PathVariable String certificateId) {
-        try {
-            ResponseEntity certificate = certificateService.getCertificateById(certificateId);
-            return certificate;
-        } catch (Exception e) {
-            log.error("Error fetching certificate: {}", e.getMessage(), e);
-            return ResponseEntity.badRequest().body(null);
-        }
+    public ResponseEntity<ResponseDTO<?>> getCertificateById(@PathVariable String certificateId) throws Exception {
+        CertificateDTO certificate = certificateService.getCertificateById(certificateId);
+        return ResponseEntity
+                .status(SuccessCode.SUCCESS_RETRIEVE_CERTIFICATE.getStatus().value())
+                .body(new ResponseDTO<>(SuccessCode.SUCCESS_RETRIEVE_CERTIFICATE, certificate));
     }
 
     @GetMapping("/certificate/userId/{userId}")
