@@ -50,6 +50,7 @@ public class KakaoLoginService {
                 JsonNode jsonNode = objectMapper.readTree(response.getBody());
                 String userId = jsonNode.get("id").asText();
                 String username = jsonNode.path("kakao_account").path("name").asText();
+                System.out.println(jsonNode);
                 //String nickname = jsonNode.path("kakao_account").path("profile").path("nickname").asText();
 
                 Map<String, String> userInfo = new HashMap<>();
