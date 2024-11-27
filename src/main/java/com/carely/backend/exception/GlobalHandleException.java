@@ -110,6 +110,13 @@ public class GlobalHandleException {
                 .status(ErrorCode.NOT_MATCH_CHATROOM.getStatus().value())
                 .body(new ErrorResponseDTO(ErrorCode.NOT_MATCH_CHATROOM));
     }
+
+    @ExceptionHandler(NewsNotFoundException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleNewsNotFoundException(final NewsNotFoundException e) {
+        return ResponseEntity
+                .status(ErrorCode.NEWS_NOT_FOUND.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.NEWS_NOT_FOUND));
+    }
     /**
      * 입력값 검증
      */

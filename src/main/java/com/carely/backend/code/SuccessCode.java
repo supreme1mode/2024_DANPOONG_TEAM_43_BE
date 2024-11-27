@@ -79,6 +79,10 @@ public enum SuccessCode {
      * */
     SUCCESS_OCR(HttpStatus.OK, "성공적으로 서류 검출을 진행했습니다."),
 
+    /**
+     * News
+     */
+    SUCCESS_RETRIEVE_NEWS(HttpStatus.OK,"소식을 성공적으로 조회했습니다."),
 
     ;
     private final HttpStatus status;

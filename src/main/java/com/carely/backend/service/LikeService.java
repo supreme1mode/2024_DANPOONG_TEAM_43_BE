@@ -76,7 +76,7 @@ public class LikeService {
                 .collect(Collectors.toList());
 
         return likedGroups.stream()
-                .map(group -> GetGroupDTO.List.toDTO(group, true, kakaoId))
+                .map(group -> GetGroupDTO.List.toDTO(group))
                 .collect(Collectors.toList());
     }
 
