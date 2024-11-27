@@ -1,10 +1,7 @@
 package com.carely.backend.service;
 
 
-import com.carely.backend.domain.Group;
-import com.carely.backend.domain.JoinGroup;
-import com.carely.backend.domain.User;
-import com.carely.backend.domain.Volunteer;
+import com.carely.backend.domain.*;
 import com.carely.backend.dto.group.CreateGroupDTO;
 import com.carely.backend.dto.group.GetGroupDTO;
 import com.carely.backend.dto.user.UserResponseDTO;
@@ -20,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.xml.stream.events.Comment;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,6 +33,7 @@ public class GroupService {
     private final S3Uploader s3Uploader;
     private final VolunteerRepository volunteerRepository;
     private final LikeRepository likeRepository;
+    private final NewsRepository newsRepository;
 
 
     public CreateGroupDTO.Res createCaregiverGroup(String kakaoId, CreateGroupDTO groupDTO) throws IOException {
@@ -59,16 +58,16 @@ public class GroupService {
         return CreateGroupDTO.Res.toDTO(newGroup);
     }
 
-    public List<GetGroupDTO.List> getGroupList(String kakaoId) {
+    public List<GetGroupDTO.GroupList> getGroupList(String kakaoId) {
         List<Group> groups = groupRepository.findAll();
-
-        User user = userRepository.findByKakaoId(kakaoId)
-                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
         return groups.stream()
                 .map(group -> {
-                    boolean isLiked = likeRepository.existsByGroupAndUser(group, user);
-                    return GetGroupDTO.List.toDTO(group, isLiked, kakaoId);
+                    // 최신 News 시간 조회 (없으면 null 반환)
+                    LocalDateTime lastNewsTime = newsRepository.findLastNewsTimeByGroupId(group.getId());
+
+                    // DTO 변환
+                    return GetGroupDTO.GroupList.toDTO(group, lastNewsTime);
                 })
                 .collect(Collectors.toList());
     }
@@ -77,12 +76,7 @@ public class GroupService {
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new GroupNotFoundException("그룹을 찾을 수 없습니다."));
 
-        User user = userRepository.findByKakaoId(kakaoId)
-                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
-
-        boolean isLiked = likeRepository.existsByGroupAndUser(group, user);
-
-        return GetGroupDTO.Detail.toDTO(group, isLiked, kakaoId);
+        return GetGroupDTO.Detail.toDTO(group);
     }
 
     @Transactional
@@ -106,10 +100,7 @@ public class GroupService {
                 .build();
         joinGroupRepository.save(joinGroup);
 
-        // Check if the group is liked by the user
-        boolean isLiked = likeRepository.existsByGroupAndUser(group, user);
-
-        return GetGroupDTO.List.toDTO(group, isLiked, kakaoId);
+        return GetGroupDTO.List.toDTO(group);
     }
 
     @Transactional
@@ -130,10 +121,7 @@ public class GroupService {
         // JoinGroup 엔티티 삭제
         joinGroupRepository.deleteByGroupAndUser(group, user);
 
-        // Check if the group is still liked by the user (optional: assuming the 'like' can persist even after leaving)
-        boolean isLiked = likeRepository.existsByGroupAndUser(group, user);
-
-        return GetGroupDTO.List.toDTO(group, isLiked, kakaoId);
+        return GetGroupDTO.List.toDTO(group);
     }
 
     public void deleteGroup(String kakaoId, Long groupId) {
@@ -152,17 +140,12 @@ public class GroupService {
         User user = userRepository.findByKakaoId(kakaoId)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
-        // 사용자가 좋아요를 누른 그룹 ID 목록 생성
-        Set<Long> likedGroupIds = user.getLikes().stream()
-                .map(like -> like.getGroup().getId())
-                .collect(Collectors.toSet());
 
         // 유저가 가입한 그룹 목록 조회 및 DTO 변환
         return user.getJoinGroups().stream()
                 .map(joinGroup -> {
                     Group group = joinGroup.getGroup();
-                    boolean isLiked = likedGroupIds.contains(group.getId());
-                    return GetGroupDTO.List.toDTO(group, isLiked, kakaoId);
+                    return GetGroupDTO.List.toDTO(group);
                 })
                 .collect(Collectors.toList());
     }

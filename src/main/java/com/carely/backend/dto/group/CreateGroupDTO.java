@@ -14,7 +14,7 @@ public class CreateGroupDTO {
     private String city;
     private String description;
     private String schedule;
-    private UserType userType;
+    // private UserType userType;
 
 
     public static Group toEntity(CreateGroupDTO dto, String kakaoId) {
@@ -23,7 +23,7 @@ public class CreateGroupDTO {
                 .city(dto.getCity())
                 .description(dto.getDescription())
                 .schedule(dto.getSchedule())
-                .userType(dto.getUserType())
+                // .userType(dto.getUserType())
                 // .groupImage(url)
                 .ownerId(kakaoId)
                 .build();
@@ -40,7 +40,7 @@ public class CreateGroupDTO {
         private String description;
         private String schedule;
         private Integer headCount;
-        private UserType userType;
+        // private UserType userType;
         // private String groupImage;
 
         public static Res toDTO(Group e) {
@@ -51,7 +51,7 @@ public class CreateGroupDTO {
                     .description(e.getDescription())
                     .schedule(e.getSchedule())
                     .headCount(e.getJoinGroups() != null ? e.getJoinGroups().size() : 0) // JoinGroup을 사용한 인원수 계산
-                    .userType(e.getUserType())
+                 //   .userType(e.getUserType())
                 //     .groupImage(e.getGroupImage())
                     .build();
         }
