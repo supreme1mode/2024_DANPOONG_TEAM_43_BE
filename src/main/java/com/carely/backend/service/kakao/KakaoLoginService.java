@@ -49,11 +49,12 @@ public class KakaoLoginService {
                 ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode jsonNode = objectMapper.readTree(response.getBody());
                 String userId = jsonNode.get("id").asText();
-                String nickname = jsonNode.path("kakao_account").path("profile").path("nickname").asText();
+                String username = jsonNode.path("kakao_account").path("name").asText();
+                //String nickname = jsonNode.path("kakao_account").path("profile").path("nickname").asText();
 
                 Map<String, String> userInfo = new HashMap<>();
                 userInfo.put("kakaoId", userId);
-                userInfo.put("nickname", nickname);
+                userInfo.put("username", username);
                 return userInfo;
             } catch (Exception e) {
                 throw new RuntimeException("Failed to parse user info response", e);

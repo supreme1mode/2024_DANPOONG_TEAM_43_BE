@@ -45,9 +45,9 @@ public class CertificateController implements CertificateAPI {
     }
 
     // 세션 유저 + 타입별로 불러오기
-    @GetMapping("/sessions/{volunteerType}/{userId}")
-    public ResponseEntity<ResponseDTO<?>> getSessionsByUserAndTypeId(@PathVariable String volunteerType, @PathVariable String userId) {
-        List<VolunteerListDTO> sessions = certificateService.getVolunteerSessionsByUserIdAndType(volunteerType, userId);
+    @GetMapping("/sessions/{documentType}/{userId}")
+    public ResponseEntity<ResponseDTO<?>> getSessionsByUserAndTypeId(@PathVariable String documentType, @PathVariable String userId) {
+        List<VolunteerListDTO> sessions = certificateService.getVolunteerSessionsByUserIdAndType(documentType, userId);
         return ResponseEntity
                 .status(SuccessCode.SUCCESS_RETRIEVE_ACTIVITY_LIST.getStatus().value())
                 .body(new ResponseDTO<>(SuccessCode.SUCCESS_RETRIEVE_ACTIVITY_LIST, sessions));
