@@ -55,14 +55,14 @@ public class UserController implements UserAPI {
 
         String kakaoId = info.get("kakaoId"); // kakaoId 추출
         System.out.println(info);
-        String nickname = info.get("nickname"); // nickname 추출
+        String username = info.get("username"); // nickname 추출
 
         // 유저가 있는지 확인
         User user = kakaoLoginService.findUserByKakaoId(kakaoId);
 
         // 유저가 없으면 kakao Id만 전달
         if (user == null) {
-            NotUserDTO notUserDTO = new NotUserDTO(kakaoId, nickname);
+            NotUserDTO notUserDTO = new NotUserDTO(kakaoId, username);
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
                     .body(new ResponseDTO<>(SuccessCode.NOT_USER, notUserDTO));
