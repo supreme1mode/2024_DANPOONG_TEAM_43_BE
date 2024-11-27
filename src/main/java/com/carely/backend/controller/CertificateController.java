@@ -22,6 +22,7 @@ public class CertificateController implements CertificateAPI {
 
     private final CertificateService certificateService;
 
+    // 봉사 세션 추가
     @PostMapping("/volunteer-session")
     public ResponseEntity<String> createVolunteerSession(@RequestBody volunteerDTO volunteer) {
         try {
@@ -33,6 +34,7 @@ public class CertificateController implements CertificateAPI {
         }
     }
 
+    // 세션 유저별로 불러오기
     @GetMapping("/sessions/{userId}")
     public ResponseEntity<ResponseDTO<?>> getSessionsByUserId(@PathVariable String userId) {
         List<VolunteerListDTO> sessions = certificateService.getVolunteerSessionsByUserId(userId);
@@ -42,6 +44,7 @@ public class CertificateController implements CertificateAPI {
 
     }
 
+    // 세션 유저 + 타입별로 불러오기
     @GetMapping("/sessions/{volunteerType}/{userId}")
     public ResponseEntity<ResponseDTO<?>> getSessionsByUserAndTypeId(@PathVariable String volunteerType, @PathVariable String userId) {
         List<VolunteerListDTO> sessions = certificateService.getVolunteerSessionsByUserIdAndType(volunteerType, userId);
@@ -50,7 +53,7 @@ public class CertificateController implements CertificateAPI {
                 .body(new ResponseDTO<>(SuccessCode.SUCCESS_RETRIEVE_ACTIVITY_LIST, sessions));
     }
 
-
+    // 자격증 발급하기
     @PostMapping("/issue/{userId}")
     public ResponseEntity<ResponseDTO<?>> issueCertificate(@PathVariable String userId) throws Exception {
         // UUID 생성
