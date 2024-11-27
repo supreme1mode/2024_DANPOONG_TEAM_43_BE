@@ -32,6 +32,7 @@ public class SecurityConfig {
     private final JWTUtil jwtUtil;
     private final RefreshRepository redisRepository;
 
+    //기본적인 HTTP 요청 처리
     @Bean(name = "securityRestTemplate")
     public RestTemplate securityRestTemplate() {
         return new RestTemplate();
