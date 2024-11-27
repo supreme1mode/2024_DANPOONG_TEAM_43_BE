@@ -61,5 +61,5 @@ jobs:
             sudo docker rm -f $(docker ps -qa)
             sudo docker stop $(docker ps -a -q)
             sudo docker pull ${{ secrets.DOCKER_REPO }}/carely
-            sudo docker run --name carely --network shared_network -p 8080:8080 -d ${{ secrets.DOCKER_REPO }}/carely
+            sudo docker-compose up --build -d
             sudo docker image prune -f
