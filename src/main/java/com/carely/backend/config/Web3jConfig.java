@@ -7,6 +7,7 @@ import org.web3j.protocol.http.HttpService;
 
 @Configuration
 public class Web3jConfig {
+    //블록체인 서버 주소
     @Bean
     public Web3j web3j() {
         return Web3j.build(new HttpService("http://13.124.232.105:7545")); // Ganache의 URL
