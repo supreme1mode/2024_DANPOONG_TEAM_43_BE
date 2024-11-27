@@ -49,13 +49,17 @@ public class KakaoLoginService {
                 ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode jsonNode = objectMapper.readTree(response.getBody());
                 String userId = jsonNode.get("id").asText();
-                String username = jsonNode.path("kakao_account").path("name").asText();
+                String name = jsonNode.path("name").asText(); // name이 없을 경우 빈 문자열 반환
+                if (name.isEmpty()) {
+                    // name이 없으면 nickname으로 대체
+                    name = jsonNode.path("kakao_account").path("profile").path("nickname").asText();
+                }
                 System.out.println(jsonNode);
                 //String nickname = jsonNode.path("kakao_account").path("profile").path("nickname").asText();
 
                 Map<String, String> userInfo = new HashMap<>();
                 userInfo.put("kakaoId", userId);
-                userInfo.put("username", username);
+                userInfo.put("username", name);
                 return userInfo;
             } catch (Exception e) {
                 throw new RuntimeException("Failed to parse user info response", e);
