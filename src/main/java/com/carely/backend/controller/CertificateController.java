@@ -35,18 +35,26 @@ public class CertificateController {
         }
     }
 
-    @GetMapping("/api/sessions/{userId}")
-    public ResponseEntity<List<VolunteerListDTO>> getSessionsByUserId(@PathVariable String userId) {
-        try {
-            List<VolunteerListDTO> sessions = certificateService.getVolunteerSessionsByUserId(userId);
-            return ResponseEntity.ok(sessions);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(Collections.singletonList((VolunteerListDTO) Map.of("error", e.getMessage())));
-        }
+    @GetMapping("/sessions/{userId}")
+    public ResponseEntity<ResponseDTO<?>> getSessionsByUserId(@PathVariable String userId) {
+        List<VolunteerListDTO> sessions = certificateService.getVolunteerSessionsByUserId(userId);
+        return ResponseEntity
+                .status(SuccessCode.SUCCESS_RETRIEVE_ACTIVITY_LIST.getStatus().value())
+                .body(new ResponseDTO<>(SuccessCode.SUCCESS_RETRIEVE_ACTIVITY_LIST, sessions));
+
     }
 
+    @GetMapping("/sessions/{volunteerType}/{userId}")
+    public ResponseEntity<ResponseDTO<?>> getSessionsByUserId(@PathVariable String volunteerType, @PathVariable String userId) {
+        List<VolunteerListDTO> sessions = certificateService.getVolunteerSessionsByUserIdAndType(volunteerType, userId);
+        return ResponseEntity
+                .status(SuccessCode.SUCCESS_RETRIEVE_ACTIVITY_LIST.getStatus().value())
+                .body(new ResponseDTO<>(SuccessCode.SUCCESS_RETRIEVE_ACTIVITY_LIST, sessions));
+    }
+
+
     @PostMapping("/issue/{userId}")
-    public ResponseEntity<ResponseDTO<?>> issueCertificate(@PathVariable Long userId) throws Exception {
+    public ResponseEntity<ResponseDTO<?>> issueCertificate(@PathVariable String userId) throws Exception {
         // UUID 생성
         String certificateId = UUID.randomUUID().toString();
         // 서비스 호출
@@ -71,6 +79,14 @@ public class CertificateController {
             log.error("Error fetching certificate: {}", e.getMessage(), e);
             return ResponseEntity.badRequest().body(null);
         }
+    }
+
+    @GetMapping("/certificate/userId/{userId}")
+    public ResponseEntity<ResponseDTO<?>> getCertificateByUserId(@PathVariable String userId) {
+        CertificateDTO certificate = certificateService.getCertificateByUserId(userId);
+        return ResponseEntity
+                .status(SuccessCode.SUCCESS_RETRIEVE_CERTIFICATE.getStatus().value())
+                .body(new ResponseDTO<>(SuccessCode.SUCCESS_RETRIEVE_CERTIFICATE, certificate));
     }
 
     @GetMapping("/total-volunteer-hours")

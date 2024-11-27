@@ -1,7 +1,9 @@
 package com.carely.backend.exception;
 
 import com.carely.backend.code.ErrorCode;
+import com.carely.backend.code.SuccessCode;
 import com.carely.backend.dto.response.ErrorResponseDTO;
+import com.carely.backend.dto.response.ResponseDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -75,6 +77,20 @@ public class GlobalHandleException {
         return ResponseEntity
                 .status(ErrorCode.CHAT_NOT_FOUND.getStatus().value())
                 .body(new ErrorResponseDTO(ErrorCode.CHAT_NOT_FOUND));
+    }
+
+    @ExceptionHandler(ListEmptyException.class)
+    protected ResponseEntity<ResponseDTO<?>> handleListEmptyException(final ListEmptyException e) {
+        return ResponseEntity
+                .status(SuccessCode.SUCCESS_BUT_LIST_EMPTY.getStatus().value())
+                .body(new ResponseDTO<>(SuccessCode.SUCCESS_BUT_LIST_EMPTY, null));
+    }
+
+    @ExceptionHandler(NotValidUserTypeException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleNotValidUserTypeException(final NotValidUserTypeException e) {
+        return ResponseEntity
+                .status(ErrorCode.USER_TYPE_NOT_FOUND.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.USER_TYPE_NOT_FOUND));
     }
 
     @ExceptionHandler(NotValidAddressException.class)
