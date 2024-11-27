@@ -31,11 +31,15 @@ public enum ErrorCode {
      */
     GROUP_NOT_FOUND(HttpStatus.NOT_FOUND, "그룹을 찾을 수 없습니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
+    USER_TYPE_NOT_FOUND(HttpStatus.NOT_FOUND, "유저 타입을 찾을 수 없습니다."),
     TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "데이터베이스에서 토큰을 찾을 수 없습니다."),
     VOLUNTEER_NOT_FOUND(HttpStatus.NOT_FOUND, "자원봉사 요청을 찾을 수 없습니다."),
     CHAT_NOT_FOUND(HttpStatus.NOT_FOUND, "채팅 메세지를 찾을 수 없습니다."),
     NOT_IN_GROUP(HttpStatus.NOT_FOUND, "가입된 적이 없는 유저입니다."),
     LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "그룹을 찜하지 않은 유저입니다."),
+    CERTIFICATE_FAIL(HttpStatus.NOT_FOUND, "자격증 인증에 실패했습니다."),
+    HAS_NOT_CERTIFICATE(HttpStatus.NOT_FOUND, "자격증이 존재하지 않는 유저입니다."),
+
     NEWS_NOT_FOUND(HttpStatus.NOT_FOUND, "소식을 찾을 수 없습니다."),
 
     /**
@@ -44,6 +48,10 @@ public enum ErrorCode {
     ALREADY_EXISTS_GUESTBOOK(HttpStatus.NOT_ACCEPTABLE, "이미 해당 활동에 대한 방명록이 존재합니다."),
     ALREADY_EXISTS_MEMO(HttpStatus.NOT_ACCEPTABLE, "이미 해당 활동에 대한 메모가 존재합니다."),
     ALREADY_APPROVED(HttpStatus.NOT_ACCEPTABLE, "이미 승인된 약속입니다."),
+    ALREADY_HAS_CERTIFICATE(HttpStatus.NOT_ACCEPTABLE, "이미 자격증이 존재하여 발급할 수 없습니다."),
+    TOTAL_TIME_NOT_ENOUGH(HttpStatus.NOT_ACCEPTABLE, "실습 시간이 충분하지 않아 자격증을 발급할 수 없습니다."),
+
+
 
 
     /**

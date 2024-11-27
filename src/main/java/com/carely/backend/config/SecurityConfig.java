@@ -32,6 +32,11 @@ public class SecurityConfig {
     private final JWTUtil jwtUtil;
     private final RefreshRepository redisRepository;
 
+    @Bean(name = "securityRestTemplate")
+    public RestTemplate securityRestTemplate() {
+        return new RestTemplate();
+    }
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();

@@ -71,12 +71,13 @@ public class VolunteerController implements VolunteerAPI {
 
     @PatchMapping("/approval/{volunteerId}")
     public ResponseEntity<?> approveVolunteer(@PathVariable("volunteerId") Long volunteerId,
-                                             @RequestBody() UpdateVolunteerApprovalDTO updateVolunteerApprovalDTO) {
+                                             @RequestBody() UpdateVolunteerApprovalDTO updateVolunteerApprovalDTO) throws Exception {
 
-        String kakaoId = SecurityContextHolder.getContext().getAuthentication().getName();
-        CreateVolunteerDTO.Res res = volunteerService.updateApproval(volunteerId, updateVolunteerApprovalDTO.getMessageId(), updateVolunteerApprovalDTO.getRoomId(), kakaoId);
+        //String kakaoId = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        ChatRoomEntity chatRoom = chatService.findRoomById(updateVolunteerApprovalDTO.getRoomId());
+        CreateVolunteerDTO.Res res = volunteerService.updateApproval(volunteerId, updateVolunteerApprovalDTO.getMessageId(), updateVolunteerApprovalDTO.getRoomId(), "3777478397");
+
+        //ChatRoomEntity chatRoom = chatService.findRoomById(updateVolunteerApprovalDTO.getRoomId());
 
         ChatMessageEntity chatMessage = ChatMessageEntity.builder()
                 .type(ChatMessageEntity.MessageType.RESERVATION)
@@ -87,15 +88,14 @@ public class VolunteerController implements VolunteerAPI {
                 .isApproved(true)
                 .build();
 
-        if (chatRoom != null) {
-            if (chatRoom.isBlocked()) {
-                throw new IllegalArgumentException("This room is blocked.");
-            }
-
+//        if (chatRoom != null) {
+//            if (chatRoom.isBlocked()) {
+//                throw new IllegalArgumentException("This room is blocked.");
+//            }
             // 변경된 메시지를 저장 -> 웹소켓으로 브로드캐스트
             chatMessage = chatService.saveChatMessage(chatMessage);
             messagingTemplate.convertAndSend("/topic/" + chatMessage.getRoomId(), chatMessage);
-        }
+        //}
 
         return ResponseEntity
                 .status(SuccessCode.SUCCESS_APPROVAL.getStatus().value())

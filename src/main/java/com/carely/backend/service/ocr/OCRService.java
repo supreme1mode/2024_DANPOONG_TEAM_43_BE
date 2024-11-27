@@ -1,10 +1,11 @@
 package com.carely.backend.service.ocr;
 
 import com.carely.backend.domain.User;
+import com.carely.backend.dto.certificate.CertificateDTO;
 import com.carely.backend.dto.ocr.OCRResponseDto;
-import com.carely.backend.exception.UserNotFoundException;
 import com.carely.backend.exception.UserNotMatchException;
 import com.carely.backend.repository.UserRepository;
+import com.carely.backend.service.certificate.CertificateService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
@@ -13,12 +14,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Base64;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,12 +27,13 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class OCRService {
     private final UserRepository userRepository;
+    private final CertificateService certificateService;
 
     @Value("${google.vision.api-key}")
     private String apiKey;
 
     @Transactional
-    public OCRResponseDto extractText(MultipartFile imageFile, String username) throws IOException {
+    public void extractText(MultipartFile imageFile, String username) throws Exception {
 
         // 이미지 파일을 Base64로 인코딩
         byte[] imageBytes = imageFile.getBytes();
@@ -74,10 +76,19 @@ public class OCRService {
         String extractedText = parseResponse(jsonResponse);
 
         // 텍스트에서 필요한 정보 추출
-        OCRResponseDto ocrResponseDto =  extractFields(extractedText);
+        OCRResponseDto ocrResponseDto = extractFields(extractedText);
         System.out.println(ocrResponseDto.getName());
         if (ocrResponseDto.getName().equals(username)) {
-            return ocrResponseDto;
+// 자격증 인증 서비스 호출
+            CertificateDTO certificateDTO = certificateService.getCertificateById(ocrResponseDto.getCertificateNum());
+
+            if (Objects.equals(certificateDTO.getCertificateId(), ocrResponseDto.getCertificateNum()) && Objects.equals(certificateDTO.getUsername(), ocrResponseDto.getName())) {
+                // 자격증 검증 성공
+                User user = userRepository.getReferenceById(Long.valueOf(certificateDTO.getUserId()));
+                user.updateCertificateCheck();
+
+            }
+
         }
         else {
             throw new UserNotMatchException("유저 안 맞음");

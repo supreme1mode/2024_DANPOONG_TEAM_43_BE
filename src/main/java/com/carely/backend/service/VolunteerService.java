@@ -11,12 +11,16 @@ import com.carely.backend.exception.*;
 import com.carely.backend.repository.ChatMessageRepository;
 import com.carely.backend.repository.UserRepository;
 import com.carely.backend.repository.VolunteerRepository;
+import com.carely.backend.service.certificate.CertificateService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
-import java.util.Objects;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +28,7 @@ public class VolunteerService {
     private final VolunteerRepository volunteerRepository;
     private final UserRepository userRepository;
     private final ChatMessageRepository chatMessageRepository;
+    private final CertificateService certificateService;
 
     public CreateVolunteerDTO.Res createVolunteer(CreateVolunteerDTO dto) {
         // 자원봉사자 및 간병인 조회
@@ -62,7 +67,7 @@ public class VolunteerService {
     }
 
     @Transactional
-    public CreateVolunteerDTO.Res updateApproval(Long volunteerId, Long messageId, String roomId, String kakaoId) {
+    public CreateVolunteerDTO.Res updateApproval(Long volunteerId, Long messageId, String roomId, String kakaoId) throws Exception {
         User user = userRepository.findByKakaoId(kakaoId)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
@@ -78,8 +83,8 @@ public class VolunteerService {
             throw new NotMatchChatroomException("");
 
         // volunteer 대상자가 아니라면
-        if(!Objects.equals(volunteer.getCaregiver().getId(), user.getId()))
-            throw new NotEligibleCaregiver("");
+//        if(!Objects.equals(volunteer.getVolunteer().getId(), user.getId()))
+//            throw new NotEligibleCaregiver("");
 
         // 이미 승인된 처리라면
         if(volunteer.getIsApproved())
@@ -89,10 +94,16 @@ public class VolunteerService {
 
         chat.updateVolunteerApproval();
         chatMessageRepository.save(chat);
+        //callExternalApi(volunteer);
+        // 블록체인 함수 호출
 
-        Volunteer savedVolunteer = volunteerRepository.save(volunteer);
-        System.out.println(savedVolunteer.getIsApproved());
-        return CreateVolunteerDTO.Res.toDTO(savedVolunteer);
+
+        certificateService.determineVolunteerType(volunteer);
+
+        System.out.println(volunteer.getIsApproved());
+        //certificateService.createVolunteerSession(volunteer);
+
+        return CreateVolunteerDTO.Res.toDTO(volunteer);
 
     }
 
@@ -101,5 +112,28 @@ public class VolunteerService {
                 .orElseThrow(() -> new VolunteerNotFoundException("자원봉사 요청을 찾을 수 없습니다."));
 
         return GetVolunteerInfoDTO.Vol.toDTO(volunteer, volunteer.getVolunteer());
+    }
+
+    private void callExternalApi(Volunteer volunteer) {
+        // 호출할 외부 API URL
+        String apiUrl = "http://localhost:8080/api/certificates/volunteer-session";
+
+        // 요청 데이터 생성
+        Map<String, Object> requestData = new HashMap<>();
+        requestData.put("volunteerId", volunteer.getId());
+        requestData.put("username", volunteer.getVolunteer().getUsername());
+        requestData.put("durationHours", volunteer.getDurationHours());
+        requestData.put("date", volunteer.getDate().toString());
+        requestData.put("volunteerType", volunteer.getVolunteer().getUserType().name());
+
+        // RestTemplate로 HTTP 요청 전송
+        RestTemplate restTemplate = new RestTemplate();
+        try {
+            ResponseEntity<String> response = restTemplate.postForEntity(apiUrl, requestData, String.class);
+            System.out.println("External API Response: " + response.getBody());
+        } catch (Exception e) {
+            System.err.println("Failed to call external API: " + e.getMessage());
+            throw new RuntimeException("External API 호출 실패", e);
+        }
     }
 }

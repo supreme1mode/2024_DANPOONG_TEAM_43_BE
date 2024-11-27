@@ -1,7 +1,9 @@
 package com.carely.backend.exception;
 
 import com.carely.backend.code.ErrorCode;
+import com.carely.backend.code.SuccessCode;
 import com.carely.backend.dto.response.ErrorResponseDTO;
+import com.carely.backend.dto.response.ResponseDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -41,11 +43,54 @@ public class GlobalHandleException {
                 .body(new ErrorResponseDTO(ErrorCode.VOLUNTEER_NOT_FOUND));
     }
 
+    @ExceptionHandler(NoCertificateUserException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleNoCertificateUserException(final NoCertificateUserException e) {
+        return ResponseEntity
+                .status(ErrorCode.HAS_NOT_CERTIFICATE.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.HAS_NOT_CERTIFICATE));
+    }
+
+    @ExceptionHandler(AlreadyHasCertificateException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleAlreadyHasCertificateException(final AlreadyHasCertificateException e) {
+        return ResponseEntity
+                .status(ErrorCode.ALREADY_HAS_CERTIFICATE.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.ALREADY_HAS_CERTIFICATE));
+    }
+
+    @ExceptionHandler(TotalTimeNotEnoughException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleTotalTimeNotEnoughException(final TotalTimeNotEnoughException e) {
+        return ResponseEntity
+                .status(ErrorCode.TOTAL_TIME_NOT_ENOUGH.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.TOTAL_TIME_NOT_ENOUGH));
+    }
+
+    @ExceptionHandler(CertificateNotValidException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleCertificationNotValidException(final CertificateNotValidException e) {
+        return ResponseEntity
+                .status(ErrorCode.CERTIFICATE_FAIL.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.CERTIFICATE_FAIL));
+    }
+
+
     @ExceptionHandler(ChatMessageNotFoundException.class)
     protected ResponseEntity<ErrorResponseDTO> handleChatMessageNotFoundException(final ChatMessageNotFoundException e) {
         return ResponseEntity
                 .status(ErrorCode.CHAT_NOT_FOUND.getStatus().value())
                 .body(new ErrorResponseDTO(ErrorCode.CHAT_NOT_FOUND));
+    }
+
+    @ExceptionHandler(ListEmptyException.class)
+    protected ResponseEntity<ResponseDTO<?>> handleListEmptyException(final ListEmptyException e) {
+        return ResponseEntity
+                .status(SuccessCode.SUCCESS_BUT_LIST_EMPTY.getStatus().value())
+                .body(new ResponseDTO<>(SuccessCode.SUCCESS_BUT_LIST_EMPTY, null));
+    }
+
+    @ExceptionHandler(NotValidUserTypeException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleNotValidUserTypeException(final NotValidUserTypeException e) {
+        return ResponseEntity
+                .status(ErrorCode.USER_TYPE_NOT_FOUND.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.USER_TYPE_NOT_FOUND));
     }
 
     @ExceptionHandler(NotValidAddressException.class)
