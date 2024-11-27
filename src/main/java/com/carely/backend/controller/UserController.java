@@ -54,6 +54,7 @@ public class UserController implements UserAPI {
         Map<String, String> info = kakaoLoginService.getKakaoUserInfo(code);
 
         String kakaoId = info.get("kakaoId"); // kakaoId 추출
+        System.out.println(info);
         String nickname = info.get("nickname"); // nickname 추출
 
         // 유저가 있는지 확인
