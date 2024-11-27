@@ -19,6 +19,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Base64;
+import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,7 +34,7 @@ public class OCRService {
     private String apiKey;
 
     @Transactional
-    public void extractText(MultipartFile imageFile, String username) throws Exception {
+    public CertificateDTO extractText(MultipartFile imageFile, String username) throws Exception {
 
         // 이미지 파일을 Base64로 인코딩
         byte[] imageBytes = imageFile.getBytes();
@@ -74,9 +75,9 @@ public class OCRService {
 
         // JSON에서 텍스트 추출
         String extractedText = parseResponse(jsonResponse);
-
+        System.out.println(extractedText);
         // 텍스트에서 필요한 정보 추출
-        OCRResponseDto ocrResponseDto = extractFields(extractedText);
+        OCRResponseDto ocrResponseDto = extractFieldsUsingKeywords(extractedText);
         System.out.println(ocrResponseDto.getName());
         if (ocrResponseDto.getName().equals(username)) {
 // 자격증 인증 서비스 호출
@@ -86,6 +87,7 @@ public class OCRService {
                 // 자격증 검증 성공
                 User user = userRepository.getReferenceById(Long.valueOf(certificateDTO.getUserId()));
                 user.updateCertificateCheck();
+                return certificateDTO;
 
             }
 
@@ -93,6 +95,7 @@ public class OCRService {
         else {
             throw new UserNotMatchException("유저 안 맞음");
         }
+        return null;
     }
 
 
@@ -115,24 +118,59 @@ public class OCRService {
     }
 
     // 정규식을 사용하여 필드 추출
-    private OCRResponseDto extractFields(String ocrResult) {
-        // 정규식 패턴
-        String namePattern = "성명\\s*(\\S+)";
-        String dobPattern = "생년월일\\s*([\\d]{4}년\\s*[\\d]{2}월\\s*[\\d]{2}일)";
-        String regNumberPattern = "등록 번호\\s*([A-Z0-9]+)";
-        String categoryPattern = "자격종목\\s*(\\S+)";
-        String acquisitionDatePattern = "취 득 일 자\\s*([\\d]{4}년\\s*[\\d]{2}월\\s*[\\d]{2}일)";
-        String subjectPattern = "취득과목\\s*([\\S ]+)";
-        System.out.println(ocrResult);
-        return OCRResponseDto.builder()
-                .name(extractByPattern(ocrResult, namePattern))
-                .birth(extractByPattern(ocrResult, dobPattern))
-                .certificateNum(extractByPattern(ocrResult, regNumberPattern))
-                .certificateType(extractByPattern(ocrResult, categoryPattern))
-                .certificateDate(extractByPattern(ocrResult, acquisitionDatePattern))
-                .certificateName(extractByPattern(ocrResult, subjectPattern))
-                .build();
+    private OCRResponseDto extractFieldsUsingKeywords(String ocrResult) {
+        Map<String, String> keywordPatterns = Map.of(
+                "name", "성명",
+                "birth", "생년월일",
+                "certificateNum", "등록 번호",
+                "certificateType", "자격종목",
+                "certificateDate", "취 득 일 자",
+                "certificateName", "취득과목"
+        );
+
+        OCRResponseDto.OCRResponseDtoBuilder builder = OCRResponseDto.builder();
+
+        for (Map.Entry<String, String> entry : keywordPatterns.entrySet()) {
+            String key = entry.getKey();
+            String keyword = entry.getValue();
+            String value = extractByKeyword(ocrResult, keyword);
+            System.out.println(key + keyword + value);
+
+            switch (key) {
+                case "name": builder.name(value); break;
+                case "birth": builder.birth(value); break;
+                case "certificateNum": builder.certificateNum(value); break;
+                case "certificateType": builder.certificateType(value); break;
+                case "certificateDate": builder.certificateDate(value); break;
+                case "certificateName": builder.certificateName(value); break;
+            }
+        }
+
+        return builder.build();
     }
+
+    private String extractByKeyword(String ocrResult, String keyword) {
+        String[] lines = ocrResult.split("\\r?\\n"); // 개행으로 텍스트 분리
+        for (int i = 0; i < lines.length; i++) {
+            // 현재 라인에서 키워드를 찾음
+            if (lines[i].contains(keyword)) {
+                // 1. 현재 라인에서 키워드 뒤에 값이 있는지 확인
+                Pattern pattern = Pattern.compile(Pattern.quote(keyword) + "\\s*:?\\s*(.*)");
+                Matcher matcher = pattern.matcher(lines[i]);
+                if (matcher.find() && !matcher.group(1).isEmpty()) {
+                    return matcher.group(1).trim();
+                }
+
+                // 2. 값이 없다면, 다음 라인을 값으로 간주
+                if (i + 1 < lines.length) {
+                    return lines[i + 1].trim();
+                }
+            }
+        }
+        return null; // 키워드가 없는 경우 null 반환
+    }
+
+
 
     // 정규식 기반으로 텍스트 추출
     private String extractByPattern(String text, String pattern) {
