@@ -281,11 +281,6 @@ public class CertificateService {
                     DefaultBlockParameterName.LATEST
             ).send();
 
-            // Check for errors in the response
-            if (response.hasError()) {
-                throw new RuntimeException("Error fetching certificate: " + response.getError().getMessage());
-            }
-
             // Debugging: Print the raw response
             System.out.println("Raw Response: " + response.getValue());
 
@@ -312,7 +307,7 @@ public class CertificateService {
                     .build();
 
         } catch (RuntimeException e) {
-            throw new CertificateNotValidException("존재하지 않음");
+            throw new NoCertificateUserException("존재하지 않음");
         }
     }
 
