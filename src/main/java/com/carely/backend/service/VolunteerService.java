@@ -83,9 +83,9 @@ public class VolunteerService {
         if(!chat.getRoomId().equals(roomId))
             throw new NotMatchChatroomException("");
 
-//        // volunteer 대상자가 아니라면
-//        if(!Objects.equals(volunteer.getVolunteer().getId(), user.getId()))
-//            throw new NotEligibleCaregiver("");
+        // volunteer 대상자가 아니라면
+        if(!Objects.equals(volunteer.getVolunteer().getId(), user.getId()))
+            throw new NotEligibleCaregiver("");
 
         // 이미 승인된 처리라면
         if(volunteer.getIsApproved())
