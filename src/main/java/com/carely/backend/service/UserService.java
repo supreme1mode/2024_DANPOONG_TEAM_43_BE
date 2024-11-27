@@ -78,6 +78,7 @@ public class UserService {
                 .role("ROLE_USER")
                 .latitude(latitude)
                 .longitude(longitude)
+                .certificateCheck(false)
                 .build();
 
         return RegisterDTO.Res.toDTO(userRepository.save(user));
