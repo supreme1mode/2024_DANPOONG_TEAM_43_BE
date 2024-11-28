@@ -1,9 +1,13 @@
 name: CD with Gradle
 
-# pull request가 close 되었을 때 실행
+# push 이벤트와 pull request가 close될 때 워크플로우 실행
 on:
-  pull_request:
-    types: [ closed ]
+  push:  # push 이벤트 설정
+    branches:
+      - main  # main 브랜치에 push될 때만 실행
+  pull_request:  # pull request 이벤트 설정
+    types:
+      - closed  # pull request가 closed될 때만 실행
 
 # github action이 읽을 수 있도록 수정
 permissions:
