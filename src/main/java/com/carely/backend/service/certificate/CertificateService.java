@@ -56,7 +56,7 @@ public class CertificateService {
         log.info("Loaded Private Key: {}", ganacheProperties.getPrivateKey());
 
         // Web3j 초기화
-        this.web3j = Web3j.build(new HttpService("http://localhost:7545")); // 명시적으로 설정
+        this.web3j = Web3j.build(new HttpService("http://172.31.9.95:7545")); // 명시적으로 설정
 
         Credentials credentials = Credentials.create(ganacheProperties.getPrivateKey()); // 프라이빗 키
         this.txManager = new RawTransactionManager(web3j, credentials);
