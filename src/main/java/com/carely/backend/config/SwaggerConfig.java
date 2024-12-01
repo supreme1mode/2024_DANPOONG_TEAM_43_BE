@@ -102,5 +102,4 @@ public class SwaggerConfig {
 
         openAPI.path("/logout", pathItem); // 경로 추가
     }
-
 }
