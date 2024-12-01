@@ -1,13 +1,17 @@
 package com.carely.backend.service.certificate;
 
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties(prefix = "ganache")
 public class GanacheProperties {
+
+    @Value("${ganache.contractKey}")
     private String contractKey;
+    @Value("${ganache.privateKey}")
     private String privateKey;
     @PostConstruct
     public void logProperties() {

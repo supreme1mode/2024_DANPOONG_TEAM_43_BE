@@ -3,8 +3,8 @@ package com.carely.backend.service.certificate;
 import okhttp3.OkHttpClient;
 import org.web3j.protocol.http.HttpService;
 
-import java.util.concurrent.TimeUnit;
 import javax.net.ssl.*;
+import java.security.cert.CertificateException;
 
 public class CustomHttpService extends HttpService {
 
@@ -14,16 +14,18 @@ public class CustomHttpService extends HttpService {
 
     private static OkHttpClient createUnsafeOkHttpClient() {
         try {
+            // TrustManagerë¥¼ ëª¨ë“  ì¸ì¦ì„œë¥¼ ì‹ ë¢°í•˜ë„ë¡ ì„¤ì •
             TrustManager[] trustAllCerts = new TrustManager[]{
                     new X509TrustManager() {
+                        @Override
+                        public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {}
+
+                        @Override
+                        public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {}
+
+                        @Override
                         public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                            return null;
-                        }
-                        public void checkClientTrusted(
-                                java.security.cert.X509Certificate[] certs, String authType) {
-                        }
-                        public void checkServerTrusted(
-                                java.security.cert.X509Certificate[] certs, String authType) {
+                            return new java.security.cert.X509Certificate[0]; // ë¹ˆ ë°°ì—´ ë°˜í™˜
                         }
                     }
             };
@@ -34,12 +36,10 @@ public class CustomHttpService extends HttpService {
 
             return new OkHttpClient.Builder()
                     .sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllCerts[0])
-                    .hostnameVerifier((hostname, session) -> true) // ¸ðµç È£½ºÆ®³×ÀÓ Çã¿ë
-                    .connectTimeout(30, TimeUnit.SECONDS)
-                    .readTimeout(30, TimeUnit.SECONDS)
+                    .hostnameVerifier((hostname, session) -> true)
                     .build();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to create a secure HTTP client", e);
         }
     }
 }
