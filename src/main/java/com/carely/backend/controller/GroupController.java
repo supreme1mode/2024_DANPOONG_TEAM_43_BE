@@ -70,6 +70,7 @@ public class GroupController implements GroupAPI {
                 .body(new ResponseDTO<>(SuccessCode.SUCCESS_JOIN_GROUP, res));
     }
 
+    //
     @PostMapping("/leave/{groupId}")
     public ResponseEntity<ResponseDTO> leaveGroup(@PathVariable("groupId") Long groupId) {
         String kakaoId = SecurityContextHolder.getContext().getAuthentication().getName();
