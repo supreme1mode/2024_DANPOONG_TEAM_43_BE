@@ -36,6 +36,7 @@ import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.RawTransactionManager;
 import org.web3j.tx.gas.StaticGasProvider;
+import org.web3j.utils.Numeric;
 
 @Service
 @Slf4j
@@ -54,16 +55,21 @@ public class CertificateService {
     public CertificateService(UserRepository userRepository, GanacheProperties ganacheProperties) {
         this.userRepository = userRepository;
         this.ganacheProperties = ganacheProperties;
-        log.info("Loaded Contract Key: {}", ganacheProperties.getContractKey());
-        log.info("Loaded Private Key: {}", ganacheProperties.getPrivateKey());
+        String privateKey = ganacheProperties.getPrivateKey().trim(); // 공백 제거
+        String contractKey = ganacheProperties.getContractKey().trim(); // 공백 제거
+
+        log.info("Loaded Contract Key: {}", contractKey);
+        log.info("Loaded Private Key: {}", privateKey);
 
         // Web3j 초기화
-        if (ganacheUrl == null || ganacheUrl.isEmpty()) {
-            throw new IllegalArgumentException("Blockchain URL is not configured");
-        }
-        this.web3j = Web3j.build(new CustomHttpService(ganacheUrl)); // 명시적으로 설정
+        this.web3j = Web3j.build(new HttpService(ganacheUrl));
 
-        Credentials credentials = Credentials.create(ganacheProperties.getPrivateKey()); // 프라이빗 키
+        // Credentials 초기화
+        if (!Numeric.containsHexPrefix(privateKey)) {
+            privateKey = "0x" + privateKey; // 0x 접두어 추가
+        }
+
+        Credentials credentials = Credentials.create(privateKey);
         this.txManager = new RawTransactionManager(web3j, credentials);
         this.gasProvider = new StaticGasProvider(
                 new BigInteger("1000000000"), // 가스 가격 (1 Gwei)
