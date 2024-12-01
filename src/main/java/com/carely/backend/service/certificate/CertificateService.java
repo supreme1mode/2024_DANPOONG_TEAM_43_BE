@@ -11,6 +11,7 @@ import com.carely.backend.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -47,6 +48,8 @@ public class CertificateService {
     protected final StaticGasProvider gasProvider;
 
     private final GanacheProperties ganacheProperties;
+    @Value("${ganache.url}")
+    private String ganacheUrl;
 
     @Autowired
     public CertificateService(UserRepository userRepository, GanacheProperties ganacheProperties) {
@@ -56,7 +59,7 @@ public class CertificateService {
         log.info("Loaded Private Key: {}", ganacheProperties.getPrivateKey());
 
         // Web3j 초기화
-        this.web3j = Web3j.build(new HttpService("http://172.31.9.95:7545")); // 명시적으로 설정
+        this.web3j = Web3j.build(new HttpService(ganacheUrl)); // 명시적으로 설정
 
         Credentials credentials = Credentials.create(ganacheProperties.getPrivateKey()); // 프라이빗 키
         this.txManager = new RawTransactionManager(web3j, credentials);
