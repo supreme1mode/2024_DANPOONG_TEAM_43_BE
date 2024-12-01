@@ -48,9 +48,7 @@ public class CertificateService {
     protected final StaticGasProvider gasProvider;
 
     private final GanacheProperties ganacheProperties;
-
-    @Value("${ganache.url}")
-    private String ganacheUrl;
+    private String ganacheUrl = "http://3.34.24.211:7545";
 
     @Autowired
     public CertificateService(UserRepository userRepository, GanacheProperties ganacheProperties) {
@@ -60,6 +58,9 @@ public class CertificateService {
         log.info("Loaded Private Key: {}", ganacheProperties.getPrivateKey());
 
         // Web3j 초기화
+        if (ganacheUrl == null || ganacheUrl.isEmpty()) {
+            throw new IllegalArgumentException("Blockchain URL is not configured");
+        }
         this.web3j = Web3j.build(new HttpService(ganacheUrl)); // 명시적으로 설정
 
         Credentials credentials = Credentials.create(ganacheProperties.getPrivateKey()); // 프라이빗 키

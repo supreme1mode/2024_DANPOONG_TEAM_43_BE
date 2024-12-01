@@ -64,9 +64,7 @@ dependencies {
 	implementation 'com.google.cloud:google-cloud-vision:3.17.0'
 
 
-	//분산 네트워크와 P2P 메시징에 필요한 기능을 제공
-	implementation 'io.vertx:vertx-core:4.3.3'
-	implementation 'io.vertx:vertx-web:4.3.3'
+	implementation 'com.squareup.okhttp3:okhttp:4.11.0'
 
 
 	implementation 'org.web3j:core:4.8.7'

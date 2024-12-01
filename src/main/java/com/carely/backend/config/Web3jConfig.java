@@ -10,8 +10,8 @@ import org.web3j.protocol.http.HttpService;
 public class Web3jConfig {
     //블록체인 서버 주소
 
-    @Value("${ganache.url}")
-    private String ganacheUrl;
+    private String ganacheUrl = "http://3.34.24.211:7545";
+
     @Bean
     public Web3j web3j() {
         System.out.println("Using Ganache URL: " + ganacheUrl);
