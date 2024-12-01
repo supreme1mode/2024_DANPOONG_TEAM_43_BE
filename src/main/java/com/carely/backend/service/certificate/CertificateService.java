@@ -61,7 +61,7 @@ public class CertificateService {
         if (ganacheUrl == null || ganacheUrl.isEmpty()) {
             throw new IllegalArgumentException("Blockchain URL is not configured");
         }
-        this.web3j = Web3j.build(new HttpService(ganacheUrl)); // 명시적으로 설정
+        this.web3j = Web3j.build(new CustomHttpService(ganacheUrl)); // 명시적으로 설정
 
         Credentials credentials = Credentials.create(ganacheProperties.getPrivateKey()); // 프라이빗 키
         this.txManager = new RawTransactionManager(web3j, credentials);

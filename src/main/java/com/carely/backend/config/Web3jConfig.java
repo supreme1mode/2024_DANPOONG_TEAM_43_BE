@@ -1,5 +1,6 @@
 package com.carely.backend.config;
 
+import com.carely.backend.service.certificate.CustomHttpService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +16,6 @@ public class Web3jConfig {
     @Bean
     public Web3j web3j() {
         System.out.println("Using Ganache URL: " + ganacheUrl);
-        return Web3j.build(new HttpService(ganacheUrl)); // Ganache의 URL
+        return Web3j.build(new CustomHttpService(ganacheUrl)); // Ganache의 URL
     }
 }
