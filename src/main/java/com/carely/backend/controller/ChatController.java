@@ -75,7 +75,6 @@ public class ChatController implements ChatAPI {
                 .body(new ResponseDTO<>(SuccessCode.SUCCESS_CREATE_CHATROOM, newRoom));
     }
 
-
     // 모든 유저 조회
 //    @GetMapping("/users")
 //    public ResponseEntity<ResponseDTO<List<UserResponseDTO>>> findAllUsers() {
