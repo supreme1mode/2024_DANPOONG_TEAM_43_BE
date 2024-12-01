@@ -41,7 +41,6 @@ public class CertificateController implements CertificateAPI {
         return ResponseEntity
                 .status(SuccessCode.SUCCESS_RETRIEVE_ACTIVITY_LIST.getStatus().value())
                 .body(new ResponseDTO<>(SuccessCode.SUCCESS_RETRIEVE_ACTIVITY_LIST, sessions));
-
     }
 
     // 세션 유저 + 타입별로 불러오기
