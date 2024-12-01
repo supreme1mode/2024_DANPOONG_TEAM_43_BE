@@ -48,6 +48,7 @@ public class CertificateService {
     protected final StaticGasProvider gasProvider;
 
     private final GanacheProperties ganacheProperties;
+
     @Value("${ganache.url}")
     private String ganacheUrl;
 
