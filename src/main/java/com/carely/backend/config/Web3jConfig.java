@@ -13,6 +13,7 @@ public class Web3jConfig {
     private String ganacheUrl;
     @Bean
     public Web3j web3j() {
+        System.out.println("Using Ganache URL: " + ganacheUrl);
         return Web3j.build(new HttpService(ganacheUrl)); // Ganache의 URL
     }
 }
