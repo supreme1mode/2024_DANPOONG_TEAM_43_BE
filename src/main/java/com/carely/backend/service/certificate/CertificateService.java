@@ -49,7 +49,7 @@ public class CertificateService {
 
     private final GanacheProperties ganacheProperties;
 
-    @Value("${ganache.url}")
+    @Value("${ganache.url:http://host.docker.internal:7545}")
     private String ganacheUrl;
 
     @Autowired
