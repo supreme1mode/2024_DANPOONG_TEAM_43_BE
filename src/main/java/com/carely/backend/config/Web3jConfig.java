@@ -9,7 +9,7 @@ import org.web3j.protocol.http.HttpService;
 @Configuration
 public class Web3jConfig {
     //블록체인 서버 주소
-    @Value("${ganache.url}")
+    @Value("${ganache.url:http://host.docker.internal:7545}")
     private String ganacheUrl;
     @Bean
     public Web3j web3j() {
