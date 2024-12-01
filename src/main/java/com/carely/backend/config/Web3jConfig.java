@@ -9,6 +9,7 @@ import org.web3j.protocol.http.HttpService;
 @Configuration
 public class Web3jConfig {
     //블록체인 서버 주소
+
     @Value("${ganache.url}")
     private String ganacheUrl;
     @Bean
