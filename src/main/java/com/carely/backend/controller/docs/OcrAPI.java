@@ -1,10 +1,8 @@
 package com.carely.backend.controller.docs;
 
-import com.carely.backend.dto.ocr.OCRCreateDTO;
 import com.carely.backend.dto.ocr.OCRResponseDto;
 import com.carely.backend.dto.response.ErrorResponseDTO;
 import com.carely.backend.dto.response.ResponseDTO;
-import com.carely.backend.dto.user.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -13,7 +11,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
