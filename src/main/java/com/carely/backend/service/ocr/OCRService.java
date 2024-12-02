@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,7 +35,10 @@ public class OCRService {
     private String apiKey;
 
     @Transactional
-    public CertificateDTO extractText(MultipartFile imageFile, String username) throws Exception {
+    public CertificateDTO extractTextAlreadyUser(MultipartFile imageFile, String kakaoId) throws Exception {
+        // 유저 확인
+        User user = userRepository.findByKakaoId(kakaoId)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
         // 이미지 파일을 Base64로 인코딩
         byte[] imageBytes = imageFile.getBytes();
@@ -79,16 +83,22 @@ public class OCRService {
         // 텍스트에서 필요한 정보 추출
         OCRResponseDto ocrResponseDto = extractFieldsUsingKeywords(extractedText);
         System.out.println(ocrResponseDto.getName());
-        if (ocrResponseDto.getName().equals(username)) {
-// 자격증 인증 서비스 호출
+
+        // 생년 월 일 분리
+        String extractedYear = ocrResponseDto.getBirth().substring(0, 4);  // "1987"
+        String extractedMonth = ocrResponseDto.getBirth().substring(6, 8); // "05"
+        String extractedDay = ocrResponseDto.getBirth().substring(10, 12); // "23"
+        
+        //OCR 정보와 현재 유저 정보가 일치하는지 확인
+        if (ocrResponseDto.getName().equals(user.getUsername()) && extractedYear.equals(user.getBirthyear()) && extractedMonth.equals(user.getBirthmonth()) && extractedDay.equals(user.getBirthday())) {
+            // 자격증 인증 서비스 호출
             CertificateDTO certificateDTO = certificateService.getCertificateById(ocrResponseDto.getCertificateNum());
 
-            if (Objects.equals(certificateDTO.getCertificateId(), ocrResponseDto.getCertificateNum()) && Objects.equals(certificateDTO.getUsername(), ocrResponseDto.getName())) {
+            // 자격증에 적힌 정보와 OCR과 동일한지 확인
+            if (Objects.equals(certificateDTO.getCertificateId(), ocrResponseDto.getCertificateNum()) && Objects.equals(certificateDTO.getUsername(), ocrResponseDto.getName()) && Objects.equals(certificateDTO.getUserId(), user.getId().toString())) {
                 // 자격증 검증 성공
-                User user = userRepository.getReferenceById(Long.valueOf(certificateDTO.getUserId()));
                 user.updateCertificateCheck();
                 return certificateDTO;
-
             }
 
         }
