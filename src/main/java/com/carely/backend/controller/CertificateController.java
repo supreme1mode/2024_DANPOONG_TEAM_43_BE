@@ -41,7 +41,6 @@ public class CertificateController implements CertificateAPI {
         return ResponseEntity
                 .status(SuccessCode.SUCCESS_RETRIEVE_ACTIVITY_LIST.getStatus().value())
                 .body(new ResponseDTO<>(SuccessCode.SUCCESS_RETRIEVE_ACTIVITY_LIST, sessions));
-
     }
 
     // 세션 유저 + 타입별로 불러오기
@@ -71,6 +70,7 @@ public class CertificateController implements CertificateAPI {
     /**
      * 자격증 조회 API
      */
+    
     @GetMapping("/certificate/{certificateId}")
     public ResponseEntity<ResponseDTO<?>> getCertificateById(@PathVariable String certificateId) throws Exception {
         CertificateDTO certificate = certificateService.getCertificateById(certificateId);
@@ -78,7 +78,7 @@ public class CertificateController implements CertificateAPI {
                 .status(SuccessCode.SUCCESS_RETRIEVE_CERTIFICATE.getStatus().value())
                 .body(new ResponseDTO<>(SuccessCode.SUCCESS_RETRIEVE_CERTIFICATE, certificate));
     }
-
+    
     @GetMapping("/certificate/userId/{userId}")
     public ResponseEntity<ResponseDTO<?>> getCertificateByUserId(@PathVariable String userId) {
         CertificateDTO certificate = certificateService.getCertificateByUserId(userId);
