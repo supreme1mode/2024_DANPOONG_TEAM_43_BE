@@ -29,7 +29,7 @@ public class UserService {
     private final VolunteerRepository volunteerRepository;
     // private final KakaoAddressService kakaoAddressService;
 
-    public RegisterDTO.Res register(RegisterDTO registerDTO, MultipartFile image) {
+    public RegisterDTO.Res register(RegisterDTO registerDTO) {
         String username = registerDTO.getUsername();
         UserType userType = registerDTO.getUserType();
         String kakaoId = registerDTO.getKakaoId();
@@ -79,6 +79,10 @@ public class UserService {
                 .latitude(latitude)
                 .longitude(longitude)
                 .certificateCheck(false)
+                .gender(registerDTO.getGender())
+                .birthyear(registerDTO.getBirthyear())
+                .birthmonth(registerDTO.getBirthmonth())
+                .birthday(registerDTO.getBirthday())
                 .build();
 
         return RegisterDTO.Res.toDTO(userRepository.save(user));

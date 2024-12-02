@@ -41,7 +41,7 @@ public interface UserAPI {
                             examples = @ExampleObject(value = "{ \"status\": 409, \"error\": \"CONFLICT\", \"code\": \"DUPLICATE_USERNAME\", \"message\": \"중복된 유저 이름입니다.\" }"))
             ),
     })
-    public ResponseEntity<ResponseDTO> registerUser(@RequestPart("registerDTO") RegisterDTO registerDTO, @RequestPart(value = "image", required = false) MultipartFile image) throws IOException;
+    public ResponseEntity<ResponseDTO> registerUser(@RequestPart("registerDTO") RegisterDTO registerDTO) throws IOException;
 
     @Operation(summary = "access token 재발급하기",
             parameters = {

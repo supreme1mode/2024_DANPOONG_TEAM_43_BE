@@ -50,9 +50,20 @@ public class KakaoLoginService {
                 JsonNode jsonNode = objectMapper.readTree(response.getBody());
                 String userId = jsonNode.get("id").asText();
                 String name = jsonNode.path("kakao_account").path("name").asText(); // name이 없을 경우 빈 문자열 반환
+                String gender = jsonNode.path("kakao_account").path("gender").asText(); //gender가 없을 경우 빈 문자열 반환
+                String birthyear = jsonNode.path("kakao_account").path("birthyear").asText(); //gender가 없을 경우 빈 문자열 반환
+                String birthday = jsonNode.path("kakao_account").path("birthday").asText(); //gender가 없을 경우 빈 문자열 반환
+
                 if (name.isEmpty()) {
                     // name이 없으면 nickname으로 대체
                     name = jsonNode.path("kakao_account").path("profile").path("nickname").asText();
+                }
+                if (gender.isEmpty()) {
+                    name = "male";
+                }
+                if (birthyear.isEmpty() || birthday.isEmpty()) {
+                    birthyear = "1900";
+                    birthday = "0101";
                 }
                 System.out.println(jsonNode);
                 //String nickname = jsonNode.path("kakao_account").path("profile").path("nickname").asText();
@@ -60,6 +71,10 @@ public class KakaoLoginService {
                 Map<String, String> userInfo = new HashMap<>();
                 userInfo.put("kakaoId", userId);
                 userInfo.put("username", name);
+                userInfo.put("gender", gender);
+                userInfo.put("birthyear", birthyear);
+                userInfo.put("birthmonth", birthday.substring(0, 2)); // 인덱스 0부터 2까지 (0포함, 2미포함)
+                userInfo.put("birthday", birthday.substring(2));     // 인덱스 2부터 끝까지
                 return userInfo;
             } catch (Exception e) {
                 throw new RuntimeException("Failed to parse user info response", e);
