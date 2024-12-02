@@ -16,4 +16,5 @@ public class NotUserDTO {
     private String birthyear;
     private String birthmonth;
     private String birthday;
+    private String phoneNum;
 }

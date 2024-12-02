@@ -61,6 +61,7 @@ public class UserController implements UserAPI {
         String birthyear = info.get("birthyear"); //생년 추출
         String birthmonth = info.get("birthmonth"); //생월 추출
         String birthday = info.get("birthday"); //생일 추출
+        String phoneNum = info.get("phoneNum"); // 핸드폰 번호 추출
 
 
         // 유저가 있는지 확인
@@ -68,7 +69,7 @@ public class UserController implements UserAPI {
 
         // 유저가 없으면 kakao Id만 전달
         if (user == null) {
-            NotUserDTO notUserDTO = new NotUserDTO(kakaoId, username, gender, birthyear, birthmonth, birthday);
+            NotUserDTO notUserDTO = new NotUserDTO(kakaoId, username, gender, birthyear, birthmonth, birthday, phoneNum);
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
                     .body(new ResponseDTO<>(SuccessCode.NOT_USER, notUserDTO));
