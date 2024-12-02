@@ -122,9 +122,9 @@ public class OCRService {
         Map<String, String> keywordPatterns = Map.of(
                 "name", "성명",
                 "birth", "생년월일",
-                "certificateNum", "등록 번호",
+                "certificateNum", "등록번호",
                 "certificateType", "자격종목",
-                "certificateDate", "취 득 일 자",
+                "certificateDate", "취득일자",
                 "certificateName", "취득과목"
         );
 
