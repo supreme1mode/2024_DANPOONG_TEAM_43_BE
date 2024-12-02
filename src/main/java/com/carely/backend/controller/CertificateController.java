@@ -78,7 +78,6 @@ public class CertificateController implements CertificateAPI {
                 .status(SuccessCode.SUCCESS_RETRIEVE_CERTIFICATE.getStatus().value())
                 .body(new ResponseDTO<>(SuccessCode.SUCCESS_RETRIEVE_CERTIFICATE, certificate));
     }
-
     
     @GetMapping("/certificate/userId/{userId}")
     public ResponseEntity<ResponseDTO<?>> getCertificateByUserId(@PathVariable String userId) {
