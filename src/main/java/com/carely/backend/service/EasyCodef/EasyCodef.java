@@ -11,7 +11,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 /**
  * <pre>
@@ -25,64 +28,39 @@ import org.springframework.context.annotation.Configuration;
  * @Date    : Jun 26, 2020 3:28:31 PM
  */
 
-@Configuration
+@Service
 public class EasyCodef {
+
 
     private ObjectMapper mapper = new ObjectMapper();
 
     /**
      * EasyCodef 사용을 위한 변수 설정 오브젝트
      */
+    @Autowired
     private EasyCodefProperties properties = new EasyCodefProperties();
 
-    /**
-     * Desc : 데모서버 사용을 위한 클라이언트 정보 설정
-     * @Company : ©CODEF corp.
-     * @Author  : notfound404@codef.io
-     * @Date    : Jun 26, 2020 3:31:12 PM
-     * @param demoClientId
-     * @param demoClientSecret
-     */
     public void setClientInfoForDemo(String demoClientId, String demoClientSecret) {
         properties.setClientInfoForDemo(demoClientId, demoClientSecret);
     }
 
-    /**
-     * Desc : RSA암호화를 위한 퍼블릭키 설정
-     * @Company : ©CODEF corp.
-     * @Author  : notfound404@codef.io
-     * @Date    : Jun 26, 2020 3:31:24 PM
-     * @param publicKey
-     */
     public void setPublicKey(String publicKey) {
         properties.setPublicKey(publicKey);
     }
 
-    /**
-     * Desc : RSA암호화를 위한 퍼블릭키 반환
-     * @Company : ©CODEF corp.
-     * @Author  : notfound404@codef.io
-     * @Date    : Jun 26, 2020 3:32:25 PM
-     * @return
-     */
     public String getPublicKey() {
         return properties.getPublicKey();
     }
 
-    /**
-     * Desc : 상품 요청
-     * @Company : ©CODEF corp.
-     * @Author  : notfound404@codef.io
-     * @Date    : Jun 26, 2020 3:32:31 PM
-     * @param productUrl
-     * @param serviceType
-     * @param parameterMap
-     * @return
-     * @throws UnsupportedEncodingException
-     * @throws JsonProcessingException
-     * @throws InterruptedException
-     */
+
     public String requestProduct(String productUrl, int serviceType, HashMap<String, Object> parameterMap) throws UnsupportedEncodingException, JsonProcessingException, InterruptedException {
+        String clientId = properties.getDemoClientId();
+        String clientSecret = properties.getDemoClientSecret();
+
+        if (clientId == null || clientSecret == null) {
+            throw new IllegalArgumentException("Client ID or Secret is not set");
+        }
+
         boolean validationFlag = true;
 
         /**	#1.필수 항목 체크 - 클라이언트 정보	*/
@@ -113,35 +91,42 @@ public class EasyCodef {
         return mapper.writeValueAsString(response);
     }
 
-    public String requestCertification(String productUrl, int serviceType, HashMap<String, Object> parameterMap) throws UnsupportedEncodingException, JsonProcessingException, InterruptedException {
+    public EasyCodefResponse requestCertification(String productUrl, int serviceType, HashMap<String, Object> parameterMap) throws UnsupportedEncodingException, JsonProcessingException, InterruptedException {
+        String clientId = properties.getDemoClientId();
+        String clientSecret = properties.getDemoClientSecret();
+
+        if (clientId == null || clientSecret == null) {
+            throw new IllegalArgumentException("Client ID or Secret is not set");
+        }
+
         boolean validationFlag = true;
 
         /**	#1.필수 항목 체크 - 클라이언트 정보	*/
         validationFlag = checkClientInfo(1);
         if(!validationFlag) {
             EasyCodefResponse response = new EasyCodefResponse(EasyCodefMessageConstant.EMPTY_CLIENT_INFO);
-            return mapper.writeValueAsString(response);
+            return response;
         }
 
         /**	#2.필수 항목 체크 - 퍼블릭 키	*/
         validationFlag = checkPublicKey();
         if(!validationFlag) {
             EasyCodefResponse response = new EasyCodefResponse(EasyCodefMessageConstant.EMPTY_PUBLIC_KEY);
-            return mapper.writeValueAsString(response);
+            return response;
         }
 
         /**	#3.추가인증 파라미터 필수 입력 체크	*/
         validationFlag = checkTwoWayInfo(parameterMap);
         if(!validationFlag) {
             EasyCodefResponse response = new EasyCodefResponse(EasyCodefMessageConstant.INVALID_2WAY_INFO);
-            return mapper.writeValueAsString(response);
+            return response;
         }
 
         /**	#4.상품 조회 요청	*/
         EasyCodefResponse response = EasyCodefConnector.execute(productUrl, 1, parameterMap, properties);
 
         /**	#5.결과 반환	*/
-        return mapper.writeValueAsString(response);
+        return response;
     }
 
 

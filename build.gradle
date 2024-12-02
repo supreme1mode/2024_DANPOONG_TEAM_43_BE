@@ -76,6 +76,12 @@ dependencies {
 	implementation 'commons-codec:commons-codec:1.14'
 	// Commons IO
 	implementation 'commons-io:commons-io:2.7'
+
+
+	// 캐시
+	implementation 'org.springframework.boot:spring-boot-starter-cache'
+
+
 }
 
 tasks.named('test') {

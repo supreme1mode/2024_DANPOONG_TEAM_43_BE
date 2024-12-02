@@ -1,6 +1,7 @@
 package com.carely.backend.service.EasyCodef;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 /**
  * <pre>
@@ -13,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
  * @Author  : notfound404@codef.io
  * @Date    : Jun 26, 2020 3:36:32 PM
  */
-@Configuration
+@Component
 public class EasyCodefConstant {
 
     /**	OAUTH 서버 도메인	*/

@@ -3,6 +3,7 @@ package com.carely.backend.controller;
 import com.carely.backend.dto.easyCodef.AdditionalAuthDTO;
 import com.carely.backend.dto.easyCodef.RequestUserIdentityDTO;
 import com.carely.backend.dto.easyCodef.UserIdentityDTO;
+import com.carely.backend.service.CacheService;
 import com.carely.backend.service.EasyCodef.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.cache.annotation.Cacheable;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
@@ -23,6 +24,7 @@ import java.util.LinkedHashMap;
 public class EasyCodefController {
     private final EasyCodef easyCodef;
     private final EasyCodefProperties easyCodefProperties;
+    private final CacheService cacheService;
     private final String url = "/v1/kr/public/mw/identity-card/check-status";
 
     @PostMapping("/token")
@@ -33,7 +35,7 @@ public class EasyCodefController {
     @PostMapping("/connect")
     public String connectAPI(@RequestBody RequestUserIdentityDTO requestUserIdentityDTO) throws InterruptedException, UnsupportedEncodingException, JsonProcessingException {
         System.out.println(easyCodefProperties.getDemoAccessToken());
-
+        String cacheKey = requestUserIdentityDTO.getIdentity();
         UserIdentityDTO userIdentityDTO = UserIdentityDTO.builder()
                 .organization("0002")
                 .loginType("6")
@@ -66,6 +68,7 @@ public class EasyCodefController {
 
 
         String string = easyCodef.requestProduct(url, 1, resultMap);
+        cacheService.save(cacheKey, userIdentityDTO);
         return string;
     }
 
@@ -74,13 +77,13 @@ public class EasyCodefController {
     //
     //- 간편인증시 인증을 완료하지 않고 간편인증(simpleAuth)에 "1"을 입력할 경우 2번까지는 재시도, 3번 시도시 CF-12872 오류 발생
     @PostMapping("/additional-info")
-    public String handleAdditionalAuth(@RequestBody AdditionalAuthDTO.TwoWayInfoDTO twoWayInfoDTO) throws UnsupportedEncodingException, JsonProcessingException, InterruptedException {
+    public EasyCodefResponse handleAdditionalAuth(@RequestBody AdditionalAuthDTO.TwoWayInfoDTO twoWayInfoDTO) throws UnsupportedEncodingException, JsonProcessingException, InterruptedException {
 
         AdditionalAuthDTO authDTO = AdditionalAuthDTO.builder()
                         .organization("0002")
-                        .identity("0000000000000")
-                        .userName("ddd")
-                        .issueDate("ddddd")
+                        .identity("9911052232814")
+                        .userName("이규민")
+                        .issueDate("20170501")
                         .simpleAuth("1")
                         .is2Way((Boolean) true)
                         .twoWayInfo(twoWayInfoDTO)
@@ -105,7 +108,7 @@ public class EasyCodefController {
         }
 
 
-        String string = easyCodef.requestCertification(url, 1, resultMap);
+        EasyCodefResponse string = easyCodef.requestCertification(url, 1, resultMap);
         return string;
     }
 

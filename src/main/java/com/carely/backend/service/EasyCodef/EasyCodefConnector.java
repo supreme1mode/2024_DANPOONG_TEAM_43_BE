@@ -18,6 +18,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 /**
  * <pre>
@@ -30,7 +31,7 @@ import org.springframework.context.annotation.Configuration;
  * @Author  : notfound404@codef.io
  * @Date    : Jun 26, 2020 3:35:17 PM
  */
-@Configuration
+@Component
 public class EasyCodefConnector {
     private static ObjectMapper mapper = new ObjectMapper();
     private static final int REPEAT_COUNT = 3;

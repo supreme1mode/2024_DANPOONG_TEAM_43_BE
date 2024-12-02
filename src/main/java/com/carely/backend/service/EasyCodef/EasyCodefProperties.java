@@ -1,33 +1,23 @@
 package com.carely.backend.service.EasyCodef;
 
+import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
-/**
- * <pre>
- * io.codef.easycodef
- *   |_ EasyCodefProperties.java
- * </pre>
- *
- * Desc : 코드에프의 쉬운 사용을 위한 프로퍼티 클래스
- * @Company : ?CODEF corp.
- * @Author  : notfound404@codef.io
- * @Date    : Jun 26, 2020 3:36:51 PM
- */
 @Getter
-@Configuration
+@Component
 public class EasyCodefProperties {
 
-    //	데모 엑세스 토큰 발급을 위한 클라이언트 아이디
+    // 데모 엑세스 토큰 발급을 위한 클라이언트 아이디
     @Value("${demo.client_id}")
     private String demoClientId;
 
-    //	데모 엑세스 토큰 발급을 위한 클라이언트 시크릿
-    @Value("${demo.secert_key}")
+    // 데모 엑세스 토큰 발급을 위한 클라이언트 시크릿
+    @Value("${demo.secret_key}")
     private String demoClientSecret;
-
 
     @Value("${demo.access_token}")
     private String demoAccessToken;
@@ -35,6 +25,19 @@ public class EasyCodefProperties {
     @Setter
     @Value("${demo.public_key}")
     private String publicKey;
+
+    /**
+     * 클래스 초기화 후 값 설정 로직 실행
+     */
+    @PostConstruct
+    public void initialize() {
+        setClientInfoForDemo(this.demoClientId, this.demoClientSecret);
+        System.out.println("EasyCodefProperties initialized with:");
+        System.out.println("Client ID: " + this.demoClientId);
+        System.out.println("Client Secret: " + this.demoClientSecret);
+        System.out.println("Access Token: " + this.demoAccessToken);
+        System.out.println("Public Key: " + this.publicKey);
+    }
 
     public void setClientInfoForDemo(String demoClientId, String demoClientSecret) {
         this.demoClientId = demoClientId;

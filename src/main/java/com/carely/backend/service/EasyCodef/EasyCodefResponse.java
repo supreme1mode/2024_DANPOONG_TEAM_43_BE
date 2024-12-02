@@ -2,12 +2,13 @@ package com.carely.backend.service.EasyCodef;
 
 import com.carely.backend.code.EasyCodefMessageConstant;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-@Configuration
+@Component
 public class EasyCodefResponse extends HashMap<String, Object>{
 
     private static final long serialVersionUID = -4106296996913677632L;

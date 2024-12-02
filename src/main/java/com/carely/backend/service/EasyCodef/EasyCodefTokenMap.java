@@ -2,10 +2,11 @@ package com.carely.backend.service.EasyCodef;
 
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 
-@Configuration
+@Component
 public class EasyCodefTokenMap {
 
     /**	쉬운 코드에프 이용을 위한 토큰 저장 맵	*/
