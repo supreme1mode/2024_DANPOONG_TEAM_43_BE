@@ -54,6 +54,10 @@ public class KakaoLoginService {
                 String birthyear = jsonNode.path("kakao_account").path("birthyear").asText(); //생년이 없을 경우 빈 문자열 반환
                 String birthday = jsonNode.path("kakao_account").path("birthday").asText(); //생일이 없을 경우 빈 문자열 반환
                 String phoneNum = jsonNode.path("kakao_account").path("phone_number").asText(); //핸드폰 번호가 없을 경우 빈 문자열 반환
+                // "+82 "를 "0"으로 대체
+                if (phoneNum.startsWith("+82")) {
+                    phoneNum = phoneNum.replaceFirst("\\+82 ", "0");
+                }
 
                 if (name.isEmpty()) {
                     // name이 없으면 nickname으로 대체
