@@ -45,14 +45,9 @@ public class User extends BaseEntity {
     private Boolean shareLocation;
     //자격증 인증 여부
     private Boolean certificateCheck = false;
-    // 성별
-    private String gender;
-    // 생년
-    private String birthyear;
-    // 생월
-    private String birthmonth;
-    // 생일
-    private String birthday;
+
+    //주민등록번호
+    private String identity;
 
     // ai 요약
     @Column(columnDefinition = "TEXT")
@@ -86,7 +81,7 @@ public class User extends BaseEntity {
     @Builder(builderMethodName = "userBuilder")
     public User(String kakaoId, UserType userType, String role, String username, Integer age, String phoneNum,
                 String city, String address, String detailAddress, Boolean locationAuthentication, Boolean shareLocation,
-                String talk, String eat, String toilet, String bath, String walk, String story
+                String talk, String eat, String toilet, String bath, String walk, String story, String identity
     ) {
         this.kakaoId = kakaoId;
         this.userType = userType;
@@ -106,6 +101,7 @@ public class User extends BaseEntity {
         this.walk = walk;
         this.story = story;
         this.certificateCheck = false;
+        this.identity = identity;
     }
 
     // 로그인

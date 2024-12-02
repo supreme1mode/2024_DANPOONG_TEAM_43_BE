@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @Builder
 public class VolunteerListDTO {
-    private String userId;
+    private String identity;
     private String username;
     //유저타입도 따로
     private String date;

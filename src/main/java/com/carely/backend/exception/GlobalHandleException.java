@@ -50,6 +50,13 @@ public class GlobalHandleException {
                 .body(new ErrorResponseDTO(ErrorCode.HAS_NOT_CERTIFICATE));
     }
 
+    @ExceptionHandler(ObjectNullException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleObjectNullException(final ObjectNullException e) {
+        return ResponseEntity
+                .status(ErrorCode.CACHE_NOT_FOUND.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.CACHE_NOT_FOUND));
+    }
+
     @ExceptionHandler(AlreadyHasCertificateException.class)
     protected ResponseEntity<ErrorResponseDTO> handleAlreadyHasCertificateException(final AlreadyHasCertificateException e) {
         return ResponseEntity

@@ -16,17 +16,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-/**
- * <pre>
- * io.codef.easycodef
- *   |_ EasyCodef.java
- * </pre>
- *
- * Desc : 코드에프의 쉬운 사용을 위한 유틸 라이브러리 클래스
- * @Company : ©CODEF corp.
- * @Author  : notfound404@codef.io
- * @Date    : Jun 26, 2020 3:28:31 PM
- */
 
 @Service
 public class EasyCodef {
@@ -53,7 +42,7 @@ public class EasyCodef {
     }
 
 
-    public String requestProduct(String productUrl, int serviceType, HashMap<String, Object> parameterMap) throws UnsupportedEncodingException, JsonProcessingException, InterruptedException {
+    public EasyCodefResponse requestProduct(String productUrl, int serviceType, HashMap<String, Object> parameterMap) throws UnsupportedEncodingException, JsonProcessingException, InterruptedException {
         String clientId = properties.getDemoClientId();
         String clientSecret = properties.getDemoClientSecret();
 
@@ -67,28 +56,28 @@ public class EasyCodef {
         validationFlag = checkClientInfo(1);
         if(!validationFlag) {
             EasyCodefResponse response = new EasyCodefResponse(EasyCodefMessageConstant.EMPTY_CLIENT_INFO);
-            return mapper.writeValueAsString(response);
+            return response;
         }
 
         /**	#2.필수 항목 체크 - 퍼블릭 키	*/
         validationFlag = checkPublicKey();
         if(!validationFlag) {
             EasyCodefResponse response = new EasyCodefResponse(EasyCodefMessageConstant.EMPTY_PUBLIC_KEY);
-            return mapper.writeValueAsString(response);
+            return response;
         }
 
         /**	#3.추가인증 키워드 체크	*/
         validationFlag = checkTwoWayKeyword(parameterMap);
         if(!validationFlag) {
             EasyCodefResponse response = new EasyCodefResponse(EasyCodefMessageConstant.INVALID_2WAY_KEYWORD);
-            return mapper.writeValueAsString(response);
+            return response;
         }
 
         /**	#4.상품 조회 요청	*/
         EasyCodefResponse response = EasyCodefConnector.execute(productUrl, 1, parameterMap, properties);
 
         /**	#5.결과 반환	*/
-        return mapper.writeValueAsString(response);
+        return response;
     }
 
     public EasyCodefResponse requestCertification(String productUrl, int serviceType, HashMap<String, Object> parameterMap) throws UnsupportedEncodingException, JsonProcessingException, InterruptedException {
@@ -215,22 +204,11 @@ public class EasyCodef {
 
 
 
-    public String createAccount(HashMap<String, Object> parameterMap) throws UnsupportedEncodingException, JsonProcessingException, InterruptedException {
+    public EasyCodefResponse createAccount(HashMap<String, Object> parameterMap) throws UnsupportedEncodingException, JsonProcessingException, InterruptedException {
         return requestProduct(EasyCodefConstant.CREATE_ACCOUNT, 1, parameterMap);
     }
 
-    /**
-     * Desc : 계정 정보 추가
-     * @Company : ©CODEF corp.
-     * @Author  : notfound404@codef.io
-     * @Date    : Jun 26, 2020 3:34:11 PM
-     * @param parameterMap
-     * @return
-     * @throws UnsupportedEncodingException
-     * @throws JsonProcessingException
-     * @throws InterruptedException
-     */
-    public String addAccount(HashMap<String, Object> parameterMap) throws UnsupportedEncodingException, JsonProcessingException, InterruptedException {
+    public EasyCodefResponse addAccount(HashMap<String, Object> parameterMap) throws UnsupportedEncodingException, JsonProcessingException, InterruptedException {
         return requestProduct(EasyCodefConstant.ADD_ACCOUNT, 1, parameterMap);
     }
 
@@ -246,7 +224,7 @@ public class EasyCodef {
      * @throws JsonProcessingException
      * @throws InterruptedException
      */
-    public String updateAccount(int serviceType, HashMap<String, Object> parameterMap) throws UnsupportedEncodingException, JsonProcessingException, InterruptedException {
+    public EasyCodefResponse updateAccount(int serviceType, HashMap<String, Object> parameterMap) throws UnsupportedEncodingException, JsonProcessingException, InterruptedException {
         return requestProduct(EasyCodefConstant.UPDATE_ACCOUNT, serviceType, parameterMap);
     }
 
@@ -262,52 +240,18 @@ public class EasyCodef {
      * @throws JsonProcessingException
      * @throws InterruptedException
      */
-    public String deleteAccount(int serviceType, HashMap<String, Object> parameterMap) throws UnsupportedEncodingException, JsonProcessingException, InterruptedException {
+    public EasyCodefResponse deleteAccount(int serviceType, HashMap<String, Object> parameterMap) throws UnsupportedEncodingException, JsonProcessingException, InterruptedException {
         return requestProduct(EasyCodefConstant.DELETE_ACCOUNT, serviceType, parameterMap);
     }
 
-    /**
-     * Desc : connectedId로 등록된 계정 목록 조회
-     * @Company : ©CODEF corp.
-     * @Author  : notfound404@codef.io
-     * @Date    : Jun 26, 2020 3:34:37 PM
-     * @param serviceType
-     * @param parameterMap
-     * @return
-     * @throws UnsupportedEncodingException
-     * @throws JsonProcessingException
-     * @throws InterruptedException
-     */
-    public String getAccountList(int serviceType, HashMap<String, Object> parameterMap) throws UnsupportedEncodingException, JsonProcessingException, InterruptedException {
+    public EasyCodefResponse getAccountList(int serviceType, HashMap<String, Object> parameterMap) throws UnsupportedEncodingException, JsonProcessingException, InterruptedException {
         return requestProduct(EasyCodefConstant.GET_ACCOUNT_LIST, serviceType, parameterMap);
     }
 
-    /**
-     * Desc : 클라이언트 정보로 등록된 모든 connectedId 목록 조회
-     * @Company : ©CODEF corp.
-     * @Author  : notfound404@codef.io
-     * @Date    : Jun 26, 2020 3:34:44 PM
-     * @param serviceType
-     * @return
-     * @throws UnsupportedEncodingException
-     * @throws JsonProcessingException
-     * @throws InterruptedException
-     */
-    public String getConnectedIdList(int serviceType) throws UnsupportedEncodingException, JsonProcessingException, InterruptedException {
+    public EasyCodefResponse getConnectedIdList(int serviceType) throws UnsupportedEncodingException, JsonProcessingException, InterruptedException {
         return requestProduct(EasyCodefConstant.GET_CID_LIST, serviceType, null);
     }
 
-    /**
-     * Desc : 토큰 반환 요청 - 보유 중인 유효한 토큰이 있는 경우 반환, 없는 경우 신규 발급 후 반환
-     * @Company : ©CODEF corp.
-     * @Author  : notfound404@codef.io
-     * @Date    : Jun 26, 2020 3:35:03 PM
-     * @param serviceType
-     * @return
-     * @throws IOException
-     * @throws JsonMappingException
-     * @throws JsonParseException
-     */
     public String requestToken(int serviceType) throws JsonParseException, JsonMappingException, IOException {
         String clientId = properties.getDemoClientId();
         String clientSecret = properties.getDemoClientSecret();
