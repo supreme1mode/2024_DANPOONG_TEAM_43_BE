@@ -12,9 +12,5 @@ import lombok.NoArgsConstructor;
 public class NotUserDTO {
     private String kakaoId;
     private String nickname;
-    private String gender;
-    private String birthyear;
-    private String birthmonth;
-    private String birthday;
     private String phoneNum;
 }

@@ -41,6 +41,7 @@ public enum ErrorCode {
     HAS_NOT_CERTIFICATE(HttpStatus.NOT_FOUND, "자격증이 존재하지 않는 유저입니다."),
 
     NEWS_NOT_FOUND(HttpStatus.NOT_FOUND, "소식을 찾을 수 없습니다."),
+    CACHE_NOT_FOUND(HttpStatus.NOT_FOUND, "캐시를 찾을 수 없거나 해당 트랜잭션은 이미 실행된 것입니다."),
 
     /**
      *  406

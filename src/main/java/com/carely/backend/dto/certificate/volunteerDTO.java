@@ -9,7 +9,8 @@ import org.web3j.abi.datatypes.Address;
 @Setter
 @Builder
 public class volunteerDTO {
-    private String userId;
+    private String volunteerSessionId;
+    private String identity;
     private String username;
     private Integer volunteerHours;
     private String date;

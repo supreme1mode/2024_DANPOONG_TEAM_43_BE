@@ -10,7 +10,7 @@ import lombok.Setter;
 @Builder
 public class VolunteerListDTO {
     private String userId;
-    private String username;
+    private String volunteerSessionsId;
     //유저타입도 따로
     private String date;
     private Integer volunteerHours;
