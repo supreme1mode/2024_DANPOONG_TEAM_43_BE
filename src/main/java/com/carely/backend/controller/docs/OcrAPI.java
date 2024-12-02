@@ -50,5 +50,5 @@ public interface OcrAPI {
                     )
             )
     })
-    public ResponseEntity<ResponseDTO<?>> extractText(@Valid @RequestPart("file") MultipartFile file, @RequestBody OCRCreateDTO ocrCreateDTO) throws IOException;
+    public ResponseEntity<ResponseDTO<?>> extractText(@Valid @RequestPart("file") MultipartFile file) throws IOException;
 }
