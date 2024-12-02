@@ -45,6 +45,14 @@ public class User extends BaseEntity {
     private Boolean shareLocation;
     //자격증 인증 여부
     private Boolean certificateCheck = false;
+    // 성별
+    private String gender;
+    // 생년
+    private String birthyear;
+    // 생월
+    private String birthmonth;
+    // 생일
+    private String birthday;
 
     // ai 요약
     @Column(columnDefinition = "TEXT")

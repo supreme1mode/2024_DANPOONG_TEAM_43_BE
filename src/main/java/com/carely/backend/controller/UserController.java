@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -40,9 +41,9 @@ public class UserController implements UserAPI {
     private final RefreshRepository refreshRedisRepository;
     private final JWTUtil jwtUtil;
 
-    @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseDTO> registerUser(@RequestPart("registerDTO") RegisterDTO registerDTO, @RequestPart(value = "image", required = false) MultipartFile image) throws IOException {
-        RegisterDTO.Res res = userService.register(registerDTO, image);
+    @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseDTO> registerUser(@Valid @RequestPart("registerDTO") RegisterDTO registerDTO) throws IOException {
+        RegisterDTO.Res res = userService.register(registerDTO);
         return ResponseEntity
                 .status(SuccessCode.SUCCESS_REGISTER.getStatus().value())
                 .body(new ResponseDTO<>(SuccessCode.SUCCESS_REGISTER, res));
@@ -56,13 +57,19 @@ public class UserController implements UserAPI {
         String kakaoId = info.get("kakaoId"); // kakaoId 추출
         System.out.println(info);
         String username = info.get("username"); // nickname 추출
+        String gender = info.get("gender"); //성별 추출
+        String birthyear = info.get("birthyear"); //생년 추출
+        String birthmonth = info.get("birthmonth"); //생월 추출
+        String birthday = info.get("birthday"); //생일 추출
+        String phoneNum = info.get("phoneNum"); // 핸드폰 번호 추출
+
 
         // 유저가 있는지 확인
         User user = kakaoLoginService.findUserByKakaoId(kakaoId);
 
         // 유저가 없으면 kakao Id만 전달
         if (user == null) {
-            NotUserDTO notUserDTO = new NotUserDTO(kakaoId, username);
+            NotUserDTO notUserDTO = new NotUserDTO(kakaoId, username, gender, birthyear, birthmonth, birthday, phoneNum);
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
                     .body(new ResponseDTO<>(SuccessCode.NOT_USER, notUserDTO));
