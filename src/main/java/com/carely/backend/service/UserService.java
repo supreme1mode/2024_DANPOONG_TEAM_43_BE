@@ -79,10 +79,6 @@ public class UserService {
                 .latitude(latitude)
                 .longitude(longitude)
                 .certificateCheck(false)
-                .gender(registerDTO.getGender())
-                .birthyear(registerDTO.getBirthyear())
-                .birthmonth(registerDTO.getBirthmonth())
-                .birthday(registerDTO.getBirthday())
                 .build();
 
         return RegisterDTO.Res.toDTO(userRepository.save(user));

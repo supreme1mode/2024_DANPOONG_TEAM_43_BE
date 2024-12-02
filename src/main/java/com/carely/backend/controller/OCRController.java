@@ -23,11 +23,11 @@ public class OCRController  {
     @PostMapping(value = "/extract", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseDTO<?>> extractText(@RequestPart("file") MultipartFile file) throws Exception {
 //        if (user.getUsername() == null) {
-//            // °¡ÀÔ ¾È µÈ À¯Àú... 1À» º¸³»ÁÖ°Å³ª ÇØ¾ß ÇÔ....
-//            // »ı³â¿ùÀÏ, ÀÌ¸§ ÀÖ¾î¾ß ÇÔ... ±×·¡¾ß ÀÚ°İÁõ °ËÁõ °¡´ÉÇÒ µí?
+//            // ê°€ì… ì•ˆ ëœ ìœ ì €... 1ì„ ë³´ë‚´ì£¼ê±°ë‚˜ í•´ì•¼ í•¨....
+//            // ìƒë…„ì›”ì¼, ì´ë¦„ ìˆì–´ì•¼ í•¨... ê·¸ë˜ì•¼ ìê²©ì¦ ê²€ì¦ ê°€ëŠ¥í•  ë“¯?
 //        }
 //        else {
-//            // °¡ÀÔÀÌ µÈ À¯Àú¶ó¸é........... °ËÁõÀ» ÇÏ°í ±× À¯ÀúÀÇ isCertificated ¸¦ 1·Î ¹Ù²ãÁà¾ßÁö
+//            // ê°€ì…ì´ ëœ ìœ ì €ë¼ë©´........... ê²€ì¦ì„ í•˜ê³  ê·¸ ìœ ì €ì˜ isCertificated ë¥¼ 1ë¡œ ë°”ê¿”ì¤˜ì•¼ì§€
 //            CertificateDTO certificateDTO = ocrService.extractTextAlreadyUser(file, user.getUsername());
 //        }
 

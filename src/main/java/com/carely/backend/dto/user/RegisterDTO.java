@@ -36,15 +36,6 @@ public class RegisterDTO {
     @NotNull
     private String detailAddress;
 
-    //성별
-    private String gender;
-    //생년
-    private String birthyear;
-    //생월
-    private String birthmonth;
-    //생일
-    private String birthday;
-
     // 위치 인증 여부
     @NotNull
     private Boolean locationAuthentication;
