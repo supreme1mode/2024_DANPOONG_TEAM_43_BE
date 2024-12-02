@@ -87,11 +87,12 @@ public class CertificateService {
         String userAddress = credentials.getAddress(); // 개인키에서 주소를 추출
 
         // 봉사 세션 생성
+        // 세션 id를 통해서 volunteer 가져올 수 있음
         Function function = new Function(
                 "createVolunteerSession",
                 Arrays.asList(
-                        new Utf8String(user.getIdentity()),
-                        new Utf8String(volunteer.getUsername()),
+                        new Utf8String(user.getId().toString()), // userId
+                        new Utf8String(volunteer.getVolunteerSessionId()),  //volunteer 세선 ID
                         new Uint256(BigInteger.valueOf(volunteer.getVolunteerHours())),
                         new Utf8String(volunteer.getDate().toString()),
                         new Utf8String(volunteer.getVolunteerType()),
@@ -112,7 +113,7 @@ public class CertificateService {
 
         Function function = new Function(
                 "getVolunteerSessionsByUserId",
-                List.of(new Utf8String(user.getIdentity())), // 함수 입력값
+                List.of(new Utf8String(user.getId().toString())), // userId를 통해서 가져올 수 있도록
                 List.of(
                         new TypeReference<DynamicArray<Utf8String>>() {},  // userIds
                         new TypeReference<DynamicArray<Utf8String>>() {},  // usernames
@@ -142,23 +143,23 @@ public class CertificateService {
 
 
         // 각각의 배열 추출
-        DynamicArray<Utf8String> userIdentities = (DynamicArray<Utf8String>) decoded.get(0);
-        DynamicArray<Utf8String> usernames = (DynamicArray<Utf8String>) decoded.get(1);
+        DynamicArray<Utf8String> userIds = (DynamicArray<Utf8String>) decoded.get(0);
+        DynamicArray<Utf8String> volunteerSessions = (DynamicArray<Utf8String>) decoded.get(1);
         DynamicArray<Uint256> volunteerHours = (DynamicArray<Uint256>) decoded.get(2);
         DynamicArray<Utf8String> dates = (DynamicArray<Utf8String>) decoded.get(3);
         DynamicArray<Utf8String> volunteerTypes = (DynamicArray<Utf8String>) decoded.get(4);
         DynamicArray<Address> userAddresses = (DynamicArray<Address>) decoded.get(5);
 
-        System.out.println(userIdentities.getValue());
-        if (userIdentities.getValue().isEmpty()) {
+        System.out.println(userIds.getValue());
+        if (userIds.getValue().isEmpty()) {
             throw new ListEmptyException("비었음");
         }
         // VolunteerListDTO 리스트 생성
         List<VolunteerListDTO> sessions = new ArrayList<>();
-        for (int i = 0; i < userIdentities.getValue().size(); i++) {
+        for (int i = 0; i < userIds.getValue().size(); i++) {
             VolunteerListDTO dto = VolunteerListDTO.builder().build();
-            dto.setIdentity(userIdentities.getValue().get(i).getValue());
-            dto.setUsername(usernames.getValue().get(i).getValue());
+            dto.setUserId(userIds.getValue().get(i).getValue());
+            dto.setVolunteerSessionsId(volunteerSessions.getValue().get(i).getValue());
             dto.setVolunteerHours(volunteerHours.getValue().get(i).getValue().intValue());
             dto.setDate(dates.getValue().get(i).getValue());
             dto.setVolunteerType(volunteerTypes.getValue().get(i).getValue());
@@ -227,6 +228,9 @@ public class CertificateService {
         if (getDecoded.isEmpty()) {
             throw new RuntimeException("Failed to retrieve certificate details.");
         }
+
+        //발급 즉시 인증으로 확인
+        user.updateCertificateCheck();
 
         // 반환 데이터 매핑
         return CertificateDTO.builder()
@@ -328,11 +332,11 @@ public class CertificateService {
     }
 
 
-    public int calculateTotalVolunteerHours(String identity) {
+    public int calculateTotalVolunteerHours(String userId) {
         // Solidity 함수 호출을 위한 Function 객체 생성
         Function function = new Function(
                 "calculateTotalVolunteerHours",
-                Collections.singletonList(new Utf8String(identity)), // 사용자 주민번호
+                Collections.singletonList(new Utf8String(userId)), // 사용자 id
                 Collections.singletonList(new TypeReference<Uint256>() {
                 }) // 반환값: 총 봉사 시간
         );
@@ -373,7 +377,7 @@ public class CertificateService {
         // Solidity 함수 정의
         Function function = new Function(
                 "getVolunteerSessionsByUserIdAndType",
-                Arrays.asList(new Utf8String(user_volunteer.getIdentity()), new Utf8String(userType.name())),
+                Arrays.asList(new Utf8String(userId), new Utf8String(userType.name())),
                 List.of(
                         new TypeReference<DynamicArray<Utf8String>>() {
                         },  // userIds
@@ -416,8 +420,8 @@ public class CertificateService {
         log.info("Decoded Result: {}", decoded);
 
         // 디코딩된 각 배열
-        DynamicArray<Utf8String> userIdentities = (DynamicArray<Utf8String>) decoded.get(0);
-        DynamicArray<Utf8String> usernames = (DynamicArray<Utf8String>) decoded.get(1);
+        DynamicArray<Utf8String> userIds = (DynamicArray<Utf8String>) decoded.get(0);
+        DynamicArray<Utf8String> volunteerSessions = (DynamicArray<Utf8String>) decoded.get(1);
         DynamicArray<Uint256> volunteerHours = (DynamicArray<Uint256>) decoded.get(2);
         DynamicArray<Utf8String> dates = (DynamicArray<Utf8String>) decoded.get(3);
         DynamicArray<Address> userAddresses = (DynamicArray<Address>) decoded.get(4);
@@ -428,8 +432,8 @@ public class CertificateService {
 //        }
 
         // 배열 크기 확인
-        if (userIdentities.getValue().size() != usernames.getValue().size()
-                || usernames.getValue().size() != volunteerHours.getValue().size()
+        if (userIds.getValue().size() != volunteerSessions.getValue().size()
+                || volunteerSessions.getValue().size() != volunteerHours.getValue().size()
                 || volunteerHours.getValue().size() != dates.getValue().size()
                 || dates.getValue().size() != userAddresses.getValue().size()) {
             throw new RuntimeException("Mismatched array sizes in Solidity response");
@@ -437,10 +441,10 @@ public class CertificateService {
 
         // 결과 매핑
         List<VolunteerListDTO> sessions = new ArrayList<>();
-        for (int i = 0; i < userIdentities.getValue().size(); i++) {
+        for (int i = 0; i < userIds.getValue().size(); i++) {
             sessions.add(VolunteerListDTO.builder()
-                    .identity(userIdentities.getValue().get(i).getValue())
-                    .username(usernames.getValue().get(i).getValue())
+                    .userId(userIds.getValue().get(i).getValue())
+                    .volunteerSessionsId(volunteerSessions.getValue().get(i).getValue())
                     .volunteerHours(volunteerHours.getValue().get(i).getValue().intValue())
                     .date(dates.getValue().get(i).getValue())
                     .volunteerType(userType.name())
@@ -577,6 +581,7 @@ public class CertificateService {
         }
 
         createVolunteerSession(volunteerDTO.builder()
+                .volunteerSessionId(volunteer.getId().toString())
                 .identity(volunteer.getVolunteer().getIdentity())
                 .username(volunteer.getVolunteer().getUsername())
                 .date(volunteer.getDate().toString())
@@ -584,7 +589,6 @@ public class CertificateService {
                 .volunteerType(userType)
                 .build());
     }
-
 
 }
 

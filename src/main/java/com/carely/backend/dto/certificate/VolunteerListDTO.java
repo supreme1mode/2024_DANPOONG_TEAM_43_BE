@@ -9,8 +9,8 @@ import lombok.Setter;
 @Setter
 @Builder
 public class VolunteerListDTO {
-    private String identity;
-    private String username;
+    private String userId;
+    private String volunteerSessionsId;
     //유저타입도 따로
     private String date;
     private Integer volunteerHours;
