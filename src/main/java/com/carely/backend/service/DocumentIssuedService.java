@@ -19,14 +19,14 @@ import java.util.List;
 public class DocumentIssuedService {
     public final CertificateService certificateService;
     public final UserRepository userRepository;
-
-
-    public void getDocumentIssuedList(String username, String documentType) {
-        User user = userRepository.findByKakaoId(username)
-                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
-
-        List<VolunteerListDTO> list= certificateService.getVolunteerSessionsByUserIdAndType(documentType, user.getId().toString());
-
-
-    }
+//
+//
+//    public void getDocumentIssuedList(String username, String documentType) {
+//        User user = userRepository.findByKakaoId(username)
+//                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+//
+//        List<VolunteerListDTO> list= certificateService.getVolunteerSessionsByUserIdAndType(documentType, user.getId().toString());
+//
+//
+//    }
 }

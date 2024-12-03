@@ -57,6 +57,13 @@ public class GlobalHandleException {
                 .body(new ErrorResponseDTO(ErrorCode.CACHE_NOT_FOUND));
     }
 
+    @ExceptionHandler(IdentityNotAcceptableException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleIdentityNotAcceptableException(final IdentityNotAcceptableException e) {
+        return ResponseEntity
+                .status(ErrorCode.NOT_IDENTITY_USER.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.NOT_IDENTITY_USER));
+    }
+
     @ExceptionHandler(AlreadyHasCertificateException.class)
     protected ResponseEntity<ErrorResponseDTO> handleAlreadyHasCertificateException(final AlreadyHasCertificateException e) {
         return ResponseEntity

@@ -80,7 +80,7 @@ public enum SuccessCode {
     SUCCESS_ISSUE_CERTIFICATE(HttpStatus.OK, "자격증을 성공적으로 발급하였습니다."),
     SUCCESS_RETRIEVE_ACTIVITY_LIST(HttpStatus.OK, "활동 목록을 성공적으로 조회하였습니다."),
     SUCCESS_RETRIEVE_CERTIFICATE(HttpStatus.OK, "성공적으로 자격증 검색을 완료했습니다."),
-
+    SUCCESS_GET_IDENTITY(HttpStatus.OK, "주민등록번호가 인증되었습니다."),
 
 
     /**

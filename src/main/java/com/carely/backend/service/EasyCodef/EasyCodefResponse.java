@@ -1,7 +1,10 @@
 package com.carely.backend.service.EasyCodef;
 
 import com.carely.backend.code.EasyCodefMessageConstant;
+import com.carely.backend.code.SuccessCode;
+import com.carely.backend.dto.response.ResponseDTO;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -87,6 +90,14 @@ public class EasyCodefResponse extends HashMap<String, Object>{
         this.result.put(EasyCodefConstant.MESSAGE, message.getMessage());
         this.result.put(EasyCodefConstant.EXTRA_MESSAGE, message.getExtraMessage());
     }
+
+
+//    public static ResponseEntity setResultToJson(EasyCodefResponse easyCodefResponse) {
+//        if
+//        return ResponseEntity
+//                .status(SuccessCode.SUCCESS_GET_IDENTITY.getStatus().value())
+//                .body(new ResponseDTO<>(SuccessCode.SUCCESS_GET_IDENTITY, null));
+//    }
 
 
     @Override
