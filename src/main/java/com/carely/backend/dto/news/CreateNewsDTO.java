@@ -31,6 +31,7 @@ public class CreateNewsDTO {
 
         public static Res toDTO(News news) {
             return Res.builder()
+                    .newsId(news.getId())
                     .writer(news.getWriter().getUsername())
                     .title(news.getTitle())
                     .content(news.getContent())

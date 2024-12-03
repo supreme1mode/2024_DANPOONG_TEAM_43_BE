@@ -25,11 +25,12 @@ public class CreateCommentDTO {
         private String writer;
         private LocalDateTime createdAt;
 
-        public static CreateCommentDTO.Res toDTO(NewsComment news) {
+        public static CreateCommentDTO.Res toDTO(NewsComment comment) {
             return CreateCommentDTO.Res.builder()
-                    .writer(news.getWriter().getUsername())
-                    .content(news.getContent())
-                    .createdAt(news.getCreatedAt())
+                    .commentId(comment.getId())
+                    .writer(comment.getWriter().getUsername())
+                    .content(comment.getContent())
+                    .createdAt(comment.getCreatedAt())
                     .build();
         }
 
