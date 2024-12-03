@@ -35,7 +35,7 @@ public class NewsService {
                 .orElseThrow(() -> new GroupNotFoundException("그룹을 찾을 수 없습니다."));
 
         List<News> newsList;
-        newsList = newsRepository.findAllByGroup(group);
+        newsList = newsRepository.findAllByGroupOrderByCreatedAtDesc(group);
 
         return newsList.stream()
                 .map(NewsResponseDTO.List::toDTO)
