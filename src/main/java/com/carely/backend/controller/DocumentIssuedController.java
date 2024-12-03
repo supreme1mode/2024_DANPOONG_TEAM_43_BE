@@ -1,6 +1,9 @@
 package com.carely.backend.controller;
 
 
+import com.carely.backend.code.SuccessCode;
+import com.carely.backend.controller.docs.DocumentAPI;
+import com.carely.backend.dto.document.ResponseDocumentDTO;
 import com.carely.backend.dto.response.ResponseDTO;
 import com.carely.backend.dto.user.CustomUserDetails;
 import com.carely.backend.service.DocumentIssuedService;
@@ -12,15 +15,19 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/document")
 @RequiredArgsConstructor
-public class DocumentIssuedController {
+public class DocumentIssuedController implements DocumentAPI {
     public final DocumentIssuedService documentIssuedService;
-//
-//    @GetMapping("/{documentType}")
-//    public ResponseEntity<ResponseDTO<?>> getDocumentIssuedList(@AuthenticationPrincipal CustomUserDetails user, @PathVariable String documentType) {
-//        documentIssuedService.getDocumentIssuedList(user.getUsername(), documentType);
-//
-//    }
+
+    @GetMapping("/{documentType}/{userId}")
+    public ResponseEntity<ResponseDTO<?>> getDocumentIssuedList(@PathVariable String documentType, @PathVariable Long userId) {
+        List<ResponseDocumentDTO> list = documentIssuedService.getDocumentIssuedList(userId, documentType);
+        return ResponseEntity
+                .status(SuccessCode.SUCCESS_RETRIEVE_ACTIVITY_LIST.getStatus().value())
+                .body(new ResponseDTO<>(SuccessCode.SUCCESS_RETRIEVE_ACTIVITY_LIST, list));
+    }
  }

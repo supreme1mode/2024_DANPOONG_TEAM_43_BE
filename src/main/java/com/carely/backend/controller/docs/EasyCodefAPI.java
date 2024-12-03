@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.io.UnsupportedEncodingException;
 
 public interface EasyCodefAPI {
-    @Operation(summary = "주민번호 인증", description = "주민등록번호를 인증합니다.")
+    @Operation(summary = "주민번호 인증(7초가 딱 적당해서 7초 안에 인증하면 되도록 했습니다.)", description = "주민등록번호를 인증합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "주민번호 인증에 성공했을 경우",
                     content = @Content(mediaType = "application/json",

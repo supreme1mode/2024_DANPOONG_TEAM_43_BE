@@ -91,7 +91,7 @@ public class CertificateService {
         Function function = new Function(
                 "createVolunteerSession",
                 Arrays.asList(
-                        new Utf8String(user.getId().toString()), // userId
+                        new Utf8String(user.getIdentity()), // userId
                         new Utf8String(volunteer.getVolunteerSessionId()),  //volunteer 세선 ID
                         new Uint256(BigInteger.valueOf(volunteer.getVolunteerHours())),
                         new Utf8String(volunteer.getDate().toString()),
@@ -113,7 +113,7 @@ public class CertificateService {
 
         Function function = new Function(
                 "getVolunteerSessionsByUserId",
-                List.of(new Utf8String(user.getId().toString())), // userId를 통해서 가져올 수 있도록
+                List.of(new Utf8String(user.getIdentity())), // userId를 통해서 가져올 수 있도록
                 List.of(
                         new TypeReference<DynamicArray<Utf8String>>() {},  // userIds
                         new TypeReference<DynamicArray<Utf8String>>() {},  // usernames
@@ -174,16 +174,17 @@ public class CertificateService {
     public CertificateDTO issueCertificate(String certificateId, String userId) throws Exception {
         User user = userRepository.findById(Long.valueOf(userId))
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
-
+        System.out.println(user.getIdentity());
         LocalDate now = LocalDate.now();
 
         if (checkIfCertificateExists(user.getIdentity())) {
             throw new AlreadyHasCertificateException("이미 존재함...");
         }
 
-        if (calculateTotalVolunteerHours(user.getIdentity()) < 80) {
+        if (calculateTotalVolunteerHours(userId) < 80) {
             throw new TotalTimeNotEnoughException("시간 부족");
         }
+
 
         Function issueFunction = new Function(
                 "issueCertificate",
@@ -333,10 +334,12 @@ public class CertificateService {
 
 
     public int calculateTotalVolunteerHours(String userId) {
+        User user = userRepository.findById(Long.valueOf(userId))
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
         // Solidity 함수 호출을 위한 Function 객체 생성
         Function function = new Function(
                 "calculateTotalVolunteerHours",
-                Collections.singletonList(new Utf8String(userId)), // 사용자 id
+                Collections.singletonList(new Utf8String(user.getIdentity())), // 사용자 id
                 Collections.singletonList(new TypeReference<Uint256>() {
                 }) // 반환값: 총 봉사 시간
         );
@@ -377,7 +380,7 @@ public class CertificateService {
         // Solidity 함수 정의
         Function function = new Function(
                 "getVolunteerSessionsByUserIdAndType",
-                Arrays.asList(new Utf8String(userId), new Utf8String(userType.name())),
+                Arrays.asList(new Utf8String(user_volunteer.getIdentity()), new Utf8String(userType.name())),
                 List.of(
                         new TypeReference<DynamicArray<Utf8String>>() {
                         },  // userIds
