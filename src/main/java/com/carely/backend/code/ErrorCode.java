@@ -39,6 +39,7 @@ public enum ErrorCode {
     LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "그룹을 찜하지 않은 유저입니다."),
     CERTIFICATE_FAIL(HttpStatus.NOT_FOUND, "자격증 인증에 실패했습니다."),
     HAS_NOT_CERTIFICATE(HttpStatus.NOT_FOUND, "자격증이 존재하지 않는 유저입니다."),
+    NOT_IDENTITY_USER(HttpStatus.NOT_FOUND, "주민등록번호가 유효하지 않습니다."),
 
     NEWS_NOT_FOUND(HttpStatus.NOT_FOUND, "소식을 찾을 수 없습니다."),
     CACHE_NOT_FOUND(HttpStatus.NOT_FOUND, "캐시를 찾을 수 없거나 해당 트랜잭션은 이미 실행된 것입니다."),
