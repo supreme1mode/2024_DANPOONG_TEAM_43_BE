@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -61,6 +62,7 @@ public class NewsResponseDTO {
 
             java.util.List<NewsCommentResponseDTO.List> newsComments = commentList.stream()
                     .map(NewsCommentResponseDTO.List::toDTO)
+                    .sorted(Comparator.comparing(NewsCommentResponseDTO.List::getCreatedAt).reversed())  // 역순 정렬
                     .toList();
 
 

@@ -93,6 +93,8 @@ public enum SuccessCode {
      * News
      */
     SUCCESS_RETRIEVE_NEWS(HttpStatus.OK,"소식을 성공적으로 조회했습니다."),
+    SUCCESS_CREATE_NEWS(HttpStatus.OK, "소식을 성공적으로 생성했습니다."),
+    SUCCESS_CREATE_NEWS_COMMENT(HttpStatus.OK, "소식 댓글을 성공적으로 생성했습니다."),
 
     ;
     private final HttpStatus status;
