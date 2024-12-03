@@ -13,5 +13,5 @@ public interface NewsRepository extends JpaRepository<News, Long> {
     @Query("SELECT MAX(n.createdAt) FROM News n WHERE n.group.id = :groupId")
     LocalDateTime findLastNewsTimeByGroupId(@Param("groupId") Long groupId);
 
-    List<News> findAllByGroup(Group group);
+    List<News> findAllByGroupOrderByCreatedAtDesc(Group group);
 }
