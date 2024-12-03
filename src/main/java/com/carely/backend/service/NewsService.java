@@ -50,14 +50,18 @@ public class NewsService {
     }
 
     @Transactional
-    public CreateNewsDTO.Res createNews(@Valid CreateNewsDTO createNewsDTO, String kakaoId) {
+    public CreateNewsDTO.Res createNews(Long groupId, @Valid CreateNewsDTO createNewsDTO, String kakaoId) {
         User writer = userRepository.findByKakaoId(kakaoId)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new GroupNotFoundException("그룹을 찾을 수 없습니다."));
 
         News news = News.builder()
                 .content(createNewsDTO.getContent())
                 .title(createNewsDTO.getTitle())
                 .writer(writer)
+                .group(group)
                 .build();
 
         News newNews = newsRepository.save(news);
