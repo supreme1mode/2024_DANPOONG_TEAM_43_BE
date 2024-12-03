@@ -42,10 +42,10 @@ public class NewsController implements NewsAPI {
                 .body(new ResponseDTO<>(SuccessCode.SUCCESS_RETRIEVE_NEWS, res));
     }
 
-    @PostMapping("/create/news")
-    public ResponseEntity<ResponseDTO<CreateNewsDTO.Res>> createNews(@Valid @RequestBody CreateNewsDTO createNewsDTO) {
+    @PostMapping("/create/news/{groupId}")
+    public ResponseEntity<ResponseDTO<CreateNewsDTO.Res>> createNews(@PathVariable("groupId") Long groupId, @Valid @RequestBody CreateNewsDTO createNewsDTO) {
         String kakaoId = SecurityContextHolder.getContext().getAuthentication().getName();
-        CreateNewsDTO.Res res = newsService.createNews(createNewsDTO, kakaoId);
+        CreateNewsDTO.Res res = newsService.createNews(groupId, createNewsDTO, kakaoId);
 
         return ResponseEntity
                 .status(SuccessCode.SUCCESS_CREATE_NEWS.getStatus().value())
