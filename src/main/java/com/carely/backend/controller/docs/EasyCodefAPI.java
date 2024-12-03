@@ -28,7 +28,7 @@ public interface EasyCodefAPI {
                                     "status": 200,
                                     "code": "SUCCESS_GET_IDENTITY",
                                     "message": "주민등록번호가 인증되었습니다.",
-                                    "data": {}
+                                    "data": null
                                 }
                                 """))),
 
