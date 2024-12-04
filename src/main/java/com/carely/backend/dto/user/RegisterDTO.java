@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Builder
@@ -55,6 +56,8 @@ public class RegisterDTO {
     // 내 위치 공유
     @NotNull
     private Boolean shareLocation;
+
+    private String identity;
 
     @Getter
     @Builder
