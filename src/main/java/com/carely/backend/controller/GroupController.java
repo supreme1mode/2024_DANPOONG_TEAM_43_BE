@@ -116,4 +116,5 @@ public class GroupController implements GroupAPI {
                 .status(SuccessCode.SUCCESS_RETRIEVE_USER.getStatus().value())
                 .body(new ResponseDTO<>(SuccessCode.SUCCESS_RETRIEVE_USER, res));
     }
+
 }

@@ -5,11 +5,10 @@ import com.carely.backend.domain.User;
 import com.carely.backend.domain.Volunteer;
 import com.carely.backend.domain.enums.UserType;
 import com.carely.backend.dto.guestBook.RequestGuestBookDTO;
+import com.carely.backend.dto.guestBook.ResponseGroupGuestbookDTO;
 import com.carely.backend.dto.guestBook.ResponseGuestBookDTO;
-import com.carely.backend.exception.AlreadyExistsGuestBookException;
-import com.carely.backend.exception.NotWriterException;
-import com.carely.backend.exception.UserNotFoundException;
-import com.carely.backend.exception.VolunteerNotFoundException;
+import com.carely.backend.exception.*;
+import com.carely.backend.repository.GroupRepository;
 import com.carely.backend.repository.GuestBookRepository;
 import com.carely.backend.repository.UserRepository;
 import com.carely.backend.repository.VolunteerRepository;
@@ -20,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,10 +28,11 @@ public class GuestBookService {
     private final UserRepository userRepository;
     private final VolunteerRepository volunteerRepository;
     private final GuestBookRepository guestBookRepository;
+    private final GroupRepository groupRepository;
 
     @Transactional
-    public void registerGuestBook(RequestGuestBookDTO requestGuestBookDTO, @Valid String user, Long volunteerId) {
-        User user_volunteer = userRepository.findByKakaoId(user)
+    public void registerGuestBook(RequestGuestBookDTO requestGuestBookDTO, @Valid String kakaoId, Long volunteerId) {
+        User user = userRepository.findByKakaoId(kakaoId)
                 .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
 
         Volunteer volunteer = volunteerRepository.findById(volunteerId)
@@ -43,14 +45,23 @@ public class GuestBookService {
         guestBookRepository.save(GuestBookEntity.builder()
                 .content(requestGuestBookDTO.getContent())
                 .volunteerSection(volunteer)
-                .caregiver(volunteer.getCaregiver())
-                .volunteer(volunteer.getVolunteer())
+                .writerType(user.getUserType().name())
                 .build());
-
-
-        volunteer.updateVolunteerGuestBook();
-
     }
+
+
+
+//    public void getMyHomeGuestBook(Long userId) {
+//        if
+//
+//
+//    }
+
+
+
+
+
+
     @Transactional
     public List<ResponseGuestBookDTO> getAllGuestBook(String user) {
         // 유저 조회
@@ -79,7 +90,7 @@ public class GuestBookService {
                 userId = volunteer.getVolunteer().getId();
             }
                 if (volunteer.getHasGuestBook()) {
-                    responseGuestBookDTOList.add(ResponseGuestBookDTO.entityToDto(guestBookRepository.findByVolunteerSectionId(volunteer.getId()), home, writer, profileName, userType, userId));
+                    responseGuestBookDTOList.add(ResponseGuestBookDTO.entityToDto(guestBookRepository.findByVolunteerSectionId(volunteer.getId()).orElseThrow(() -> new GuestBookNotFoundException("방명록 없음")), home, writer, profileName, userType, userId));
                 } else if (volunteer.getCaregiver().equals(user_volunteer)) {
                     continue;
                 } else {
@@ -128,7 +139,7 @@ public class GuestBookService {
                     userId = volunteer.getVolunteer().getId();
                 }
             if (volunteer.getCaregiver().equals(user_volunteer) && volunteer.getHasGuestBook()) {
-                responseGuestBookDTOList.add(ResponseGuestBookDTO.entityToDto(guestBookRepository.findByVolunteerSectionId(volunteer.getId()), home, writer, profileName, userType, userId));
+                responseGuestBookDTOList.add(ResponseGuestBookDTO.entityToDto(guestBookRepository.findByVolunteerSectionId(volunteer.getId()).orElseThrow(() -> new GuestBookNotFoundException("방명록 없음")), home, writer, profileName, userType, userId));
             }
         }
         return responseGuestBookDTOList;
@@ -163,7 +174,7 @@ public class GuestBookService {
             }
 
             if (volunteer.getVolunteer().equals(user_volunteer) && volunteer.getHasGuestBook()) {
-                responseGuestBookDTOList.add(ResponseGuestBookDTO.entityToDto(guestBookRepository.findByVolunteerSectionId(volunteer.getId()), home, writer, profileName, userType, userId));
+                responseGuestBookDTOList.add(ResponseGuestBookDTO.entityToDto(guestBookRepository.findByVolunteerSectionId(volunteer.getId()).orElseThrow(() -> new GuestBookNotFoundException("방명록 없음")), home, writer, profileName, userType, userId));
             } else {
                 responseGuestBookDTOList.add(ResponseGuestBookDTO.builder()
                         .home(home)
@@ -197,5 +208,45 @@ public class GuestBookService {
         
         
 
+    }
+
+
+    public List<ResponseGroupGuestbookDTO> getGroupGusetbook(Long groupId, String kakaoId) {
+        // 해당 그룹 봉사 리스트 받아오기
+        Set<Volunteer> list = groupRepository.getReferenceById(groupId).getVolunteerSessions();
+        if (list.isEmpty()) {
+            throw new ListEmptyException("없음");
+        }
+        return list.stream().map((volunteerSessions -> {
+            String v_Content;
+            String c_Content;
+
+            GuestBookEntity volunteer_guestBook = guestBookRepository.findByVolunteerSectionIdAndWriterType(volunteerSessions.getId(), volunteerSessions.getVolunteer().getUserType().name()).get();
+            if (volunteer_guestBook == null) {
+                v_Content = null;
+            }
+            else {
+                v_Content = volunteer_guestBook.getContent();
+            }
+            GuestBookEntity caregiver_guestBook = guestBookRepository.findByVolunteerSectionIdAndWriterType(volunteerSessions.getId(), volunteerSessions.getCaregiver().getUserType().name()).get();
+            if (caregiver_guestBook == null) {
+                c_Content = null;
+            }
+            else {
+                c_Content = caregiver_guestBook.getContent();
+            }
+            return ResponseGroupGuestbookDTO.builder()
+                    .volunteer(ResponseGroupGuestbookDTO.GuestBookDTO.builder()
+                            .userType(volunteerSessions.getVolunteer().getUserType().name())
+                            .username(volunteerSessions.getVolunteer().getUsername())
+                            .content(v_Content)
+                            .build())
+                    .caregiver(ResponseGroupGuestbookDTO.GuestBookDTO.builder()
+                            .userType(volunteerSessions.getCaregiver().getUserType().name())
+                            .username(volunteerSessions.getCaregiver().getUsername())
+                            .content(c_Content)
+                            .build())
+                    .build();
+        })).collect(Collectors.toList());
     }
 }

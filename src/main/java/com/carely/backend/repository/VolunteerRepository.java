@@ -25,8 +25,8 @@ public interface VolunteerRepository extends JpaRepository<Volunteer, Long> {
 
     List<Volunteer> findByVolunteerAndHasMemoFalse(User writer);
 
-    @Query("SELECT v FROM Volunteer v " +
-            "WHERE v.caregiver IN (SELECT j.user FROM JoinGroup j WHERE j.group.id = :groupId) " +
-            "AND v.volunteer IN (SELECT j.user FROM JoinGroup j WHERE j.group.id = :groupId)")
-    List<Volunteer> findVolunteersInGroup(@Param("groupId") Long groupId);
+//    @Query("SELECT v FROM Volunteer v " +
+//            "WHERE v.caregiver IN (SELECT j.user FROM JoinGroup j WHERE j.group.id = :groupId) " +
+//            "AND v.volunteer IN (SELECT j.user FROM JoinGroup j WHERE j.group.id = :groupId)")
+//    List<Volunteer> findVolunteersInGroup(@Param("groupId") Long groupId);
 }
