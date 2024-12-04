@@ -24,9 +24,6 @@ public class RegisterDTO {
     // 이름
     @NotNull
     private String username;
-    // 나이
-    @NotNull
-    private Integer age;
     // 전화번호
     @NotNull
     private String phoneNum;

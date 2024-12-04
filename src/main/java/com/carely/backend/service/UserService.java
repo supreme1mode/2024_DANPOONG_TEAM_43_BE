@@ -33,9 +33,12 @@ public class UserService {
     // private final KakaoAddressService kakaoAddressService;
 
     public RegisterDTO.Res register(RegisterDTO registerDTO, MultipartFile file) throws IOException {
+        Boolean checkCertificate = false;
+
         if (file.isEmpty() && registerDTO.getUserType().equals(UserType.CARE_WORKER)) {
             throw new NoFileException("파일 없는데");
         }
+
         String imageUrl = ocrService.uploadCertificateImage(file, registerDTO.getKakaoId());
 
         String username = registerDTO.getUsername();
@@ -59,6 +62,7 @@ public class UserService {
         if(userRepository.existsByKakaoId(registerDTO.getKakaoId())) {
             throw new DuplicateUsernameException("중복된 아이디가 존재합니다.");
         }
+
 
         Map<String, Double> location = getLocation(address);
         // 위도, 경도 설정
