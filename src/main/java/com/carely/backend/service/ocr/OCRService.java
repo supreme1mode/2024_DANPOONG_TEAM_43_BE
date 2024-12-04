@@ -30,8 +30,8 @@ import java.util.regex.Pattern;
 @Service
 @RequiredArgsConstructor
 public class OCRService {
-    private S3Uploader s3Uploader;
-    private UserRepository userRepository;
+    private final S3Uploader s3Uploader;
+    private final UserRepository userRepository;
 
     public String uploadCertificateImage(MultipartFile file, String kakaoId) throws IOException {
 
