@@ -79,6 +79,7 @@ public class MyPageDTO {
         @Setter
         private double longitude;
         private Integer age;
+        private String certificateImage;
 
         private String talk;
         private String eat;
@@ -109,6 +110,7 @@ public class MyPageDTO {
                     .bath(user.getBath())
                     .walk(user.getWalk())
                     .story(user.getStory())
+                    .certificateImage(user.getCertificateImage())
                     .build();
 
             getLocation(detailRes);
