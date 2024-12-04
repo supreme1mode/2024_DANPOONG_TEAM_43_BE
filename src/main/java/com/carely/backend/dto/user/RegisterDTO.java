@@ -79,6 +79,8 @@ public class RegisterDTO {
         private String detailAddress;
         // 위치 인증 여부
         private Boolean locationAuthentication;
+        // 나이
+        private Integer age;
 
         private Boolean shareLocation;
         private Double latitude;
@@ -87,6 +89,7 @@ public class RegisterDTO {
 
         public static Res toDTO(User user) {
             return Res.builder()
+                    .age(user.getAge())
                     .userId(user.getId())
                     .kakaoId(user.getKakaoId())
                     .city(user.getCity())
