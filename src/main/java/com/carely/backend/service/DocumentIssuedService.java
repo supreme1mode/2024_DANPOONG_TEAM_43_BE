@@ -40,6 +40,7 @@ public class DocumentIssuedService {
                     .address(user.getAddress())
                     .partnerName(volunteer.getCaregiver().getUsername())
                     .partnerType(volunteer.getCaregiver().getUserType().name())
+                    .partnerId(volunteer.getCaregiver().getId())
                     .volunteerDate(volunteer.getDate().toString())
                     .durationTimes(volunteer.getDurationHours())
                     .content(volunteer.getMainTask())
