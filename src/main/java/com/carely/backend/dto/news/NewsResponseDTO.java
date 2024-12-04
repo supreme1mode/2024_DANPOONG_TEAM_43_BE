@@ -25,6 +25,7 @@ public class NewsResponseDTO {
         private String content;
         private UserType writerType;
         private String writer;
+        private Long writerId;
         private Integer commentCount;
         private LocalDateTime createdAt;
 
@@ -39,6 +40,7 @@ public class NewsResponseDTO {
                     .writer(news.getWriter().getUsername())
                     .writerType(news.getWriter().getUserType())
                     .commentCount(commentCount)
+                    .writerId(news.getWriter().getId())
                     .build();
         }
     }
@@ -53,6 +55,7 @@ public class NewsResponseDTO {
         private String content;
         private UserType writerType;
         private String writer;
+        private Long writerId;
         private Integer commentCount;
         private LocalDateTime createdAt;
         private java.util.List<NewsCommentResponseDTO.List> newsComments;
@@ -72,6 +75,7 @@ public class NewsResponseDTO {
                     .title(news.getTitle())
                     .content(news.getContent())
                     .writer(news.getWriter().getUsername())
+                    .writerId(news.getWriter().getId())
                     .writerType(news.getWriter().getUserType())
                     .newsComments(newsComments)
                     .build();
