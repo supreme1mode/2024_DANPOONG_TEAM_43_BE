@@ -69,6 +69,9 @@ public class Volunteer extends BaseEntity {
     @JoinColumn(name = "caregiver_id")
     private User caregiver;
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    private Group group;
+
     // 승인 처리
     public void updateVolunteerApproval() {
         this.isApproved = true;

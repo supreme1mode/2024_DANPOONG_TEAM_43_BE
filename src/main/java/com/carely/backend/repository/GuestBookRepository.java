@@ -6,16 +6,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface GuestBookRepository extends JpaRepository<GuestBookEntity, Long> {
     //@Query("SELECT g FROM GuestBookEntity g WHERE g.id = :id")
-    GuestBookEntity findByVolunteerId(Long volunteerId);
-    GuestBookEntity findByVolunteerSectionId(Long volunteerSectionId);
-    List<GuestBookEntity> findByCaregiver(User caregiver);
-    List<GuestBookEntity> findByVolunteer(User volunteer);
+    Optional<GuestBookEntity> findByVolunteerSectionId(Long volunteerSectionId);
 
     void deleteByVolunteerSectionId(Long volunteerSectionId);
+
+    Optional<GuestBookEntity> findByVolunteerSectionIdAndWriterType(Long volunteerSectionId, String writerType);
 
 
 }

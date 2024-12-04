@@ -50,6 +50,13 @@ public class GlobalHandleException {
                 .body(new ErrorResponseDTO(ErrorCode.HAS_NOT_CERTIFICATE));
     }
 
+    @ExceptionHandler(GuestBookNotFoundException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleGuestBookNotFoundException(final GuestBookNotFoundException e) {
+        return ResponseEntity
+                .status(ErrorCode.GUESTBOOK_NOT_FOUNT.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.GUESTBOOK_NOT_FOUNT));
+    }
+
     @ExceptionHandler(ObjectNullException.class)
     protected ResponseEntity<ErrorResponseDTO> handleObjectNullException(final ObjectNullException e) {
         return ResponseEntity

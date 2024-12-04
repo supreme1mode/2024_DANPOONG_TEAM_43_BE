@@ -2,15 +2,14 @@ package com.carely.backend.service;
 
 
 import com.carely.backend.domain.ChatMessageEntity;
+import com.carely.backend.domain.Group;
 import com.carely.backend.domain.User;
 import com.carely.backend.domain.Volunteer;
 import com.carely.backend.domain.enums.UserType;
 import com.carely.backend.dto.volunteer.CreateVolunteerDTO;
 import com.carely.backend.dto.volunteer.GetVolunteerInfoDTO;
 import com.carely.backend.exception.*;
-import com.carely.backend.repository.ChatMessageRepository;
-import com.carely.backend.repository.UserRepository;
-import com.carely.backend.repository.VolunteerRepository;
+import com.carely.backend.repository.*;
 import com.carely.backend.service.certificate.CertificateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -30,6 +30,8 @@ public class VolunteerService {
     private final UserRepository userRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final CertificateService certificateService;
+    private final JoinGroupRepository joinGroupRepository;
+    private final GroupRepository groupRepository;
 
     public CreateVolunteerDTO.Res createVolunteer(CreateVolunteerDTO dto) {
         // 자원봉사자 및 간병인 조회
@@ -62,6 +64,14 @@ public class VolunteerService {
                 .caregiver(caregiver)
                 .isApproved(false)
                 .build();
+
+        //사람들이 한 그룹일 경우
+        List<Group> groups = joinGroupRepository.findCommonGroups(volunteer.getId(), caregiver.getId());
+        if (!groups.isEmpty()) {
+            for (Group group: groups) {
+                group.setVolunteerSessions(volunteerEntity);
+            }
+        }
 
         // 저장
         return CreateVolunteerDTO.Res.toDTO(volunteerRepository.save(volunteerEntity));

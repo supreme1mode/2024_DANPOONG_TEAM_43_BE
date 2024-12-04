@@ -4,6 +4,7 @@ package com.carely.backend.controller;
 import com.carely.backend.code.SuccessCode;
 import com.carely.backend.controller.docs.GuestBookAPI;
 import com.carely.backend.dto.guestBook.RequestGuestBookDTO;
+import com.carely.backend.dto.guestBook.ResponseGroupGuestbookDTO;
 import com.carely.backend.dto.guestBook.ResponseGuestBookDTO;
 import com.carely.backend.dto.response.ResponseDTO;
 import com.carely.backend.dto.user.CustomUserDetails;
@@ -65,5 +66,15 @@ public class GuestBookController implements GuestBookAPI {
         return ResponseEntity
                 .status(SuccessCode.SUCCESS_DELETE_GUESTBOOK.getStatus().value())
                 .body(new ResponseDTO<>(SuccessCode.SUCCESS_DELETE_GUESTBOOK, null));
+    }
+
+    // 그룹에 속한 방명록 조회
+    @GetMapping("/guestbook/{groupId}")
+    public ResponseEntity<ResponseDTO<?>> getGroupGuestbook(@PathVariable Long groupId, @AuthenticationPrincipal CustomUserDetails user) {
+        List<ResponseGroupGuestbookDTO> res = guestBookService.getGroupGusetbook(groupId, user.getUsername());
+
+        return ResponseEntity
+                .status(SuccessCode.SUCCESS_RETRIEVE_GUESTBOOK.getStatus().value())
+                .body(new ResponseDTO<>(SuccessCode.SUCCESS_RETRIEVE_GUESTBOOK, res));
     }
   }

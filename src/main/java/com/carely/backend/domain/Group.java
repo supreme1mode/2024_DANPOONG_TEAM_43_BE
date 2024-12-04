@@ -41,5 +41,11 @@ public class Group extends BaseEntity {
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Like> likes = new HashSet<>();
 
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Volunteer> volunteerSessions = new HashSet<>();
 
+
+    public void setVolunteerSessions(Volunteer volunteer) {
+        this.volunteerSessions.add(volunteer);
+    }
 }

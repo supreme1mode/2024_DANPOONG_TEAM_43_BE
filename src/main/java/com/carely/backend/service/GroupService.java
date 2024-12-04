@@ -2,13 +2,13 @@ package com.carely.backend.service;
 
 
 import com.carely.backend.domain.*;
+import com.carely.backend.domain.enums.UserType;
 import com.carely.backend.dto.group.CreateGroupDTO;
 import com.carely.backend.dto.group.GetGroupDTO;
+import com.carely.backend.dto.guestBook.ResponseGroupGuestbookDTO;
+import com.carely.backend.dto.guestBook.ResponseGuestBookDTO;
 import com.carely.backend.dto.user.UserResponseDTO;
-import com.carely.backend.exception.AlreadyInGroupException;
-import com.carely.backend.exception.GroupNotFoundException;
-import com.carely.backend.exception.NotUserInGroupException;
-import com.carely.backend.exception.NotWriterException;
+import com.carely.backend.exception.*;
 import com.carely.backend.repository.*;
 import com.carely.backend.service.s3.S3Uploader;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +34,7 @@ public class GroupService {
     private final VolunteerRepository volunteerRepository;
     private final LikeRepository likeRepository;
     private final NewsRepository newsRepository;
+    private final GuestBookRepository guestBookRepository;
 
 
     public CreateGroupDTO.Res createCaregiverGroup(String kakaoId, CreateGroupDTO groupDTO) throws IOException {
@@ -182,5 +183,6 @@ public class GroupService {
                 })
                 .sum();
     }
+
 
 }
