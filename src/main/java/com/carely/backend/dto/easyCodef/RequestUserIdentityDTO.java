@@ -5,9 +5,9 @@ import lombok.Getter;
 @Getter
 public class RequestUserIdentityDTO {
     //핸드폰 번호
-    private String phoneNo;
+    private String phoneNum;
     //이름
-    private String userName;
+    private String nickname;
     //발급일자
     private String issueDate;
     //주민번호
