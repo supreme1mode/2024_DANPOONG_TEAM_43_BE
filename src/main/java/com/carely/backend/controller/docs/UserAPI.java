@@ -96,6 +96,6 @@ public interface UserAPI {
     public ResponseEntity<ResponseDTO> verifyAuthenticationPost(@RequestBody() AddressDTO addressDTO);
 
     @Operation(summary = "유저 삭제하기", description = "유저를 삭제합니다. (회원 탈퇴로 나중에 수정하기)gi")
-    public ResponseEntity<ResponseDTO> deleteUser();
+    public ResponseEntity<ResponseDTO> deleteUser(@PathVariable String kakao_id) ;
 
 }
