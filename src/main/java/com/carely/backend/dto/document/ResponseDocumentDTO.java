@@ -11,6 +11,7 @@ public class ResponseDocumentDTO {
     private String volunteerSessionType;
     private String partnerType;
     private String partnerName;
+    private Long partnerId;
     private String volunteerDate;
     private String myIdentity;
     private String address;
