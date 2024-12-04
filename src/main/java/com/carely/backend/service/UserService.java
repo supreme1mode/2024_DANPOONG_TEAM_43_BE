@@ -211,19 +211,19 @@ public class UserService {
         }
     }
 
-    public List<MapUserDTO> findUsersByCityAndUserTypes(String city, List<UserType> userTypes, User superUser, Double latitude, Double longittude) {
+    public List<MapUserDTO> findUsersByCityAndUserTypes(String city, List<UserType> userTypes, User currentUser, Double latitude, Double longittude) {
         List<User> users = userRepository.findByCityAndUserTypeIn(city, userTypes);
 
         return users.stream()
-                .map(user -> new MapUserDTO().toDTO(user, calculateTotalDuration(user, superUser)))
+                .map(user -> new MapUserDTO().toDTO(user, calculateTotalDuration(user, currentUser), currentUser))
                 .collect(Collectors.toList()); // 빈 리스트도 collect로 반환
     }
 
-    public List<MapUserDTO> findUserByAddress(String city, User superUser, Double latitude, Double longittude) {
+    public List<MapUserDTO> findUserByAddress(String city, User currentUser, Double latitude, Double longittude) {
         List<User> users = userRepository.findByCity(city);
 
         return users.stream()
-                .map(user -> new MapUserDTO().toDTO(user, calculateTotalDuration(user, superUser)))
+                .map(user -> new MapUserDTO().toDTO(user, calculateTotalDuration(user, currentUser), currentUser))
                 .collect(Collectors.toList()); // 빈 리스트도 collect로 반환
     }
 
@@ -244,7 +244,7 @@ public class UserService {
 
         return users.stream()
                 .filter(user -> !user.getKakaoId().equals(kakaoId))  // 본인 제외
-                .map(user -> new MapUserDTO().toDTO(user, calculateTotalDuration(user, viewer)))
+                .map(user -> new MapUserDTO().toDTO(user, calculateTotalDuration(user, viewer), viewer))
                 .collect(Collectors.toList());  // 빈 리스트도 collect로 반환
     }
 
@@ -257,7 +257,7 @@ public class UserService {
 
         return users.stream()
                 .filter(user -> !user.getKakaoId().equals(kakaoId))  // 본인 제외
-                .map(user -> new MapUserDTO().toDTO(user, calculateTotalDuration(user, viewer)))
+                .map(user -> new MapUserDTO().toDTO(user, calculateTotalDuration(user, viewer), viewer))
                 .collect(Collectors.toList());  // 빈 리스트도 collect로 반환
     }
 
