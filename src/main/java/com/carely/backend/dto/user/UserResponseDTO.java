@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.web3j.abi.datatypes.Int;
 
 @Getter
 @Builder
@@ -24,6 +25,7 @@ public class UserResponseDTO {
         private String username;
         private UserType userType;
         private Long timeTogether; // 새로운 필드
+        private Integer age;
 
         public static Group toDTO(User user, long timeTogether) {
             return Group.builder()
@@ -31,6 +33,7 @@ public class UserResponseDTO {
                     .username(user.getUsername())
                     .userType(user.getUserType())
                     .timeTogether(timeTogether)
+                    .age(user.getAge())
                     .build();
         }
     }
@@ -44,6 +47,7 @@ public class UserResponseDTO {
         private String username;
         private com.carely.backend.domain.enums.UserType userType;
         private String story;
+        private Integer age;
 
         public static RecentUser toDTO(User user) {
             return RecentUser.builder()
@@ -51,6 +55,7 @@ public class UserResponseDTO {
                     .username(user.getUsername())
                     .userType(user.getUserType())
                     .story(user.getStory())
+                    .age(user.getAge())
                     .build();
         }
     }

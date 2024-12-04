@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import org.json.JSONObject;
+import org.web3j.abi.datatypes.Int;
 
 
 @Getter
@@ -31,9 +32,11 @@ public class MyPageDTO {
         private String toilet;
         private String bath;
         private String walk;
+        private Integer age;
 
         public static SimpleRes toDTO(User user) {
             return SimpleRes.builder()
+                    .age(user.getAge())
                     .userId(user.getId())
                     .userType(user.getUserType())
                     .username(user.getUsername())
@@ -75,6 +78,7 @@ public class MyPageDTO {
         private double latitude;
         @Setter
         private double longitude;
+        private Integer age;
 
         private String talk;
         private String eat;
@@ -89,6 +93,7 @@ public class MyPageDTO {
 
         public static DetailRes toDTO(User user) {
             DetailRes detailRes = DetailRes.builder()
+                    .age(user.getAge())
                     .userId(user.getId())
                     .userType(user.getUserType())
                     .username(user.getUsername())
@@ -112,7 +117,7 @@ public class MyPageDTO {
 
         private static void getLocation(DetailRes detailRes) {
 
-            String API_KEY = "78256822bbbbbe614142bcad43930708"; // 여기에 카카오 API 키 입력
+            String API_KEY = "78256822bbbbbe614142bcad43930708";
             String GEOCODE_URL = "https://dapi.kakao.com/v2/local/search/address.json";
 
             String address = detailRes.getAddress(); // 위도 경도를 구할 주소

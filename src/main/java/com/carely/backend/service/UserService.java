@@ -20,7 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -87,6 +89,7 @@ public class UserService {
                 .shareLocation(registerDTO.getShareLocation())
                 .role("ROLE_USER")
                 .latitude(latitude)
+                .age(getAge(registerDTO.getIdentity()))
                 .longitude(longitude)
                 .certificateCheck(false)
                 .identity(registerDTO.getIdentity())
@@ -94,6 +97,25 @@ public class UserService {
                 .build();
 
         return RegisterDTO.Res.toDTO(userRepository.save(user));
+    }
+
+    private static int getAge(String identify) {
+        String birthDateStr = identify.substring(0, 6);
+        int year = Integer.parseInt(birthDateStr.substring(0, 2));
+        int month = Integer.parseInt(birthDateStr.substring(2, 4));
+        int day = Integer.parseInt(birthDateStr.substring(4, 6));
+
+        char genderCode = identify.charAt(6);
+        if (genderCode == '1' || genderCode == '2') {
+            year += 1900;
+        }
+        else {
+            year += 2000;
+        }
+
+        LocalDate birthDate = LocalDate.of(year, month, day);
+        LocalDate currentDate = LocalDate.now();
+        return Period.between(birthDate, currentDate).getYears() + 1; // 만나이 아님
     }
 
     private Map<String, Double> getLocation(String address) {
