@@ -34,8 +34,6 @@ public class OCRService {
     private UserRepository userRepository;
 
     public String uploadCertificateImage(MultipartFile file, String kakaoId) throws IOException {
-        User user = userRepository.findByKakaoId(kakaoId)
-                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
         return s3Uploader.upload(file, "certificate");
     }

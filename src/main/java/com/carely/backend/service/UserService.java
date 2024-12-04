@@ -33,7 +33,6 @@ public class UserService {
     // private final KakaoAddressService kakaoAddressService;
 
     public RegisterDTO.Res register(RegisterDTO registerDTO, MultipartFile file) throws IOException {
-        Boolean checkCertificate = false;
 
         if (file.isEmpty() && registerDTO.getUserType().equals(UserType.CARE_WORKER)) {
             throw new NoFileException("파일 없는데");
