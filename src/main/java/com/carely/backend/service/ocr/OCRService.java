@@ -6,6 +6,7 @@ import com.carely.backend.dto.ocr.OCRResponseDto;
 import com.carely.backend.exception.UserNotMatchException;
 import com.carely.backend.repository.UserRepository;
 import com.carely.backend.service.certificate.CertificateService;
+import com.carely.backend.service.s3.S3Uploader;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
@@ -15,6 +16,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -28,8 +30,20 @@ import java.util.regex.Pattern;
 @Service
 @RequiredArgsConstructor
 public class OCRService {
-    private final UserRepository userRepository;
-    private final CertificateService certificateService;
+    private S3Uploader s3Uploader;
+    private UserRepository userRepository;
+
+    public String uploadCertificateImage(MultipartFile file, String kakaoId) throws IOException {
+        User user = userRepository.findByKakaoId(kakaoId)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        return s3Uploader.upload(file, "certificate");
+    }
+
+
+
+    //private final UserRepository userRepository;
+    //private final CertificateService certificateService;
 
     @Value("${google.vision.api-key}")
     private String apiKey;

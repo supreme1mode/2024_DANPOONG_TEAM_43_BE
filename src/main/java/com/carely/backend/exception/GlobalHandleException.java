@@ -71,6 +71,13 @@ public class GlobalHandleException {
                 .body(new ErrorResponseDTO(ErrorCode.ALREADY_HAS_CERTIFICATE));
     }
 
+    @ExceptionHandler(NoFileException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleNoFileException(final NoFileException e) {
+        return ResponseEntity
+                .status(ErrorCode.NO_FILE.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.NO_FILE));
+    }
+
     @ExceptionHandler(TotalTimeNotEnoughException.class)
     protected ResponseEntity<ErrorResponseDTO> handleTotalTimeNotEnoughException(final TotalTimeNotEnoughException e) {
         return ResponseEntity

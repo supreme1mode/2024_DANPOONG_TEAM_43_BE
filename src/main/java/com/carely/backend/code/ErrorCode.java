@@ -52,7 +52,7 @@ public enum ErrorCode {
     ALREADY_APPROVED(HttpStatus.NOT_ACCEPTABLE, "이미 승인된 약속입니다."),
     ALREADY_HAS_CERTIFICATE(HttpStatus.NOT_ACCEPTABLE, "이미 자격증이 존재하여 발급할 수 없습니다."),
     TOTAL_TIME_NOT_ENOUGH(HttpStatus.NOT_ACCEPTABLE, "실습 시간이 충분하지 않아 자격증을 발급할 수 없습니다."),
-
+    NO_FILE(HttpStatus.NOT_ACCEPTABLE, "요양보호사로 회원가입 시 자격증 사진이 필요합니다."),
 
 
 

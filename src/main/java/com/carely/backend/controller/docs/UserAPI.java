@@ -34,14 +34,20 @@ public interface UserAPI {
                             examples = @ExampleObject(value = "{ \"status\": 200, \"code\": \"SUCCESS_REGISTER\", \"message\": \"회원가입을 성공했습니다.\", \"data\": { \"kakaoId\": \"377747839\", \"userType\": \"VOLUNTEER\", \"username\": \"김은서\", \"age\": 22, \"phoneNum\": \"010-8230-2512\", \"address\": \"경기도 과천시 과천동 376-17\", \"detailAddress\": \"202호\", \"locationAuthentication\": true } }")
                     )
             ),
+            @ApiResponse(responseCode = "406", description = "요양보호사이지만 이미지 파일이 없는 경우",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponseDTO.class),
+                            examples = @ExampleObject(value = "{ \"status\": 406, \"error\": \"CONFLICT\", \"code\": \"NO_FILE\", \"message\": \"요양보호사로 회원가입 시 자격증 사진이 필요합니다.\" }"))
+            ),
 
             @ApiResponse(responseCode = "409", description = "데이베이스에 존재하는 회원이 회원가입을 진행할 경우",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponseDTO.class),
                             examples = @ExampleObject(value = "{ \"status\": 409, \"error\": \"CONFLICT\", \"code\": \"DUPLICATE_USERNAME\", \"message\": \"중복된 유저 이름입니다.\" }"))
             ),
+
     })
-    public ResponseEntity<ResponseDTO> registerUser(@RequestPart("registerDTO") RegisterDTO registerDTO) throws IOException;
+    public ResponseEntity<ResponseDTO> registerUser(@RequestPart("registerDTO") RegisterDTO registerDTO, @RequestPart MultipartFile file) throws IOException;
 
     @Operation(summary = "access token 재발급하기",
             parameters = {

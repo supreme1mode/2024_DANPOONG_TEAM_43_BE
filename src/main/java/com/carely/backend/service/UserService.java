@@ -6,10 +6,12 @@ import com.carely.backend.domain.enums.UserType;
 import com.carely.backend.dto.user.*;
 import com.carely.backend.exception.DuplicateUsernameException;
 import com.carely.backend.exception.KakaoIdNotFoundException;
+import com.carely.backend.exception.NoFileException;
 import com.carely.backend.exception.UserNotFoundException;
 import com.carely.backend.repository.UserRepository;
 import com.carely.backend.repository.VolunteerRepository;
 import com.carely.backend.service.kakao.KakaoAddressService;
+import com.carely.backend.service.ocr.OCRService;
 import com.carely.backend.service.parser.AddressParser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -27,9 +29,15 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserRepository userRepository;
     private final VolunteerRepository volunteerRepository;
+    private final OCRService ocrService;
     // private final KakaoAddressService kakaoAddressService;
 
-    public RegisterDTO.Res register(RegisterDTO registerDTO) {
+    public RegisterDTO.Res register(RegisterDTO registerDTO, MultipartFile file) throws IOException {
+        if (file.isEmpty()) {
+            throw new NoFileException("파일 없는데");
+        }
+        String imageUrl = ocrService.uploadCertificateImage(file, registerDTO.getKakaoId());
+
         String username = registerDTO.getUsername();
         UserType userType = registerDTO.getUserType();
         String kakaoId = registerDTO.getKakaoId();
@@ -79,6 +87,8 @@ public class UserService {
                 .latitude(latitude)
                 .longitude(longitude)
                 .certificateCheck(false)
+                .identity(registerDTO.getIdentity())
+                .certificateImage(imageUrl)
                 .build();
 
         return RegisterDTO.Res.toDTO(userRepository.save(user));
