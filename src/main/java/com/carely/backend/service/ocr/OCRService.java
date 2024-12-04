@@ -1,29 +1,17 @@
 package com.carely.backend.service.ocr;
 
-import com.carely.backend.domain.User;
-import com.carely.backend.dto.certificate.CertificateDTO;
 import com.carely.backend.dto.ocr.OCRResponseDto;
-import com.carely.backend.exception.UserNotMatchException;
 import com.carely.backend.repository.UserRepository;
-import com.carely.backend.service.certificate.CertificateService;
 import com.carely.backend.service.s3.S3Uploader;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Base64;
 import java.util.Map;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

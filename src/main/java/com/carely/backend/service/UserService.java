@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.net.URLEncoder;
 
 @Service
 @RequiredArgsConstructor
@@ -36,11 +37,16 @@ public class UserService {
 
     public RegisterDTO.Res register(RegisterDTO registerDTO, MultipartFile file) throws IOException {
 
-        if (file.isEmpty() && registerDTO.getUserType().equals(UserType.CARE_WORKER)) {
-            throw new NoFileException("파일 없는데");
-        }
+        String imageUrl = null;
 
-        String imageUrl = ocrService.uploadCertificateImage(file, registerDTO.getKakaoId());
+        if (registerDTO.getUserType().equals(UserType.CARE_WORKER)) {
+            if (file == null && registerDTO.getUserType().equals(UserType.CARE_WORKER)) {
+                throw new NoFileException("파일 없는데");
+            }
+
+            imageUrl = ocrService.uploadCertificateImage(file, registerDTO.getKakaoId());
+
+        }
 
         String username = registerDTO.getUsername();
         UserType userType = registerDTO.getUserType();
