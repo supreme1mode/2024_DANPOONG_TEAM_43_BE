@@ -201,10 +201,10 @@ public class UserController implements UserAPI {
 
 
     // 회원 탈퇴
-    @DeleteMapping("/delete-user")
-    public ResponseEntity<ResponseDTO> deleteUser() {
-        String kakaoId = SecurityContextHolder.getContext().getAuthentication().getName();
-        userService.deleteUser(kakaoId);
+    @DeleteMapping("/delete-user/{kakao_id}")
+    public ResponseEntity<ResponseDTO> deleteUser(@PathVariable String kakao_id) {
+        //String kakaoId = SecurityContextHolder.getContext().getAuthentication().getName();
+        userService.deleteUser(kakao_id);
         return ResponseEntity
                 .status(SuccessCode.SUCCESS_DELETE_USER.getStatus().value())
                 .body(new ResponseDTO<>(SuccessCode.SUCCESS_DELETE_USER, null));
