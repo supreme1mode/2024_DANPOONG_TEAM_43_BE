@@ -28,6 +28,7 @@ public class Group extends BaseEntity {
     private String description;
     private String schedule;
     private String ownerId;
+    private String groupImage;
 
 //    @Enumerated(EnumType.STRING)
 //    private UserType userType;

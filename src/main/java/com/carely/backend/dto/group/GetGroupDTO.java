@@ -53,6 +53,7 @@ public class GetGroupDTO {
         private String description;
         private Integer headCount; // 인원수
         private LocalDateTime lastNews;
+        private String groupImage;
         // private UserType userType;
         // private Boolean isLiked;
         // private Boolean isWriter;
@@ -63,6 +64,7 @@ public class GetGroupDTO {
                     .groupId(e.getId())
                     .groupName(e.getGroupName())
                     .city(e.getCity())
+                    .groupImage(e.getGroupImage())
                     .description(e.getDescription())
                     .headCount(e.getJoinGroups() != null ? e.getJoinGroups().size() : 0) // JoinGroup을 사용한 인원수 계산
                     // .userType(e.getUserType())
@@ -84,6 +86,7 @@ public class GetGroupDTO {
         private String city;
         private String description;
         private String schedule;
+        private String groupImage;
         private Integer headCount; // 인원수
         // private Boolean isLiked;
         // private Boolean isWriter;
@@ -97,6 +100,7 @@ public class GetGroupDTO {
                     .groupId(e.getId())
                     .groupName(e.getGroupName())
                     .city(e.getCity())
+                    .groupImage(e.getGroupImage())
                     .description(e.getDescription())
                     .schedule(e.getSchedule())
                     .headCount(e.getJoinGroups() != null ? e.getJoinGroups().size() : 0) // JoinGroup을 사용한 인원수 계산
