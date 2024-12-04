@@ -48,6 +48,7 @@ public class UserService {
 
         }
 
+
         String username = registerDTO.getUsername();
         UserType userType = registerDTO.getUserType();
         String kakaoId = registerDTO.getKakaoId();
