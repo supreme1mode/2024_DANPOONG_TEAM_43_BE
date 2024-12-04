@@ -75,7 +75,6 @@ public class UserService {
                 .city(city)
                 .username(username)
                 .userType(userType)
-                .age(registerDTO.getAge())
                 .phoneNum(registerDTO.getPhoneNum())
                 .address(address)
                 .detailAddress(registerDTO.getDetailAddress())

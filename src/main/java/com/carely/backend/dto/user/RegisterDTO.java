@@ -69,8 +69,6 @@ public class RegisterDTO {
         private UserType userType;
         // 이름
         private String username;
-        // 나이
-        private Integer age;
         // 전화번호
         private String phoneNum;
         // 도시
@@ -94,7 +92,6 @@ public class RegisterDTO {
                     .city(user.getCity())
                     .userType(user.getUserType())
                     .username(user.getUsername())
-                    .age(user.getAge())
                     .phoneNum(user.getPhoneNum())
                     .address(user.getAddress())
                     .detailAddress(user.getDetailAddress())
