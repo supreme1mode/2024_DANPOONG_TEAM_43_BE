@@ -33,7 +33,7 @@ public class UserService {
     // private final KakaoAddressService kakaoAddressService;
 
     public RegisterDTO.Res register(RegisterDTO registerDTO, MultipartFile file) throws IOException {
-        if (file.isEmpty()) {
+        if (file.isEmpty() && registerDTO.getUserType().equals(UserType.CARE_WORKER)) {
             throw new NoFileException("파일 없는데");
         }
         String imageUrl = ocrService.uploadCertificateImage(file, registerDTO.getKakaoId());
