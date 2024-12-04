@@ -24,7 +24,6 @@ public class MyPageDTO {
         private Long userId; // 유저 고유 아이디
         private UserType userType;
         private String username;
-        private Integer age;
         private String city;
         private String address;
         private String talk;
@@ -38,7 +37,6 @@ public class MyPageDTO {
                     .userId(user.getId())
                     .userType(user.getUserType())
                     .username(user.getUsername())
-                    .age(user.getAge())
                     .city(user.getCity())
                     .address(user.getAddress())
                     .talk(user.getTalk())
@@ -58,8 +56,6 @@ public class MyPageDTO {
         private Long userId;
         // 이름
         private String username;
-        // 나이
-        private Integer age;
         // 전화번호
         private String phoneNum;
         // 도시
@@ -96,7 +92,6 @@ public class MyPageDTO {
                     .userId(user.getId())
                     .userType(user.getUserType())
                     .username(user.getUsername())
-                    .age(user.getAge())
                     .phoneNum(user.getPhoneNum())
                     .locationAuthentication(user.getLocationAuthentication())
                     .shareLocation(user.getShareLocation())
