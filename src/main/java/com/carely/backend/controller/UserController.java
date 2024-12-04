@@ -42,7 +42,7 @@ public class UserController implements UserAPI {
     private final JWTUtil jwtUtil;
 
     @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseDTO> registerUser(@RequestPart("registerDTO") RegisterDTO registerDTO, @RequestPart MultipartFile file) throws IOException {
+    public ResponseEntity<ResponseDTO> registerUser(@RequestPart("registerDTO") RegisterDTO registerDTO,  @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
         RegisterDTO.Res res = userService.register(registerDTO, file);
         return ResponseEntity
                 .status(SuccessCode.SUCCESS_REGISTER.getStatus().value())
