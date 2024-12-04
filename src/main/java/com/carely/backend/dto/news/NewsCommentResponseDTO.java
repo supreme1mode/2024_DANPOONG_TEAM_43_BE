@@ -19,6 +19,7 @@ public class NewsCommentResponseDTO {
         private String content;
         private UserType writerType;
         private String writer;
+        private Long writerId;
         private LocalDateTime createdAt;
 
         public static List toDTO (NewsComment e) {
@@ -28,6 +29,7 @@ public class NewsCommentResponseDTO {
                     .writer(e.getWriter().getUsername())
                     .writerType(e.getWriter().getUserType())
                     .createdAt(e.getCreatedAt())
+                    .writerId(e.getWriter().getId())
                     .build();
         }
     }
