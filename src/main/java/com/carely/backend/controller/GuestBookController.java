@@ -32,32 +32,6 @@ public class GuestBookController implements GuestBookAPI {
                 .body(new ResponseDTO<>(SuccessCode.SUCCESS_CREATE_GUESTBOOK, null));
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<ResponseDTO<?>> getAllGuestBook(@Valid @AuthenticationPrincipal CustomUserDetails user){
-        List<ResponseGuestBookDTO> responseGuestBookDTOList = guestBookService.getAllGuestBook(user.getUsername());
-
-        return ResponseEntity
-                .status(SuccessCode.SUCCESS_RETRIEVE_GUESTBOOK.getStatus().value())
-                .body(new ResponseDTO<>(SuccessCode.SUCCESS_RETRIEVE_GUESTBOOK, responseGuestBookDTOList));
-    }
-
-    @GetMapping("/myHome")
-    public ResponseEntity<ResponseDTO<?>> getGuestBookMyHome(@Valid @AuthenticationPrincipal CustomUserDetails user){
-        List<ResponseGuestBookDTO> responseGuestBookDTOList = guestBookService.getGuestBookMyHome(user.getUsername());
-
-        return ResponseEntity
-                .status(SuccessCode.SUCCESS_RETRIEVE_GUESTBOOK.getStatus().value())
-                .body(new ResponseDTO<>(SuccessCode.SUCCESS_RETRIEVE_GUESTBOOK, responseGuestBookDTOList));
-    }
-
-    @GetMapping("/caregiverHome")
-    public ResponseEntity<ResponseDTO<?>> getGuestBookCaregiverHome(@Valid @AuthenticationPrincipal CustomUserDetails user) {
-        List<ResponseGuestBookDTO> responseGuestBookDTOList = guestBookService.getGuestBookCaregiverHome(user.getUsername());
-
-        return ResponseEntity
-                .status(SuccessCode.SUCCESS_RETRIEVE_GUESTBOOK.getStatus().value())
-                .body(new ResponseDTO<>(SuccessCode.SUCCESS_RETRIEVE_GUESTBOOK, responseGuestBookDTOList));
-    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseDTO<?>> deleteGuestBook(@Valid @AuthenticationPrincipal CustomUserDetails user, @PathVariable Long id) {
@@ -71,10 +45,49 @@ public class GuestBookController implements GuestBookAPI {
     // 그룹에 속한 방명록 조회
     @GetMapping("/guestbook/{groupId}")
     public ResponseEntity<ResponseDTO<?>> getGroupGuestbook(@PathVariable Long groupId, @AuthenticationPrincipal CustomUserDetails user) {
-        List<ResponseGroupGuestbookDTO> res = guestBookService.getGroupGusetbook(groupId, user.getUsername());
+        List<ResponseGroupGuestbookDTO> res = guestBookService.getGroupGuestbook(groupId, user.getUsername());
 
         return ResponseEntity
                 .status(SuccessCode.SUCCESS_RETRIEVE_GUESTBOOK.getStatus().value())
                 .body(new ResponseDTO<>(SuccessCode.SUCCESS_RETRIEVE_GUESTBOOK, res));
     }
-  }
+    
+    
+    // 마이페이지 방명록 조회
+    @GetMapping("/myPage")
+    public ResponseEntity<ResponseDTO<?>> getMyPageGuestBook(@AuthenticationPrincipal CustomUserDetails user) {
+        List<ResponseGroupGuestbookDTO> res = guestBookService.getMyPageGuestBook(user.getUsername());
+
+        return ResponseEntity
+                .status(SuccessCode.SUCCESS_RETRIEVE_GUESTBOOK.getStatus().value())
+                .body(new ResponseDTO<>(SuccessCode.SUCCESS_RETRIEVE_GUESTBOOK, res));
+    }
+
+    //    @GetMapping("/all")
+//    public ResponseEntity<ResponseDTO<?>> getAllGuestBook(@Valid @AuthenticationPrincipal CustomUserDetails user){
+//        List<ResponseGuestBookDTO> responseGuestBookDTOList = guestBookService.getAllGuestBook(user.getUsername());
+//
+//        return ResponseEntity
+//                .status(SuccessCode.SUCCESS_RETRIEVE_GUESTBOOK.getStatus().value())
+//                .body(new ResponseDTO<>(SuccessCode.SUCCESS_RETRIEVE_GUESTBOOK, responseGuestBookDTOList));
+//    }
+//
+//    @GetMapping("/myHome")
+//    public ResponseEntity<ResponseDTO<?>> getGuestBookMyHome(@Valid @AuthenticationPrincipal CustomUserDetails user){
+//        List<ResponseGuestBookDTO> responseGuestBookDTOList = guestBookService.getGuestBookMyHome(user.getUsername());
+//
+//        return ResponseEntity
+//                .status(SuccessCode.SUCCESS_RETRIEVE_GUESTBOOK.getStatus().value())
+//                .body(new ResponseDTO<>(SuccessCode.SUCCESS_RETRIEVE_GUESTBOOK, responseGuestBookDTOList));
+//    }
+//
+//    @GetMapping("/caregiverHome")
+//    public ResponseEntity<ResponseDTO<?>> getGuestBookCaregiverHome(@Valid @AuthenticationPrincipal CustomUserDetails user) {
+//        List<ResponseGuestBookDTO> responseGuestBookDTOList = guestBookService.getGuestBookCaregiverHome(user.getUsername());
+//
+//        return ResponseEntity
+//                .status(SuccessCode.SUCCESS_RETRIEVE_GUESTBOOK.getStatus().value())
+//                .body(new ResponseDTO<>(SuccessCode.SUCCESS_RETRIEVE_GUESTBOOK, responseGuestBookDTOList));
+//    }
+
+}

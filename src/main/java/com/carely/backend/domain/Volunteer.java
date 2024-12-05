@@ -10,8 +10,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Builder
@@ -59,9 +57,6 @@ public class Volunteer extends BaseEntity {
     private Boolean isApproved;
 
     @Builder.Default
-    private Boolean hasGuestBook = Boolean.FALSE;
-
-    @Builder.Default
     private Boolean hasMemo = Boolean.FALSE;
 
     // 간병인
@@ -72,13 +67,23 @@ public class Volunteer extends BaseEntity {
     @ManyToOne(cascade = CascadeType.ALL)
     private Group group;
 
+    @Builder.Default
+    private Boolean checkVolunteerWriteGuestBook = false;
+
+    @Builder.Default
+    private Boolean checkCaregiverWriteGuestBook = false;
+
     // 승인 처리
     public void updateVolunteerApproval() {
         this.isApproved = true;
     }
 
-    public void updateVolunteerGuestBook() {this.hasGuestBook = true;}
-    public void deleteVolunteerGuestBook() {this.hasGuestBook = false;}
+    public void updateVolunteerGuestBook() {this.checkVolunteerWriteGuestBook = true;}
+    public void updateCaregiverGuestBook() {this.checkCaregiverWriteGuestBook = true;}
+
+    public void deleteVolunteerGuestBook() {this.checkVolunteerWriteGuestBook = false;}
+    public void deleteCaregiverGuestBook() {this.checkCaregiverWriteGuestBook = false;}
+
 
     public void updateVolunteerMemo() {this.hasMemo = true;}
 }

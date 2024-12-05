@@ -61,6 +61,8 @@ public class VolunteerService {
                 .volunteer(volunteer)
                 .roomId(dto.getRoomId())
                 .caregiver(caregiver)
+                .checkCaregiverWriteGuestBook(false)
+                .checkVolunteerWriteGuestBook(false)
                 .isApproved(false)
                 .build();
 

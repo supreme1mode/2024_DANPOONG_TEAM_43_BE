@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface VolunteerRepository extends JpaRepository<Volunteer, Long> {
 
-    @Query("SELECT v FROM Volunteer v WHERE (v.volunteer = :volunteer AND v.caregiver = :caregiver) OR (v.volunteer = :caregiver AND v.caregiver = :volunteer)")
+    @Query("SELECT v FROM Volunteer v WHERE (v.volunteer = :volunteer AND v.caregiver = :caregiver) OR (v.volunteer = :caregiver AND v.caregiver = :volunteer) ORDER BY v.id DESC")
     List<Volunteer> findByVolunteerAndCaregiver(@Param("volunteer") User volunteer, @Param("caregiver") User caregiver);
 
 
@@ -20,7 +20,7 @@ public interface VolunteerRepository extends JpaRepository<Volunteer, Long> {
 
     List<Volunteer> findByCaregiver(User caregiver);
 
-    @Query("SELECT v FROM Volunteer v WHERE (v.volunteer = :volunteer OR v.caregiver = :volunteer)")
+    @Query("SELECT v FROM Volunteer v WHERE (v.volunteer = :volunteer OR v.caregiver = :volunteer) ORDER BY v.id DESC")
     List<Volunteer> findByVolunteerOrCaregiver(@Param("volunteer") User volunteer);
 
     List<Volunteer> findByVolunteerAndHasMemoFalse(User writer);
