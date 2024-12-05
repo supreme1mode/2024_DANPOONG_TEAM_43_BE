@@ -6,10 +6,12 @@ import com.carely.backend.dto.certificate.CertificateDTO;
 import com.carely.backend.dto.certificate.VolunteerListDTO;
 import com.carely.backend.dto.certificate.volunteerDTO;
 import com.carely.backend.dto.response.ResponseDTO;
+import com.carely.backend.dto.user.CustomUserDetails;
 import com.carely.backend.service.certificate.CertificateService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -53,12 +55,13 @@ public class CertificateController implements CertificateAPI {
     }
 
     // 자격증 발급하기
-    @PostMapping("/issue/{userId}")
-    public ResponseEntity<ResponseDTO<?>> issueCertificate(@PathVariable String userId) throws Exception {
+    @PostMapping("/issue}")
+    public ResponseEntity<ResponseDTO<?>> issueCertificate(@AuthenticationPrincipal CustomUserDetails user) throws Exception {
+
         // UUID 생성
         String certificateId = UUID.randomUUID().toString();
         // 서비스 호출
-        CertificateDTO certificateDTO = certificateService.issueCertificate(certificateId, userId);
+        CertificateDTO certificateDTO = certificateService.issueCertificate(certificateId, user.getUsername());
 
         // 응답 반환
         return ResponseEntity
