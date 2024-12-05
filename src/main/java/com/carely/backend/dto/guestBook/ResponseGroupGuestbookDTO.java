@@ -15,5 +15,6 @@ public class ResponseGroupGuestbookDTO {
         private String userType;
         private String username;
         private String content;
+        private Long userId;
     }
 }
