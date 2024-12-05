@@ -107,25 +107,40 @@ public interface GuestBookAPI {
 
     @Operation(summary = "그룹 방명록 불러오기", description = "group_id에 있는 방명록을 모두 불러옵니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "그룹을 성공적으로 생성했을 경우",
+            @ApiResponse(responseCode = "200", description = "방명록을 성공적으로 조회했습니다.",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseDTO.class),
                             examples = @ExampleObject(value = """
                                 {
-                                    "status": 201,
-                                    "code": "SUCCESS_CREATE_GROUP",
-                                    "message": "그룹을 성공적으로 생성했습니다.",
-                                    "data": {
-                                        "groupId": 2,
-                                        "groupName": "그룹이름",
-                                        "city": "도봉구",
-                                        "description": "상세 설명",
-                                        "schedule": "스케쥴",
-                                        "headCount": 0,
-                                        "userType": "VOLUNTEER",
-                                        "groupImage": "https://groomcaregiver.s3.ap-northeast-2.amazonaws.com/group/d9ef4300-6bfb-4315-9023-7093c4236901"
+                                  "status": 200,
+                                  "code": "SUCCESS_RETRIEVE_GUESTBOOK",
+                                  "message": "방명록을 성공적으로 조회했습니다.",
+                                  "data": [
+                                    {
+                                      "volunteer": {
+                                        "userType": "CARE_WORKER",
+                                        "username": "강신영",
+                                        "content": "어우 지겨워"
+                                      },
+                                      "caregiver": {
+                                        "userType": "CAREGIVER",
+                                        "username": "김민주",
+                                        "content": null
+                                      }
                                     }
+                                  ]
                                 }
+                                """))),
+            @ApiResponse(responseCode = "200", description = "방명록을 성공적으로 조회했으나 리스트가 비어있을 경우",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDTO.class),
+                            examples = @ExampleObject(value = """
+                            {
+                              "status": 200,
+                              "code": "SUCCESS_BUT_LIST_EMPTY",
+                              "message": "성공적으로 조회하였으나, 리스트가 비었습니다.",
+                              "data": null
+                            }
                                 """))),
 
             @ApiResponse(responseCode = "401", description = "잘못된 토큰으로 요청할 경우",
