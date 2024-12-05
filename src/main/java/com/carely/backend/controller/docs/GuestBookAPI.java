@@ -117,7 +117,7 @@ public interface GuestBookAPI {
                                   "message": "방명록을 성공적으로 조회했습니다.",
                                   "data": [
                                     {
-                                      "volunteer": {
+                                      "otherType": {
                                         "userType": "CARE_WORKER",
                                         "username": "강신영",
                                         "content": "어우 지겨워"
@@ -203,7 +203,7 @@ public interface GuestBookAPI {
                                   "message": "방명록을 성공적으로 조회했습니다.",
                                   "data": [
                                     {
-                                      "volunteer": {
+                                      "otherType": {
                                         "userType": "CARE_WORKER",
                                         "username": "강신영",
                                         "content": "어우 지겨워"
