@@ -3,6 +3,7 @@ package com.carely.backend.dto.user;
 import com.carely.backend.domain.User;
 import com.carely.backend.domain.enums.UserType;
 import com.carely.backend.dto.guestBook.ResponseGroupGuestbookDTO;
+import com.carely.backend.dto.guestBook.UserDetailGuestBookDTO;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
@@ -92,7 +93,7 @@ public class MyPageDTO {
         private String story;
 
         @Setter
-        private List<ResponseGroupGuestbookDTO> guestbookDTOS = null;
+        private List<UserDetailGuestBookDTO> guestbookDTOS = null;
         // 함께한 사람 setter 로 추가할 수 있도록 함
         @JsonInclude(JsonInclude.Include.NON_NULL)
         @Setter

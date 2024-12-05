@@ -4,6 +4,7 @@ import com.carely.backend.domain.GuestBookEntity;
 import com.carely.backend.domain.User;
 import com.carely.backend.domain.Volunteer;
 import com.carely.backend.domain.enums.UserType;
+import com.carely.backend.dto.guestBook.UserDetailGuestBookDTO;
 import com.carely.backend.dto.user.*;
 import com.carely.backend.exception.*;
 import com.carely.backend.repository.GroupRepository;
@@ -156,8 +157,42 @@ public class UserService {
         if (list.isEmpty()) {
             res.setGuestbookDTOS(null);
         }
+
+
+
+
         else {
-            res.setGuestbookDTOS(list.stream().map((guestBookService::getGuestbook)).collect(Collectors.toList()));
+            res.setGuestbookDTOS(
+                    list.stream()
+                            .map(volunteer -> {
+                                User partner;
+                                // 내가 간병인이면
+                                if (user.getUserType().equals(UserType.CAREGIVER)) {
+                                    partner = volunteer.getVolunteer();
+                                } else {
+                                    partner = volunteer.getCaregiver();
+                                }
+
+                                GuestBookEntity guestBook = guestBookRepository.findByVolunteerSectionIdAAndWriterId(volunteer.getId(), partner.getId());
+
+                                // guestBook이 null인 경우 null 반환 (Stream에서 제외될 수 있음)
+                                if (guestBook == null) {
+                                    return null;
+                                }
+
+                                // guestBook이 있는 경우 DTO 생성
+                                return UserDetailGuestBookDTO.builder()
+                                        .partnerUsername(partner.getUsername())
+                                        .partnerUserId(partner.getId())
+                                        .partnerUserType(partner.getUserType().name())
+                                        .content(guestBook.getContent())
+                                        .date(volunteer.getDate().toString())
+                                        .build();
+                            })
+                            .filter(Objects::nonNull) // null 제거
+                            .collect(Collectors.toList())
+            );
+
         }
         return res;
     }

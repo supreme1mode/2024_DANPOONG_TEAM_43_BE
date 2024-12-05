@@ -60,6 +60,7 @@ public class GuestBookService {
                 .content(requestGuestBookDTO.getContent())
                 .volunteerSection(volunteer)
                 .writerType(user.getUserType().name())
+                .writer(user)
                 .build());
     }
 
@@ -73,18 +74,68 @@ public class GuestBookService {
         if (list.isEmpty()) {
             throw new ListEmptyException("없음");
         }
-        return list.stream().map((this::getGuestbook)).collect(Collectors.toList());
+        return list.stream().map((volunteer -> {
+            return getMyGuestBook(volunteer, user);
+        })).collect(Collectors.toList());
+    }
+
+    public ResponseGroupGuestbookDTO getMyGuestBook(Volunteer volunteer, User user) {
+        GuestBookEntity guestBook = guestBookRepository.findByVolunteerSectionIdAAndWriterId(volunteer.getId(), user.getId());
+
+        User partner;
+        String content_partner = null;
+        String content_mine = null;
+
+        if (volunteer.getVolunteer() == user) { // 내가 봉사자면 상대방이 caregiver
+            partner = volunteer.getCaregiver();
+        } else {
+            partner = volunteer.getVolunteer(); //내가 caregiver면
+        }
+
+        GuestBookEntity guestBook_partner = guestBookRepository.findByVolunteerSectionIdAAndWriterId(partner.getId(), user.getId());
+        if (!(guestBook_partner == null)) {
+            content_partner = guestBook_partner.getContent();
+        }
+        if (!(guestBook == null)) {
+            content_mine = guestBook.getContent();
+        }
+
+        return ResponseGroupGuestbookDTO.builder()
+                .otherType(
+                        (ResponseGroupGuestbookDTO.GuestBookDTO.builder()
+                            .userType(user.getUserType().name())
+                            .userId(user.getId())
+                            .username(user.getUsername())
+                            .content(content_partner)
+                            .build())
+                )
+                .caregiver(
+                        (ResponseGroupGuestbookDTO.GuestBookDTO.builder()
+                                .userType(user.getUserType().name())
+                                .userId(user.getId())
+                                .username(user.getUsername())
+                                .content(content_mine)
+                                .build())
+                ).build();
+
+
+        // 상대방
+
+
+        // 나
     }
 
     // 그룹 방명록 리스트 받아오기
     public List<ResponseGroupGuestbookDTO> getGroupGuestbook(Long groupId, String kakaoId) {
+        User user = userRepository.findByKakaoId(kakaoId)
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
         // 해당 그룹 봉사 리스트 받아오기
         Set<Volunteer> list = groupRepository.getReferenceById(groupId).getVolunteerSessions();
         if (list.isEmpty()) {
             throw new ListEmptyException("없음");
 
         }
-        return list.stream().map((this::getGuestbook)).collect(Collectors.toList());
+        return list.stream().map((volunteer -> this.getGuestbook(volunteer))).collect(Collectors.toList());
     }
 
 

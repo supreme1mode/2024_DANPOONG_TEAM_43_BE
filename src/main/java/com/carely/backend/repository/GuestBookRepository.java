@@ -11,11 +11,12 @@ import java.util.Optional;
 @Repository
 public interface GuestBookRepository extends JpaRepository<GuestBookEntity, Long> {
     //@Query("SELECT g FROM GuestBookEntity g WHERE g.id = :id")
-    Optional<GuestBookEntity> findByVolunteerSectionId(Long volunteerSectionId);
+    //Optional<GuestBookEntity> findByVolunteerSectionId(Long volunteerSectionId);
 
     void deleteByVolunteerSectionId(Long volunteerSectionId);
 
     GuestBookEntity findByVolunteerSectionIdAndWriterType(Long volunteerSectionId, String writerType);
 
+    GuestBookEntity findByVolunteerSectionIdAAndWriterId(Long volunteerSectionId, Long writerId);
 
 }

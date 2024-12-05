@@ -25,12 +25,9 @@ public class GuestBookEntity extends BaseEntity {
 
     private String writerType;
 
-
-
-//    // 자원봉사자
-//    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//    @JoinColumn(name = "volunteer_id")
-//    private User volunteer;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
+    private User writer;
 //
 //    // 간병인
 //    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

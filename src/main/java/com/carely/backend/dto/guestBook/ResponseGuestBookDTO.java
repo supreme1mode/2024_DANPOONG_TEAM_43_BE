@@ -1,42 +1,20 @@
 package com.carely.backend.dto.guestBook;
 
-import com.carely.backend.domain.GuestBookEntity;
-import com.carely.backend.domain.enums.UserType;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
 @Builder
 public class ResponseGuestBookDTO {
-    private Long sectionId;
-    private String home;
-    private String writer;
-    private String profileName;
-    private UserType userType;
-    private Long userId;
-    //private String volunteerName;
-    //private UserType volunteerUserType;
-    private Integer durationHours;
-    //private String caregiverName;
-    //private UserType caregiverUserType;
-    //private String caregiverAddress;
-    //private Integer caregiverAge;
-    private String careDate;
-    private String content;
+    private GuestBookDTO otherType; // 남의 거
+    private GuestBookDTO caregiver; // 내 거
 
-    public static ResponseGuestBookDTO entityToDto(GuestBookEntity guestBookEntity, String home, String writer, String profileName, UserType userType, Long id) {
-        return ResponseGuestBookDTO.builder()
-                .sectionId(guestBookEntity.getVolunteerSection().getId())
-                .home(home)
-                .writer(writer)
-                .profileName(profileName)
-                .userType(userType)
-                .userId(id)
-                .careDate(guestBookEntity.getVolunteerSection().getEndTime().toString())
-                .durationHours(guestBookEntity.getVolunteerSection().getDurationHours())
-                .content(guestBookEntity.getContent())
-                .build();
+    @Getter
+    @Builder
+    public static class GuestBookDTO {
+        private String userType;
+        private String username;
+        private String content;
+        private Long userId;
     }
 }
