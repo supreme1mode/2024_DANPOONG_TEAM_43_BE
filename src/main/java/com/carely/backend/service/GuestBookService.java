@@ -110,10 +110,12 @@ public class GuestBookService {
                         .userType(volunteerSessions.getVolunteer().getUserType().name())
                         .username(volunteerSessions.getVolunteer().getUsername())
                         .content(v_Content)
+                        .userId(volunteerSessions.getVolunteer().getId())
                         .build())
                 .caregiver(ResponseGroupGuestbookDTO.GuestBookDTO.builder()
                         .userType(volunteerSessions.getCaregiver().getUserType().name())
                         .username(volunteerSessions.getCaregiver().getUsername())
+                        .userId(volunteerSessions.getCaregiver().getId())
                         .content(c_Content)
                         .build())
                 .build();
