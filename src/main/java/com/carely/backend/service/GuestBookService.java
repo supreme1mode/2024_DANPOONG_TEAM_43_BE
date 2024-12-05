@@ -58,7 +58,7 @@ public class GuestBookService {
 
         guestBookRepository.save(GuestBookEntity.builder()
                 .content(requestGuestBookDTO.getContent())
-                .volunteerSection(volunteer)
+                .volunteerSession(volunteer)
                 .writerType(user.getUserType().name())
                 .writer(user)
                 .build());
