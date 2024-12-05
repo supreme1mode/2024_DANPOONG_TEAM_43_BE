@@ -97,7 +97,7 @@ public class GroupController implements GroupAPI {
     public ResponseEntity<ResponseDTO> getUserJoinedGroups() {
         String kakaoId = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        List<GetGroupDTO.List> res = groupService.getUserJoinedGroups(kakaoId);
+        List<GetGroupDTO.GroupList> res = groupService.getUserJoinedGroups(kakaoId);
 
         return ResponseEntity
                 .status(SuccessCode.SUCCESS_REGISTER_GROUP.getStatus().value())
