@@ -171,8 +171,8 @@ public class CertificateService {
         return sessions;
     }
 
-    public CertificateDTO issueCertificate(String certificateId, String userId) throws Exception {
-        User user = userRepository.findById(Long.valueOf(userId))
+    public CertificateDTO issueCertificate(String certificateId, String kakaoId) throws Exception {
+        User user = userRepository.findByKakaoId(kakaoId)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
         System.out.println(user.getIdentity());
         LocalDate now = LocalDate.now();
@@ -181,7 +181,7 @@ public class CertificateService {
             throw new AlreadyHasCertificateException("이미 존재함...");
         }
 
-        if (calculateTotalVolunteerHours(userId) < 80) {
+        if (calculateTotalVolunteerHours(user.getId().toString()) < 80) {
             throw new TotalTimeNotEnoughException("시간 부족");
         }
 
