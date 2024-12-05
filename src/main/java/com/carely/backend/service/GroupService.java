@@ -70,8 +70,10 @@ public class GroupService {
                     // 최신 News 시간 조회 (없으면 null 반환)
                     LocalDateTime lastNewsTime = newsRepository.findLastNewsTimeByGroupId(group.getId());
 
+                    boolean isJoined = joinGroupRepository.existsByUserAndGroup(user, group);
+
                     // DTO 변환
-                    return GetGroupDTO.GroupList.toDTO(group, lastNewsTime);
+                    return GetGroupDTO.GroupList.toDTO(group, lastNewsTime, isJoined);
                 })
                 .collect(Collectors.toList());
     }
@@ -80,7 +82,12 @@ public class GroupService {
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new GroupNotFoundException("그룹을 찾을 수 없습니다."));
 
-        return GetGroupDTO.Detail.toDTO(group);
+        User user = userRepository.findByKakaoId(kakaoId)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        boolean isJoined = joinGroupRepository.existsByUserAndGroup(user, group);
+
+        return GetGroupDTO.Detail.toDTO(group, isJoined);
     }
 
     @Transactional
