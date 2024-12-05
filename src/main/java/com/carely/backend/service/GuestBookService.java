@@ -80,7 +80,7 @@ public class GuestBookService {
     }
 
     public ResponseGroupGuestbookDTO getMyGuestBook(Volunteer volunteer, User user) {
-        GuestBookEntity guestBook = guestBookRepository.findByVolunteerSectionIdAAndWriterId(volunteer.getId(), user.getId());
+        GuestBookEntity guestBook = guestBookRepository.findByVolunteerSectionIdAndWriterId(volunteer.getId(), user.getId());
 
         User partner;
         String content_partner = null;
@@ -92,7 +92,7 @@ public class GuestBookService {
             partner = volunteer.getVolunteer(); //내가 caregiver면
         }
 
-        GuestBookEntity guestBook_partner = guestBookRepository.findByVolunteerSectionIdAAndWriterId(partner.getId(), user.getId());
+        GuestBookEntity guestBook_partner = guestBookRepository.findByVolunteerSectionIdAndWriterId(partner.getId(), user.getId());
         if (!(guestBook_partner == null)) {
             content_partner = guestBook_partner.getContent();
         }
