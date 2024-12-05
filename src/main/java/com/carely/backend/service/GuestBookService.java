@@ -71,7 +71,7 @@ public class GuestBookService {
 
         List<Volunteer> list = volunteerRepository.findByVolunteerOrCaregiver(user);
         if (list.isEmpty()) {
-            throw new ListEmptyException("없음");
+            return null;
         }
         return list.stream().map((this::getGuestbook)).collect(Collectors.toList());
     }
