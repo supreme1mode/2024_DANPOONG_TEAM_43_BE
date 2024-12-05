@@ -166,7 +166,7 @@ public class UserService {
                                     partner = volunteer.getCaregiver();
                                 }
 
-                                GuestBookEntity guestBook = guestBookRepository.findByVolunteerSessionIdAAndWriterId(volunteer.getId(), partner.getId());
+                                GuestBookEntity guestBook = guestBookRepository.findByVolunteerSectionIdAAndWriterId(volunteer.getId(), partner.getId());
 
                                 // guestBook이 null인 경우 null 반환 (Stream에서 제외될 수 있음)
                                 if (guestBook == null) {
