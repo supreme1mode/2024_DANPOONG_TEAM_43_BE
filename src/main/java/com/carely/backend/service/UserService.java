@@ -33,6 +33,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final VolunteerRepository volunteerRepository;
     private final OCRService ocrService;
+    private final GuestBookService guestBookService;
     // private final KakaoAddressService kakaoAddressService;
 
     public RegisterDTO.Res register(RegisterDTO registerDTO, MultipartFile file) throws IOException {
@@ -147,6 +148,9 @@ public class UserService {
         // 함께한 사람 추가
         MyPageDTO.DetailRes res = MyPageDTO.DetailRes.toDTO(user);
         res.setTogetherTime(calculateTotalDuration(viewer, user));
+
+        // 함께한 사람 방명록 추가
+        res.setGuestbookDTOS(guestBookService.getMyPageGuestBook(kakaoId).subList(0, 5));
         return res;
     }
 
