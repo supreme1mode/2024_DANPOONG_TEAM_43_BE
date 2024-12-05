@@ -80,7 +80,7 @@ public class GuestBookService {
     }
 
     public ResponseGroupGuestbookDTO getMyGuestBook(Volunteer volunteer, User user) {
-        GuestBookEntity guestBook = guestBookRepository.findByVolunteerSectionIdAAndWriterId(volunteer.getId(), user.getId());
+        GuestBookEntity guestBook = guestBookRepository.findByVolunteerSessionIdAAndWriterId(volunteer.getId(), user.getId());
 
         User partner;
         String content_partner = null;
@@ -92,7 +92,7 @@ public class GuestBookService {
             partner = volunteer.getVolunteer(); //내가 caregiver면
         }
 
-        GuestBookEntity guestBook_partner = guestBookRepository.findByVolunteerSectionIdAAndWriterId(partner.getId(), user.getId());
+        GuestBookEntity guestBook_partner = guestBookRepository.findByVolunteerSessionIdAAndWriterId(partner.getId(), user.getId());
         if (!(guestBook_partner == null)) {
             content_partner = guestBook_partner.getContent();
         }
@@ -144,13 +144,13 @@ public class GuestBookService {
         String v_Content;
         String c_Content;
 
-        GuestBookEntity volunteer_guestBook = guestBookRepository.findByVolunteerSectionIdAndWriterType(volunteerSessions.getId(), volunteerSessions.getVolunteer().getUserType().name());
+        GuestBookEntity volunteer_guestBook = guestBookRepository.findByVolunteerSessionIdAndWriterType(volunteerSessions.getId(), volunteerSessions.getVolunteer().getUserType().name());
         if (volunteer_guestBook == null) {
             v_Content = null;
         } else {
             v_Content = volunteer_guestBook.getContent();
         }
-        GuestBookEntity caregiver_guestBook = guestBookRepository.findByVolunteerSectionIdAndWriterType(volunteerSessions.getId(), volunteerSessions.getCaregiver().getUserType().name());
+        GuestBookEntity caregiver_guestBook = guestBookRepository.findByVolunteerSessionIdAndWriterType(volunteerSessions.getId(), volunteerSessions.getCaregiver().getUserType().name());
         if (caregiver_guestBook == null) {
             c_Content = null;
         } else {
@@ -323,7 +323,7 @@ public class GuestBookService {
         Volunteer volunteer = volunteerRepository.findById(id).orElseThrow(() -> new VolunteerNotFoundException("존재하지 않음."));
         if (volunteer.getVolunteer().equals(user_volunteer)) {
             volunteer.deleteVolunteerGuestBook();
-            guestBookRepository.deleteByVolunteerSectionId(id);
+            guestBookRepository.deleteByVolunteerSessionId(id);
         }
         else {
             throw new NotWriterException("작성자가 아닌 글은 지울 수 없습니다.");

@@ -13,10 +13,10 @@ public interface GuestBookRepository extends JpaRepository<GuestBookEntity, Long
     //@Query("SELECT g FROM GuestBookEntity g WHERE g.id = :id")
     //Optional<GuestBookEntity> findByVolunteerSectionId(Long volunteerSectionId);
 
-    void deleteByVolunteerSectionId(Long volunteerSectionId);
+    void deleteByVolunteerSessionId(Long volunteerSessionId);
 
-    GuestBookEntity findByVolunteerSectionIdAndWriterType(Long volunteerSectionId, String writerType);
+    GuestBookEntity findByVolunteerSessionIdAndWriterType(Long volunteerSessionId, String writerType);
 
-    GuestBookEntity findByVolunteerSectionIdAAndWriterId(Long volunteerSectionId, Long writerId);
+    GuestBookEntity findByVolunteerSessionIdAAndWriterId(Long volunteerSessionId, Long writerId);
 
 }
