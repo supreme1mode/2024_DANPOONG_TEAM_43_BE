@@ -48,5 +48,6 @@ public class Group extends BaseEntity {
 
     public void setVolunteerSessions(Volunteer volunteer) {
         this.volunteerSessions.add(volunteer);
+
     }
 }

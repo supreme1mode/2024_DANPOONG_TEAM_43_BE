@@ -78,6 +78,13 @@ public class GlobalHandleException {
                 .body(new ErrorResponseDTO(ErrorCode.ALREADY_HAS_CERTIFICATE));
     }
 
+    @ExceptionHandler(AlreadyExistsGuestBookException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleAlreadyExistsGuestBookException(final AlreadyExistsGuestBookException e) {
+        return ResponseEntity
+                .status(ErrorCode.ALREADY_EXISTS_GUESTBOOK.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.ALREADY_EXISTS_GUESTBOOK));
+    }
+
     @ExceptionHandler(NoFileException.class)
     protected ResponseEntity<ErrorResponseDTO> handleNoFileException(final NoFileException e) {
         return ResponseEntity

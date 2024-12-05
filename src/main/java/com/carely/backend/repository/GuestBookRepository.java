@@ -15,7 +15,7 @@ public interface GuestBookRepository extends JpaRepository<GuestBookEntity, Long
 
     void deleteByVolunteerSectionId(Long volunteerSectionId);
 
-    Optional<GuestBookEntity> findByVolunteerSectionIdAndWriterType(Long volunteerSectionId, String writerType);
+    GuestBookEntity findByVolunteerSectionIdAndWriterType(Long volunteerSectionId, String writerType);
 
 
 }

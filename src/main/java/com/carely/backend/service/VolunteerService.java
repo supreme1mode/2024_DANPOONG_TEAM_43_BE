@@ -21,6 +21,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -61,15 +62,21 @@ public class VolunteerService {
                 .volunteer(volunteer)
                 .roomId(dto.getRoomId())
                 .caregiver(caregiver)
+                .checkCaregiverWriteGuestBook(false)
+                .checkVolunteerWriteGuestBook(false)
                 .isApproved(false)
                 .build();
 
         //사람들이 한 그룹일 경우
-        List<Group> groups = joinGroupRepository.findCommonGroups(volunteer.getId(), caregiver.getId());
+        List<Group> groups = joinGroupRepository.findCommonGroups(volunteer, caregiver);
         if (!groups.isEmpty()) {
             for (Group group: groups) {
                 group.setVolunteerSessions(volunteerEntity);
+                volunteerEntity.updateGroupId(group);
             }
+        }
+        else {
+            System.out.println("같은 그룹 아님");
         }
 
         // 저장
