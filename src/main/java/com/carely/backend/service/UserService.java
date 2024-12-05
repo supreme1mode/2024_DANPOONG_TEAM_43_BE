@@ -34,10 +34,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final VolunteerRepository volunteerRepository;
     private final OCRService ocrService;
-    private final GroupRepository groupRepository;
     private final GuestBookRepository guestBookRepository;
-    private final GuestBookService guestBookService;
-    // private final KakaoAddressService kakaoAddressService;
 
     public RegisterDTO.Res register(RegisterDTO registerDTO, MultipartFile file) throws IOException {
 
