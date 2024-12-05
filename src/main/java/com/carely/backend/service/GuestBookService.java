@@ -71,7 +71,7 @@ public class GuestBookService {
 
         List<Volunteer> list = volunteerRepository.findByVolunteerOrCaregiver(user);
         if (list.isEmpty()) {
-            return null;
+            throw new ListEmptyException("없음");
         }
         return list.stream().map((this::getGuestbook)).collect(Collectors.toList());
     }
@@ -89,7 +89,7 @@ public class GuestBookService {
 
 
     // 돌려주는 REsponseDTO 만드는 메서드
-    private ResponseGroupGuestbookDTO getGuestbook(Volunteer volunteerSessions) {
+    public ResponseGroupGuestbookDTO getGuestbook(Volunteer volunteerSessions) {
         String v_Content;
         String c_Content;
 

@@ -1,13 +1,13 @@
 package com.carely.backend.service;
 
+import com.carely.backend.domain.GuestBookEntity;
 import com.carely.backend.domain.User;
 import com.carely.backend.domain.Volunteer;
 import com.carely.backend.domain.enums.UserType;
 import com.carely.backend.dto.user.*;
-import com.carely.backend.exception.DuplicateUsernameException;
-import com.carely.backend.exception.KakaoIdNotFoundException;
-import com.carely.backend.exception.NoFileException;
-import com.carely.backend.exception.UserNotFoundException;
+import com.carely.backend.exception.*;
+import com.carely.backend.repository.GroupRepository;
+import com.carely.backend.repository.GuestBookRepository;
 import com.carely.backend.repository.UserRepository;
 import com.carely.backend.repository.VolunteerRepository;
 import com.carely.backend.service.kakao.KakaoAddressService;
@@ -33,6 +33,8 @@ public class UserService {
     private final UserRepository userRepository;
     private final VolunteerRepository volunteerRepository;
     private final OCRService ocrService;
+    private final GroupRepository groupRepository;
+    private final GuestBookRepository guestBookRepository;
     private final GuestBookService guestBookService;
     // private final KakaoAddressService kakaoAddressService;
 
@@ -150,7 +152,13 @@ public class UserService {
         res.setTogetherTime(calculateTotalDuration(viewer, user));
 
         // 함께한 사람 방명록 추가
-        res.setGuestbookDTOS(guestBookService.getMyPageGuestBook(kakaoId).subList(0, 5));
+        List<Volunteer> list = volunteerRepository.findByVolunteerOrCaregiver(user);
+        if (list.isEmpty()) {
+            res.setGuestbookDTOS(null);
+        }
+        else {
+            res.setGuestbookDTOS(list.stream().map((guestBookService::getGuestbook)).collect(Collectors.toList()));
+        }
         return res;
     }
 
