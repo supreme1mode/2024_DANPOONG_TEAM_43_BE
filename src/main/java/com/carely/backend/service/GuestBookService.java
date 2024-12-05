@@ -106,7 +106,7 @@ public class GuestBookService {
             c_Content = caregiver_guestBook.getContent();
         }
         return ResponseGroupGuestbookDTO.builder()
-                .volunteer(ResponseGroupGuestbookDTO.GuestBookDTO.builder()
+                .otherType(ResponseGroupGuestbookDTO.GuestBookDTO.builder()
                         .userType(volunteerSessions.getVolunteer().getUserType().name())
                         .username(volunteerSessions.getVolunteer().getUsername())
                         .content(v_Content)
