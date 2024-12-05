@@ -1,26 +1,33 @@
 name: CD with Gradle
 
-# push 이벤트와 pull request가 close될 때 워크플로우 실행
 on:
-  push:  # push 이벤트 설정
+  push:
     branches:
-      - main  # main 브랜치에 push될 때만 실행
-  pull_request:  # pull request 이벤트 설정
+      - main
+  pull_request:
     types:
-      - closed  # pull request가 closed될 때만 실행
+      - closed
 
-# github action이 읽을 수 있도록 수정
 permissions:
   contents: read
 
-
 jobs:
-  build:
+  handle-events:
     runs-on: ubuntu-latest
-
 
     steps:
       - uses: actions/checkout@v3
+      # pull_request가 닫힌 경우에만 실행
+      - name: Handle Pull Request Closed
+        if: github.event_name == 'pull_request' && github.event.action == 'closed'
+        run: echo "Pull request closed! Handling pull_request event."
+  
+      # push 이벤트인 경우에만 실행
+      - name: Handle Push Event
+        if: github.event_name == 'push'
+        run: echo "Code pushed to main! Handling push event."
+  
+        
 
       # jdk 17 버전 환경을 세팅
       - name: Set up JDK 17
