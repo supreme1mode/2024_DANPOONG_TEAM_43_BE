@@ -19,7 +19,9 @@ public interface JoinGroupRepository extends JpaRepository<JoinGroup, Long> {
     @Query("DELETE FROM JoinGroup jg WHERE jg.group = :group AND jg.user = :user")
     void deleteByGroupAndUser(Group group, User user);
 
+    @Query("SELECT DISTINCT g1.group FROM JoinGroup g1 JOIN JoinGroup g2 " +
+            "ON g1.group = g2.group " +
+            "WHERE g1.user = :user1 AND g2.user = :user2")
+    List<Group> findCommonGroups(@Param("user1") User user1, @Param("user2") User user2);
 
-    @Query("SELECT g FROM JoinGroup g JOIN g.user u1 JOIN g.user u2 WHERE u1.id = :userId1 AND u2.id = :userId2")
-    List<Group> findCommonGroups(@Param("userId1") Long userId1, @Param("userId2") Long userId2);
 }

@@ -82,6 +82,7 @@ public class GuestBookService {
         Set<Volunteer> list = groupRepository.getReferenceById(groupId).getVolunteerSessions();
         if (list.isEmpty()) {
             throw new ListEmptyException("없음");
+
         }
         return list.stream().map((this::getGuestbook)).collect(Collectors.toList());
     }

@@ -85,5 +85,6 @@ public class Volunteer extends BaseEntity {
     public void deleteCaregiverGuestBook() {this.checkCaregiverWriteGuestBook = false;}
 
 
+    public void updateGroupId(Group group) {this.group = group;}
     public void updateVolunteerMemo() {this.hasMemo = true;}
 }
