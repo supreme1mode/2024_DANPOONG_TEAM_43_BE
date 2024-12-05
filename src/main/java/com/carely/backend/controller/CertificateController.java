@@ -55,7 +55,7 @@ public class CertificateController implements CertificateAPI {
     }
 
     // 자격증 발급하기
-    @PostMapping("/issue}")
+    @PostMapping("/issue")
     public ResponseEntity<ResponseDTO<?>> issueCertificate(@AuthenticationPrincipal CustomUserDetails user) throws Exception {
 
         // UUID 생성
