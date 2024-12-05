@@ -147,7 +147,7 @@ public class GroupService {
     }
 
     @Transactional(readOnly = true)
-    public List<GetGroupDTO.List> getUserJoinedGroups(String kakaoId) {
+    public List<GetGroupDTO.GroupList> getUserJoinedGroups(String kakaoId) {
         User user = userRepository.findByKakaoId(kakaoId)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
@@ -156,10 +156,13 @@ public class GroupService {
         return user.getJoinGroups().stream()
                 .map(joinGroup -> {
                     Group group = joinGroup.getGroup();
-                    return GetGroupDTO.List.toDTO(group);
+                    LocalDateTime lastNewsTime = newsRepository.findLastNewsTimeByGroupId(group.getId());
+                    boolean isJoined = joinGroupRepository.existsByUserAndGroup(user, group);
+                    return GetGroupDTO.GroupList.toDTO(group, lastNewsTime, isJoined);
                 })
                 .collect(Collectors.toList());
     }
+
 
 
     public List<UserResponseDTO.Group> getGroupUser(Long groupId, String kakaoId) {
