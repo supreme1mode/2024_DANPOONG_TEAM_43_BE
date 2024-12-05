@@ -54,6 +54,7 @@ public class GetGroupDTO {
         private Integer headCount; // 인원수
         private LocalDateTime lastNews;
         private String groupImage;
+        private Boolean is
         // private UserType userType;
         // private Boolean isLiked;
         // private Boolean isWriter;

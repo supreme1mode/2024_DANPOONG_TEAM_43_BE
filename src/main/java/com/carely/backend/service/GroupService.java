@@ -60,7 +60,10 @@ public class GroupService {
     }
 
     public List<GetGroupDTO.GroupList> getGroupList(String kakaoId) {
-        List<Group> groups = groupRepository.findAll();
+        User user = userRepository.findByKakaoId(kakaoId)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        List<Group> groups = groupRepository.findGroupsNotJoinedByUser(user);
 
         return groups.stream()
                 .map(group -> {
