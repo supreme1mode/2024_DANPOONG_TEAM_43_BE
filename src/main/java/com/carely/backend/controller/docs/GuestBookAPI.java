@@ -192,7 +192,6 @@ public interface GuestBookAPI {
 
 
     @Operation(summary = "방명록 조회하기", description = "마이페이지에 있는 방명록 조회하기.")
-    @Operation(summary = "그룹 방명록 불러오기", description = "group_id에 있는 방명록을 모두 불러옵니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "방명록을 성공적으로 조회했습니다.",
                     content = @Content(mediaType = "application/json",

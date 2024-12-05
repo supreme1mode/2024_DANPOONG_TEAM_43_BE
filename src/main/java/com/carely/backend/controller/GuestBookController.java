@@ -43,7 +43,7 @@ public class GuestBookController implements GuestBookAPI {
     }
 
     // 그룹에 속한 방명록 조회
-    @GetMapping("/guestbook/{groupId}")
+    @GetMapping("/group/{groupId}")
     public ResponseEntity<ResponseDTO<?>> getGroupGuestbook(@PathVariable Long groupId, @AuthenticationPrincipal CustomUserDetails user) {
         List<ResponseGroupGuestbookDTO> res = guestBookService.getGroupGuestbook(groupId, user.getUsername());
 
