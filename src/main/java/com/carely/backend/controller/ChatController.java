@@ -94,7 +94,8 @@ public class ChatController implements ChatAPI {
         ChatRoomEntity chatRoom = chatService.findRoomById(chatMessage.getRoomId());
         if (chatRoom != null) {
             if (chatRoom.isBlocked()) {
-                throw new IllegalArgumentException("This room is blocked.");
+                chatRoom.setBlocked(false);
+                //throw new IllegalArgumentException("This room is blocked.");
             }
             chatRoom.sendMessage(chatMessage, chatService);
 
