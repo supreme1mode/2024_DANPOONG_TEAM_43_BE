@@ -35,7 +35,7 @@ public class CreateNewsDTO {
                     .writer(news.getWriter().getUsername())
                     .title(news.getTitle())
                     .content(news.getContent())
-                    .createdAt(news.getCreatedAt())
+                    .createdAt(news.getCreatedAt().plusHours(9))
                     .build();
         }
 

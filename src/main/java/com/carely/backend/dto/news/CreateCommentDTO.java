@@ -30,7 +30,7 @@ public class CreateCommentDTO {
                     .commentId(comment.getId())
                     .writer(comment.getWriter().getUsername())
                     .content(comment.getContent())
-                    .createdAt(comment.getCreatedAt())
+                    .createdAt(comment.getCreatedAt().plusHours(9))
                     .build();
         }
 

@@ -28,7 +28,7 @@ public class NewsCommentResponseDTO {
                     .content(e.getContent())
                     .writer(e.getWriter().getUsername())
                     .writerType(e.getWriter().getUserType())
-                    .createdAt(e.getCreatedAt())
+                    .createdAt(e.getCreatedAt().plusHours(9))
                     .writerId(e.getWriter().getId())
                     .build();
         }

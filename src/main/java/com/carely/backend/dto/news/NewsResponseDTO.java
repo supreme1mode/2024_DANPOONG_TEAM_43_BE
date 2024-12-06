@@ -34,7 +34,7 @@ public class NewsResponseDTO {
 
             return List.builder()
                     .newsId(news.getId())
-                    .createdAt(news.getCreatedAt())
+                    .createdAt(news.getCreatedAt().plusHours(9))
                     .title(news.getTitle())
                     .content(news.getContent())
                     .writer(news.getWriter().getUsername())
@@ -71,7 +71,7 @@ public class NewsResponseDTO {
 
             return Detail.builder()
                     .newsId(news.getId())
-                    .createdAt(news.getCreatedAt())
+                    .createdAt(news.getCreatedAt().plusHours(9))
                     .title(news.getTitle())
                     .content(news.getContent())
                     .writer(news.getWriter().getUsername())
