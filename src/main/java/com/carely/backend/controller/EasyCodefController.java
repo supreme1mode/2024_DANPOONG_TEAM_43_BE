@@ -25,10 +25,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 @RequestMapping
@@ -82,51 +79,30 @@ public class EasyCodefController implements EasyCodefAPI {
         // 동기식 응답 처리를 위한 CountDownLatch 생성
         CountDownLatch latch = new CountDownLatch(1);
         AtomicReference<ResponseDTO> finalResponse = new AtomicReference<>();
+        AtomicReference<Boolean> firstRequestSuccessful = new AtomicReference<>(false); // 첫 번째 요청 성공 여부
 
-        // 7초 뒤 /additional-info 호출
+        // 스케줄러 생성
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+        // 첫 번째 요청: 10초 후
         scheduler.schedule(() -> {
-            try {
-                // 추가 인증 DTO 생성
-                AdditionalAuthDTO authDTO = AdditionalAuthDTO.builder()
-                        .organization(userIdentityDTO.getOrganization())
-                        .identity(userIdentityDTO.getIdentity())
-                        .userName(userIdentityDTO.getUserName())
-                        .issueDate(userIdentityDTO.getIssueDate())
-                        .simpleAuth("1")
-                        .is2Way(true)
-                        .twoWayInfo(AdditionalAuthDTO.TwoWayInfoDTO.builder()
-                                .jti(jti)
-                                .twoWayTimestamp(twoWayTimestamp)
-                                .jobIndex(0)
-                                .threadIndex(0)
-                                .build())
-                        .build();
+            boolean success = handleAdditionalAuth(userIdentityDTO, jti, twoWayTimestamp, finalResponse);
+            firstRequestSuccessful.set(success); // 첫 번째 요청 결과 저장
 
-                // 추가 인증 로직
-                LinkedHashMap<String, Object> twoResultMap = new ObjectMapper().convertValue(authDTO, LinkedHashMap.class);
-                EasyCodefResponse additionalResponse = easyCodef.requestCertification(url, 1, twoResultMap);
-
-                // 인증 결과 처리
-                Map<String, Object> resultMapper = (Map<String, Object>) additionalResponse.get("result");
-                String code = (String) resultMapper.get("code");
-                System.out.println("Additional Info API Response Code: " + code);
-
-                if (!Objects.equals(code, "CF-00000")) {
-                    throw new IdentityNotAcceptableException("안 됨");
-                } else {
-                    finalResponse.set(new ResponseDTO(SuccessCode.SUCCESS_GET_IDENTITY, "Authentication successful"));
-                }
-            } catch (Exception e) {
-                System.err.println("추가 인증 중 오류 발생: " + e.getMessage());
-                throw new IdentityNotAcceptableException("안 됨");
-            } finally {
-                latch.countDown(); // 작업 완료 신호
-                scheduler.shutdown(); // 스케줄러 종료
-                throw new IdentityNotAcceptableException("안 됨");
-
+            if (success) {
+                // 첫 번째 요청이 성공하면 latch 해제 및 스케줄러 종료
+                latch.countDown();
+                scheduler.shutdown();
             }
-        }, 7, TimeUnit.SECONDS);
+        }, 10, TimeUnit.SECONDS);
+
+        // 두 번째 요청: 14초 후 (첫 번째 요청이 실패했을 때만 실행)
+        ScheduledFuture<?> secondTask = scheduler.schedule(() -> {
+            if (!firstRequestSuccessful.get()) {
+                handleAdditionalAuth(userIdentityDTO, jti, twoWayTimestamp, finalResponse);
+                latch.countDown(); // 두 번째 요청 처리 후 latch 해제
+            }
+        }, 14, TimeUnit.SECONDS);
 
         // 작업 완료 대기
         latch.await();
@@ -136,6 +112,44 @@ public class EasyCodefController implements EasyCodefAPI {
                 .status(SuccessCode.SUCCESS_GET_IDENTITY.getStatus().value())
                 .body(finalResponse.get());
     }
+
+    private boolean handleAdditionalAuth(UserIdentityDTO userIdentityDTO, String jti, Long twoWayTimestamp, AtomicReference<ResponseDTO> finalResponse) {
+        try {
+            // 추가 인증 DTO 생성
+            AdditionalAuthDTO authDTO = AdditionalAuthDTO.builder()
+                    .organization(userIdentityDTO.getOrganization())
+                    .identity(userIdentityDTO.getIdentity())
+                    .userName(userIdentityDTO.getUserName())
+                    .issueDate(userIdentityDTO.getIssueDate())
+                    .simpleAuth("1")
+                    .is2Way(true)
+                    .twoWayInfo(AdditionalAuthDTO.TwoWayInfoDTO.builder()
+                            .jti(jti)
+                            .twoWayTimestamp(twoWayTimestamp)
+                            .jobIndex(0)
+                            .threadIndex(0)
+                            .build())
+                    .build();
+
+            // 추가 인증 로직
+            LinkedHashMap<String, Object> twoResultMap = new ObjectMapper().convertValue(authDTO, LinkedHashMap.class);
+            EasyCodefResponse additionalResponse = easyCodef.requestCertification(url, 1, twoResultMap);
+
+            // 인증 결과 처리
+            Map<String, Object> resultMapper = (Map<String, Object>) additionalResponse.get("result");
+            String code = (String) resultMapper.get("code");
+            System.out.println("Additional Info API Response Code: " + code);
+
+            if (Objects.equals(code, "CF-00000")) {
+                finalResponse.set(new ResponseDTO(SuccessCode.SUCCESS_GET_IDENTITY, "Authentication successful"));
+                return true; // 인증 성공
+            }
+        } catch (Exception e) {
+            System.err.println("추가 인증 중 오류 발생: " + e.getMessage());
+        }
+        return false; // 인증 실패
+    }
+
 
     //추가인증 특이사항
     //
