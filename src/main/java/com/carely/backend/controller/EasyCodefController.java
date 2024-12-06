@@ -82,6 +82,7 @@ public class EasyCodefController implements EasyCodefAPI {
         // 동기식 응답 처리를 위한 CountDownLatch 생성
         CountDownLatch latch = new CountDownLatch(1);
         AtomicReference<ResponseDTO> finalResponse = new AtomicReference<>();
+        System.out.println(finalResponse);
         AtomicReference<Boolean> firstRequestSuccess = new AtomicReference<>(false); // 첫 번째 요청 성공 여부
 
         // 스케줄러 생성
@@ -91,6 +92,7 @@ public class EasyCodefController implements EasyCodefAPI {
         scheduler.schedule(() -> {
             try {
                 boolean success = processAdditionalAuth(userIdentityDTO, jti, twoWayTimestamp, finalResponse);
+                System.out.println(jti);
                 if (success) {
                     firstRequestSuccess.set(true); // 첫 번째 요청 성공
                     latch.countDown(); // 작업 완료 신호
@@ -107,6 +109,7 @@ public class EasyCodefController implements EasyCodefAPI {
                 // 첫 번째 요청이 실패한 경우에만 실행
                 if (!firstRequestSuccess.get()) {
                     processAdditionalAuth(userIdentityDTO, jti, twoWayTimestamp, finalResponse);
+                    System.out.println(jti);
                     latch.countDown(); // 작업 완료 신호
                 }
             } catch (Exception e) {
