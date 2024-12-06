@@ -125,7 +125,7 @@ public class EasyCodefController implements EasyCodefAPI {
                 .body(finalResponse.get());
     }
 
-    private boolean processAdditionalAuth(UserIdentityDTO userIdentityDTO, String jti, Long twoWayTimestamp, AtomicReference<ResponseDTO> finalResponse) {
+    private boolean processAdditionalAuth(UserIdentityDTO userIdentityDTO, String jti, Long twoWayTimestamp, AtomicReference<ResponseDTO> finalResponse) throws UnsupportedEncodingException, JsonProcessingException, InterruptedException {
         try {
             // 추가 인증 DTO 생성
             AdditionalAuthDTO authDTO = AdditionalAuthDTO.builder()
@@ -158,6 +158,30 @@ public class EasyCodefController implements EasyCodefAPI {
             }
         } catch (Exception e) {
             System.err.println("추가 인증 처리 중 오류 발생: " + e.getMessage());
+            // 추가 인증 DTO 생성
+            AdditionalAuthDTO authDTO = AdditionalAuthDTO.builder()
+                    .organization(userIdentityDTO.getOrganization())
+                    .identity(userIdentityDTO.getIdentity())
+                    .userName(userIdentityDTO.getUserName())
+                    .issueDate(userIdentityDTO.getIssueDate())
+                    .simpleAuth("0")
+                    .is2Way(true)
+                    .twoWayInfo(AdditionalAuthDTO.TwoWayInfoDTO.builder()
+                            .jti(jti)
+                            .twoWayTimestamp(twoWayTimestamp)
+                            .jobIndex(0)
+                            .threadIndex(0)
+                            .build())
+                    .build();
+
+            // 추가 인증 로직
+            LinkedHashMap<String, Object> twoResultMap = new ObjectMapper().convertValue(authDTO, LinkedHashMap.class);
+            EasyCodefResponse additionalResponse = easyCodef.requestCertification(url, 1, twoResultMap);
+
+            // 인증 결과 처리
+            Map<String, Object> resultMapper = (Map<String, Object>) additionalResponse.get("result");
+            String code = (String) resultMapper.get("code");
+            System.out.println("Additional Info API Response Code: " + code);
         }
         return false; // 실패
     }
