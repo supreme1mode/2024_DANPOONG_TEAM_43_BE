@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class ResponseGroupGuestbookDTO {
+    private String volunteerSessionId;
     private GuestBookDTO otherType;
     private GuestBookDTO caregiver;
 

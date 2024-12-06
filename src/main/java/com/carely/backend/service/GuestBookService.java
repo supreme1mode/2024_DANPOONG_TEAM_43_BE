@@ -93,7 +93,7 @@ public class GuestBookService {
             partner = volunteer.getVolunteer(); //내가 caregiver면
         }
 
-        GuestBookEntity guestBook_partner = guestBookRepository.findByVolunteerSectionIdAndWriterId(partner.getId(), user.getId());
+        GuestBookEntity guestBook_partner = guestBookRepository.findByVolunteerSectionIdAndWriterId(volunteer.getId(), partner.getId());
         if (!(guestBook_partner == null)) {
             content_partner = guestBook_partner.getContent();
         }
@@ -102,11 +102,12 @@ public class GuestBookService {
         }
 
         return ResponseGroupGuestbookDTO.builder()
+                .volunteerSessionId(volunteer.getId().toString())
                 .otherType(
                         (ResponseGroupGuestbookDTO.GuestBookDTO.builder()
-                            .userType(user.getUserType().name())
-                            .userId(user.getId())
-                            .username(user.getUsername())
+                            .userType(partner.getUserType().name())
+                            .userId(partner.getId())
+                            .username(partner.getUsername())
                             .content(content_partner)
                             .build())
                 )

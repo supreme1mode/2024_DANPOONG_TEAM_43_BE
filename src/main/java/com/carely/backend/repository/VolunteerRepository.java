@@ -20,7 +20,7 @@ public interface VolunteerRepository extends JpaRepository<Volunteer, Long> {
 
     List<Volunteer> findByCaregiver(User caregiver);
 
-    @Query("SELECT v FROM Volunteer v WHERE (v.volunteer = :volunteer OR v.caregiver = :volunteer) ORDER BY v.id DESC")
+    @Query("SELECT DISTINCT v FROM Volunteer v WHERE (v.volunteer = :volunteer OR v.caregiver = :volunteer) ORDER BY v.id DESC")
     List<Volunteer> findByVolunteerOrCaregiver(@Param("volunteer") User volunteer);
 
     List<Volunteer> findByVolunteerAndHasMemoFalse(User writer);
