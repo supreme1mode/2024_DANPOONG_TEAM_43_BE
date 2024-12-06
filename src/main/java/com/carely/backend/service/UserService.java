@@ -150,7 +150,9 @@ public class UserService {
         res.setTogetherTime(calculateTotalDuration(viewer, user));
 
         // 함께한 사람 방명록 추가
-        List<Volunteer> list = volunteerRepository.findByVolunteerOrCaregiver(user).subList(0,5);
+        List<Volunteer> result = volunteerRepository.findByVolunteerOrCaregiver(user);
+        List<Volunteer> list = result.size() > 5 ? result.subList(0, 5) : result;
+
         if (list.isEmpty()) {
             res.setGuestbookDTOS(null);
         }
