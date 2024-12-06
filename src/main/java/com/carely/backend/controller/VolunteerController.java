@@ -46,7 +46,7 @@ public class VolunteerController implements VolunteerAPI {
                 .roomId(dto.getRoomId())
                 .senderId(res.getVolunteerId())
                 .message(jsonMessage)
-                .timestamp(LocalDateTime.now())
+                .timestamp(LocalDateTime.now().plusHours(9))
                 .isApproved(false)
                 .type(ChatMessageEntity.MessageType.RESERVATION)
                 .build();
@@ -84,7 +84,7 @@ public class VolunteerController implements VolunteerAPI {
                 .roomId(updateVolunteerApprovalDTO.getRoomId())
                 .senderId(res.getCaregiverId())
                 .message("약속을 수락했어요!")
-                .timestamp(LocalDateTime.now())
+                .timestamp(LocalDateTime.now().plusHours(9))
                 .isApproved(true)
                 .build();
 
