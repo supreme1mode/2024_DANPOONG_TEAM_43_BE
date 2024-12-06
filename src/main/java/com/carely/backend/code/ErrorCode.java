@@ -61,7 +61,7 @@ public enum ErrorCode {
      * 409
      */
     DUPLICATE_USERNAME(HttpStatus.CONFLICT, "중복된 카카오 아이디입니다."),
-    ALREADY_IN_GROUP(HttpStatus.CONFLICT, "이미 가입되어 있는 유저입니다."),
+    ALREADY_IN_GROUP(HttpStatus.CONFLICT, "이미 다른 그룹에 가입한 적이 있는 유저입니다."),
     ALREADY_LIKE_GROUP(HttpStatus.CONFLICT, "이미 찜한 그룹입니다."),
 
     /**

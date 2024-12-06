@@ -85,6 +85,13 @@ public class GlobalHandleException {
                 .body(new ErrorResponseDTO(ErrorCode.ALREADY_EXISTS_GUESTBOOK));
     }
 
+    @ExceptionHandler(AlreadyInGroupException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleAlreadyInGroupException(final AlreadyInGroupException e) {
+        return ResponseEntity
+                .status(ErrorCode.ALREADY_IN_GROUP.getStatus().value())
+                .body(new ErrorResponseDTO(ErrorCode.ALREADY_IN_GROUP));
+    }
+
     @ExceptionHandler(NoFileException.class)
     protected ResponseEntity<ErrorResponseDTO> handleNoFileException(final NoFileException e) {
         return ResponseEntity

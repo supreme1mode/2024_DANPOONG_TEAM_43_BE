@@ -25,4 +25,6 @@ public interface JoinGroupRepository extends JpaRepository<JoinGroup, Long> {
     List<Group> findCommonGroups(@Param("user1") User user1, @Param("user2") User user2);
 
     boolean existsByUserAndGroup(User user, Group group);
+
+    boolean existsByUser(User user);
 }
