@@ -79,7 +79,7 @@ public class VolunteerService {
             System.out.println("같은 그룹 아님");
         }
 
-        // 저장
+        volunteerEntity.setCreatedAt(volunteerEntity.getCreatedAt().plusHours(9));
         return CreateVolunteerDTO.Res.toDTO(volunteerRepository.save(volunteerEntity));
     }
 
