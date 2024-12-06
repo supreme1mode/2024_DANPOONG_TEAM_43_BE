@@ -38,6 +38,7 @@ public class GuestBookService {
         Volunteer volunteer = volunteerRepository.findById(volunteerId)
                 .orElseThrow(() -> new VolunteerNotFoundException("자원봉사 요청을 찾을 수 없습니다."));
 
+
         // 이미 자원봉사자나 요양보호사의 방명록이 있는 경우
         if ((user.getUserType().equals(UserType.CARE_WORKER)) || (user.getUserType().equals(UserType.VOLUNTEER))) {
             if (volunteer.getCheckVolunteerWriteGuestBook()) {
