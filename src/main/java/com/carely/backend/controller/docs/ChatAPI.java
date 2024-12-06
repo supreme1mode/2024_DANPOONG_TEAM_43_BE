@@ -4,8 +4,10 @@ import com.carely.backend.domain.ChatMessageEntity;
 import com.carely.backend.dto.chat.ChatRequest;
 import com.carely.backend.dto.chat.ChatRoomResponseDTO;
 import com.carely.backend.dto.response.ResponseDTO;
+import com.carely.backend.dto.user.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,5 +38,5 @@ public interface ChatAPI {
     public ResponseEntity<ChatMessageEntity> uploadFile(@RequestParam("file") MultipartFile file, @PathVariable("roomId") String roomId);
 
     @Operation(summary = "열린 채팅방 조회하기", description = "열린 채팅방을 조회합니다.")
-    public ResponseEntity<ResponseDTO<List<ChatRoomResponseDTO>>> findAllChatRooms();
+    public ResponseEntity<ResponseDTO<List<ChatRoomResponseDTO>>> findAllChatRooms(@AuthenticationPrincipal CustomUserDetails user);
 }
