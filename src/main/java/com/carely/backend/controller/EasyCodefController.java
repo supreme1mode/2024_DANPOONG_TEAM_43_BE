@@ -25,7 +25,10 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 @RequestMapping
@@ -79,28 +82,37 @@ public class EasyCodefController implements EasyCodefAPI {
         // 동기식 응답 처리를 위한 CountDownLatch 생성
         CountDownLatch latch = new CountDownLatch(1);
         AtomicReference<ResponseDTO> finalResponse = new AtomicReference<>();
-        AtomicReference<Boolean> firstRequestSuccessful = new AtomicReference<>(false); // 첫 번째 요청 성공 여부
+        AtomicReference<Boolean> firstRequestSuccess = new AtomicReference<>(false); // 첫 번째 요청 성공 여부
 
         // 스케줄러 생성
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
         // 첫 번째 요청: 10초 후
         scheduler.schedule(() -> {
-            boolean success = handleAdditionalAuth(userIdentityDTO, jti, twoWayTimestamp, finalResponse);
-            firstRequestSuccessful.set(success); // 첫 번째 요청 결과 저장
-
-            if (success) {
-                // 첫 번째 요청이 성공하면 latch 해제 및 스케줄러 종료
-                latch.countDown();
-                scheduler.shutdown();
+            try {
+                boolean success = processAdditionalAuth(userIdentityDTO, jti, twoWayTimestamp, finalResponse);
+                if (success) {
+                    firstRequestSuccess.set(true); // 첫 번째 요청 성공
+                    latch.countDown(); // 작업 완료 신호
+                    scheduler.shutdown(); // 두 번째 요청 취소를 위해 스케줄러 종료
+                }
+            } catch (Exception e) {
+                System.err.println("첫 번째 추가 인증 중 오류 발생: " + e.getMessage());
             }
         }, 10, TimeUnit.SECONDS);
 
-        // 두 번째 요청: 14초 후 (첫 번째 요청이 실패했을 때만 실행)
-        ScheduledFuture<?> secondTask = scheduler.schedule(() -> {
-            if (!firstRequestSuccessful.get()) {
-                handleAdditionalAuth(userIdentityDTO, jti, twoWayTimestamp, finalResponse);
-                latch.countDown(); // 두 번째 요청 처리 후 latch 해제
+        // 두 번째 요청: 14초 후
+        scheduler.schedule(() -> {
+            try {
+                // 첫 번째 요청이 실패한 경우에만 실행
+                if (!firstRequestSuccess.get()) {
+                    processAdditionalAuth(userIdentityDTO, jti, twoWayTimestamp, finalResponse);
+                    latch.countDown(); // 작업 완료 신호
+                }
+            } catch (Exception e) {
+                System.err.println("두 번째 추가 인증 중 오류 발생: " + e.getMessage());
+            } finally {
+                scheduler.shutdown(); // 스케줄러 종료
             }
         }, 14, TimeUnit.SECONDS);
 
@@ -113,7 +125,7 @@ public class EasyCodefController implements EasyCodefAPI {
                 .body(finalResponse.get());
     }
 
-    private boolean handleAdditionalAuth(UserIdentityDTO userIdentityDTO, String jti, Long twoWayTimestamp, AtomicReference<ResponseDTO> finalResponse) {
+    private boolean processAdditionalAuth(UserIdentityDTO userIdentityDTO, String jti, Long twoWayTimestamp, AtomicReference<ResponseDTO> finalResponse) {
         try {
             // 추가 인증 DTO 생성
             AdditionalAuthDTO authDTO = AdditionalAuthDTO.builder()
@@ -142,14 +154,13 @@ public class EasyCodefController implements EasyCodefAPI {
 
             if (Objects.equals(code, "CF-00000")) {
                 finalResponse.set(new ResponseDTO(SuccessCode.SUCCESS_GET_IDENTITY, "Authentication successful"));
-                return true; // 인증 성공
+                return true; // 성공
             }
         } catch (Exception e) {
-            System.err.println("추가 인증 중 오류 발생: " + e.getMessage());
+            System.err.println("추가 인증 처리 중 오류 발생: " + e.getMessage());
         }
-        return false; // 인증 실패
+        return false; // 실패
     }
-
 
     //추가인증 특이사항
     //
