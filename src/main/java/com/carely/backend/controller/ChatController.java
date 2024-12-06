@@ -9,6 +9,7 @@ import com.carely.backend.dto.chat.ChatRequest;
 import com.carely.backend.dto.chat.ChatRoomResponseDTO;
 import com.carely.backend.dto.response.ErrorResponseDTO;
 import com.carely.backend.dto.response.ResponseDTO;
+import com.carely.backend.dto.user.CustomUserDetails;
 import com.carely.backend.service.UserService;
 import com.carely.backend.service.chat.ChatService;
 import com.carely.backend.service.s3.S3Uploader;
@@ -19,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -120,10 +122,8 @@ public class ChatController implements ChatAPI {
 //    }
 
     @GetMapping("/rooms")
-    public ResponseEntity<ResponseDTO<List<ChatRoomResponseDTO>>> findAllChatRooms() {
-        String kakaoId = SecurityContextHolder.getContext().getAuthentication().getName();
-
-        List<ChatRoomResponseDTO> rooms = chatService.findAllRoom(kakaoId);
+    public ResponseEntity<ResponseDTO<List<ChatRoomResponseDTO>>> findAllChatRooms(@AuthenticationPrincipal CustomUserDetails user) {
+        List<ChatRoomResponseDTO> rooms = chatService.findAllRoom(user.getUsername());
 
         System.out.println("get rooms");
 
