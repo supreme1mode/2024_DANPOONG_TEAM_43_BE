@@ -314,7 +314,10 @@ public class UserService {
     public List<RecommandUserDTO.Res> recommendCaregivers(User currentUser) {
 
         // 같은 city에 있는 간병인만 조회
-        List<User> allCaregivers = userRepository.findByUserType(UserType.CAREGIVER);
+        String currentCity = currentUser.getCity();
+
+        // 같은 city에 있는 모든 사용자 조회
+        List<User> allCaregivers = userRepository.findByUserTypeAndCity(UserType.CAREGIVER, currentCity);
         System.out.println(currentUser.getAddress());
 
         // 본인 제외, 보완 가능한 trait 필터링
@@ -349,10 +352,14 @@ public class UserService {
     }
 
     // 자원봉사 리스트 조회
+// 자원봉사 리스트 조회
     public List<RecommandUserDTO.Res> recommendUsers(User currentUser) {
 
+        // 현재 사용자의 city 값 조회
+        String currentCity = currentUser.getCity();
+
         // 같은 city에 있는 모든 사용자 조회
-        List<User> allUsers = userRepository.findAll();
+        List<User> allUsers = userRepository.findByCity(currentCity);
 
         // 본인 제외, CAREGIVER 제외, 보완 가능한 trait 필터링
         List<User> filteredUsers = allUsers.stream()
