@@ -30,7 +30,7 @@ public class RecommandUserDTO {
         private String bath;
         private String walk;
 
-        public static RecommandUserDTO.Res toDTO(User user, long timeTogether) {
+        public static RecommandUserDTO.Res toDTO(User user, long timeTogether, User currentUser) {
             Res res =  Res.builder()
                     .userId(user.getId())
                     .address(user.getAddress())
@@ -46,7 +46,7 @@ public class RecommandUserDTO {
                     .longitude(user.getLongitude())
                     .build();
 
-            res.setKm(calculateDistance(res.getLatitude(), res.getLongitude(), user.getLatitude(), user.getLongitude()));
+            res.setKm(calculateDistance(currentUser.getLatitude(), currentUser.getLongitude(), user.getLatitude(), user.getLongitude()));
             return res;
         }
 

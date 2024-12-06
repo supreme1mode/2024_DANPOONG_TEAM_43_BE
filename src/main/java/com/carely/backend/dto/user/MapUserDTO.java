@@ -50,7 +50,7 @@ public class MapUserDTO {
     @Setter
     private Double km;
 
-    public MapUserDTO toDTO(User user, Long togetherTime, User currentUer) {
+    public MapUserDTO toDTO(User user, Long togetherTime, User currentUser) {
         MapUserDTO mapUserDTO =  MapUserDTO.builder()
                 .userId(user.getId())
                 .username(user.getUsername())
@@ -76,7 +76,7 @@ public class MapUserDTO {
             mapUserDTO.setLongitude(nearestLocation[1]);
         }
 
-        mapUserDTO.setKm(calculateDistance(currentUer.getLatitude(), currentUer.getLongitude(), user.getLatitude(), user.getLongitude()));
+        mapUserDTO.setKm(calculateDistance(currentUser.getLatitude(), currentUser.getLongitude(), user.getLatitude(), user.getLongitude()));
         return mapUserDTO;
     }
 

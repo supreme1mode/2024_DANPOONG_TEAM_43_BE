@@ -343,7 +343,7 @@ public class UserService {
         return selectedCaregivers.stream()
                 .map(user -> {
                     Long totalDuration = calculateTotalDuration(user, currentUser);
-                    return RecommandUserDTO.Res.toDTO(user, totalDuration);
+                    return RecommandUserDTO.Res.toDTO(user, totalDuration, currentUser);
                 })
                 .collect(Collectors.toList());
     }
@@ -385,7 +385,7 @@ public class UserService {
         return selectedUsers.stream()
                 .map(user -> {
                     Long totalDuration = calculateTotalDuration(user, currentUser);
-                    return RecommandUserDTO.Res.toDTO(user, totalDuration);
+                    return RecommandUserDTO.Res.toDTO(user, totalDuration, currentUser);
                 })
                 .collect(Collectors.toList());
     }
