@@ -98,10 +98,10 @@ public class GroupService {
         User user = userRepository.findByKakaoId(kakaoId)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
-        // 이미 그룹에 가입되어 있는지 확인
-        boolean isAlreadyInGroup = joinGroupRepository.existsByGroupAndUser(group, user);
-        if (isAlreadyInGroup) {
-            throw new AlreadyInGroupException("이미 가입되어 있는 유저입니다.");
+        // 이미 다른 그룹에 가입되어 있는지 확인
+        boolean isAlreadyInAnotherGroup = joinGroupRepository.existsByUser(user);
+        if (isAlreadyInAnotherGroup) {
+            throw new AlreadyInGroupException("이미 다른 그룹에 가입되어 있는 유저입니다.");
         }
 
         // JoinGroup 엔티티 생성 및 저장
