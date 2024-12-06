@@ -89,7 +89,7 @@ public class KakaoLoginService {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "authorization_code");
         params.add("client_id", clientId); // client_id
-        params.add("redirect_uri", "http://localhost:3000/kakao-login"); // redirect_uri
+        params.add("redirect_uri", "https://carely-seven.vercel.app/kakao-login"); // redirect_uri
         params.add("code", code); // 인증 코드                          
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
