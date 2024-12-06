@@ -33,7 +33,6 @@ public class VolunteerService {
     private final JoinGroupRepository joinGroupRepository;
     private final GroupRepository groupRepository;
 
-    @Transactional
     public CreateVolunteerDTO.Res createVolunteer(CreateVolunteerDTO dto) {
         // 자원봉사자 및 간병인 조회
         User volunteer = userRepository.findById(dto.getVolunteerId())
@@ -80,9 +79,7 @@ public class VolunteerService {
             System.out.println("같은 그룹 아님");
         }
 
-        Volunteer savedVolunteer = volunteerRepository.save(volunteerEntity);
-        savedVolunteer.setCreatedAt(savedVolunteer.getCreatedAt().plusHours(9));
-        return CreateVolunteerDTO.Res.toDTO(savedVolunteer);
+        return CreateVolunteerDTO.Res.toDTO(volunteerRepository.save(volunteerEntity));
     }
 
     @Transactional

@@ -62,8 +62,8 @@ public class CreateVolunteerDTO {
                     .id(e.getId())
                     .volunteerId(e.getVolunteer().getId())  // 자원봉사자 ID
                     .caregiverId(e.getCaregiver().getId())  // 간병인 ID
-                    .startTime(e.getStartTime())
-                    .endTime(e.getEndTime())
+                    .startTime(e.getStartTime().plusHours(9))
+                    .endTime(e.getEndTime().plusHours(9))
                     .durationHours(e.getDurationHours())
                     .salary(e.getSalary())
                     .mainTask(e.getMainTask())
