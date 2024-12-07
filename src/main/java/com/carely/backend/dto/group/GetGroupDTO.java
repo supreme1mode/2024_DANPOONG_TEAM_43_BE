@@ -1,6 +1,6 @@
 package com.carely.backend.dto.group;
+
 import com.carely.backend.domain.Group;
-import com.carely.backend.domain.enums.UserType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

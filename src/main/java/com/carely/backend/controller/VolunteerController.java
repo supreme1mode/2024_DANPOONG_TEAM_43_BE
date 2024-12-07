@@ -9,7 +9,6 @@ import com.carely.backend.dto.response.ResponseDTO;
 import com.carely.backend.dto.volunteer.CreateVolunteerDTO;
 import com.carely.backend.dto.volunteer.GetVolunteerInfoDTO;
 import com.carely.backend.dto.volunteer.UpdateVolunteerApprovalDTO;
-import com.carely.backend.service.UserService;
 import com.carely.backend.service.VolunteerService;
 import com.carely.backend.service.chat.ChatService;
 import com.fasterxml.jackson.databind.ObjectMapper;

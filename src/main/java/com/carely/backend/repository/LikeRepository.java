@@ -6,8 +6,6 @@ import com.carely.backend.domain.Like;
 import com.carely.backend.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import javax.swing.text.html.Option;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 

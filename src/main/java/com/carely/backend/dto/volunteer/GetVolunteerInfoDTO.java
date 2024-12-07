@@ -1,7 +1,6 @@
 package com.carely.backend.dto.volunteer;
 
 
-import com.carely.backend.domain.Memo;
 import com.carely.backend.domain.User;
 import com.carely.backend.domain.Volunteer;
 import com.carely.backend.domain.enums.VolunteerType;

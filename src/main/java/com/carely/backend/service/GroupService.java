@@ -1,27 +1,26 @@
 package com.carely.backend.service;
 
 
-import com.carely.backend.domain.*;
-import com.carely.backend.domain.enums.UserType;
+import com.carely.backend.domain.Group;
+import com.carely.backend.domain.JoinGroup;
+import com.carely.backend.domain.User;
+import com.carely.backend.domain.Volunteer;
 import com.carely.backend.dto.group.CreateGroupDTO;
 import com.carely.backend.dto.group.GetGroupDTO;
-import com.carely.backend.dto.guestBook.ResponseGroupGuestbookDTO;
-import com.carely.backend.dto.guestBook.ResponseGuestBookDTO;
 import com.carely.backend.dto.user.UserResponseDTO;
-import com.carely.backend.exception.*;
+import com.carely.backend.exception.AlreadyInGroupException;
+import com.carely.backend.exception.GroupNotFoundException;
+import com.carely.backend.exception.NotUserInGroupException;
+import com.carely.backend.exception.NotWriterException;
 import com.carely.backend.repository.*;
 import com.carely.backend.service.s3.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.xml.stream.events.Comment;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,7 +36,7 @@ public class GroupService {
     private final GuestBookRepository guestBookRepository;
 
 
-    public CreateGroupDTO.Res createCaregiverGroup(String kakaoId, CreateGroupDTO groupDTO) throws IOException {
+    public CreateGroupDTO.Res createCaregiverGroup(String kakaoId, CreateGroupDTO groupDTO) {
         User user = userRepository.findByKakaoId(kakaoId)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 

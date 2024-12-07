@@ -2,8 +2,11 @@ package com.carely.backend.util;
 
 import com.carely.backend.service.certificate.UnsafeTrustManager;
 import okhttp3.OkHttpClient;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import java.security.SecureRandom;
-import javax.net.ssl.*;
 
 public class UnsafeOkHttpClient {
 

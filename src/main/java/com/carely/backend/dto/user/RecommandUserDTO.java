@@ -2,10 +2,7 @@ package com.carely.backend.dto.user;
 
 import com.carely.backend.domain.User;
 import com.carely.backend.domain.enums.UserType;
-import com.carely.backend.service.kakao.KakaoAddressService;
 import lombok.*;
-
-import java.util.Map;
 
 public class RecommandUserDTO {
     @Getter

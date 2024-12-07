@@ -2,7 +2,6 @@ package com.carely.backend.domain;
 
 
 import com.carely.backend.domain.common.BaseEntity;
-import com.carely.backend.domain.enums.UserType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

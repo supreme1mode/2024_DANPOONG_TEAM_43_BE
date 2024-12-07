@@ -1,7 +1,6 @@
 package com.carely.backend.dto.news;
 
 import com.carely.backend.domain.News;
-import com.carely.backend.domain.enums.UserType;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

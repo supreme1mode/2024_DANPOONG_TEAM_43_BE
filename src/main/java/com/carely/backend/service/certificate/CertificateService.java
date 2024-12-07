@@ -12,16 +12,9 @@ import com.carely.backend.repository.VolunteerRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-import java.math.BigInteger;
-import java.time.LocalDate;
-import java.util.*;
-
 import org.web3j.abi.FunctionEncoder;
 import org.web3j.abi.FunctionReturnDecoder;
 import org.web3j.abi.TypeReference;
@@ -38,6 +31,14 @@ import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.RawTransactionManager;
 import org.web3j.tx.gas.StaticGasProvider;
 import org.web3j.utils.Numeric;
+
+import java.io.IOException;
+import java.math.BigInteger;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -97,7 +98,7 @@ public class CertificateService {
                         new Utf8String(user.getIdentity()), // userId
                         new Utf8String(volunteer.getVolunteerSessionId()),  //volunteer 세선 ID
                         new Uint256(BigInteger.valueOf(volunteer.getVolunteerHours())),
-                        new Utf8String(volunteer.getDate().toString()),
+                        new Utf8String(volunteer.getDate()),
                         new Utf8String(volunteer.getVolunteerType()),
                         new Address(userAddress)  // 올바른 이더리움 주소를 전달
                 ),
@@ -213,7 +214,7 @@ public class CertificateService {
         // 트랜잭션 후 데이터 조회
         Function getCertificateFunction = new Function(
                 "getCertificateByUserId",
-                Arrays.asList(new Utf8String(user.getIdentity())),
+                List.of(new Utf8String(user.getIdentity())),
                 Arrays.asList(
                         new TypeReference<Utf8String>() {}, // certificateId
                         new TypeReference<Utf8String>() {}, // username
@@ -594,7 +595,7 @@ public class CertificateService {
         }
 
         // 만약에 요양보호사인데 자격증 검증이 아직이라면...
-        else if (volunteer.getVolunteer().getUserType().equals(UserType.CARE_WORKER) && (!volunteer.getVolunteer().getCertificateCheck())) {
+        else if (volunteer.getVolunteer().getUserType().equals(UserType.CARE_WORKER)) {
             userType = UserType.VOLUNTEER.name();
         }
 

@@ -7,7 +7,6 @@ import com.carely.backend.domain.Volunteer;
 import com.carely.backend.domain.enums.UserType;
 import com.carely.backend.dto.memo.MemoResponseDTO;
 import com.carely.backend.dto.volunteer.GetVolunteerInfoDTO;
-import com.carely.backend.exception.AlreadyExistsGuestBookException;
 import com.carely.backend.exception.AlreadyExistsMemoException;
 import com.carely.backend.exception.UserMustNotCaregiverException;
 import com.carely.backend.exception.VolunteerNotFoundException;
@@ -22,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
