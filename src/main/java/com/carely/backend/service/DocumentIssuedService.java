@@ -26,11 +26,11 @@ public class DocumentIssuedService {
 
 
 
-    public List<ResponseDocumentDTO> getDocumentIssuedList(Long userId, String documentType) {
-        User user = userRepository.findById(userId)
+    public List<ResponseDocumentDTO> getDocumentIssuedList(String kakaoId, String documentType) {
+        User user = userRepository.findByKakaoId(kakaoId)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
-        List<VolunteerListDTO> list= certificateService.getVolunteerSessionsByUserIdAndType(documentType, userId.toString());
+        List<VolunteerListDTO> list= certificateService.getVolunteerSessionsByUserIdAndType(documentType, user.getId().toString());
         return list.stream().map((volunteerListDTO -> {
             Volunteer volunteer = volunteerRepository.getReferenceById(Long.valueOf(volunteerListDTO.getVolunteerSessionsId()));
             return ResponseDocumentDTO.builder()

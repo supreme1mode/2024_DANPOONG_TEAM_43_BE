@@ -2,6 +2,7 @@ package com.carely.backend.controller.docs;
 
 import com.carely.backend.dto.response.ErrorResponseDTO;
 import com.carely.backend.dto.response.ResponseDTO;
+import com.carely.backend.dto.user.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 
 public interface DocumentAPI {
@@ -96,6 +98,7 @@ public interface DocumentAPI {
                                         """)
                             }))
     })
-    public ResponseEntity<ResponseDTO<?>> getDocumentIssuedList(@PathVariable String documentType, @PathVariable Long userId);
+    public ResponseEntity<ResponseDTO<?>> getDocumentIssuedList(@PathVariable String documentType, @AuthenticationPrincipal CustomUserDetails user);
 
-}
+
+    }

@@ -92,7 +92,7 @@ public interface CertificateAPI {
     public ResponseEntity<ResponseDTO<?>> getSessionsByUserId(@PathVariable String userId);
 
     @Operation(summary = "봉사 세션 불러오기(요양보호/자원봉사)", description = "volunteerType에 volunteer/care_worker 각각의 타입에 해당하는 리스트가 반환됩니다.")
-    public ResponseEntity<ResponseDTO<?>> getSessionsByUserAndTypeId(@PathVariable String volunteerType, @PathVariable String userId);
+    public ResponseEntity<ResponseDTO<?>> getSessionsByUserAndTypeId(@PathVariable String documentType, @AuthenticationPrincipal CustomUserDetails user);
 
 
 
@@ -101,7 +101,7 @@ public interface CertificateAPI {
     public ResponseEntity<ResponseDTO<?>> getCertificateById(@PathVariable String certificateId) throws Exception;
 
     @Operation(summary = "발급된 자격증 불러오기(userId)", description = "userId를 통해 해당 자격증이 존재하는지 검증할 수 있습니다. (자격증 번호 알게 하려고 둔 거임)")
-    public ResponseEntity<ResponseDTO<?>> getCertificateByUserId(@PathVariable String userId);
+    public ResponseEntity<ResponseDTO<?>> getCertificateByUserId(@AuthenticationPrincipal CustomUserDetails user);
 
     @Operation(summary = "총 봉사 시간이 얼마인지 불러오기", description = "총 봉사 시간을 받아올 수 있습니다.")
     public ResponseEntity<Integer> getTotalVolunteerHours(@RequestParam String userId);

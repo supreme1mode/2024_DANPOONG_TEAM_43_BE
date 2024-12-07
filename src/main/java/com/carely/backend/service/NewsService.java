@@ -29,18 +29,35 @@ public class NewsService {
     private final GroupRepository groupRepository;
     private final NewsCommentRepository newsCommentRepository;
     private final UserRepository userRepository;
+    private final CacheService cacheService;
 
-    public List<NewsResponseDTO.List> getGroupNewsList(Long groupId) {
+
+    public List<NewsResponseDTO.List> getGroupNewsList(Long groupId, String kakaoId) {
+        // 1. 캐시에서 데이터 조회
+        String cacheKey = "groupNews:" + kakaoId;
+        List<NewsResponseDTO.List> cachedResult = cacheService.get(cacheKey);
+        if (cachedResult != null) {
+            return cachedResult; // 캐시 데이터 반환
+        }
+
+        // 3. 그룹 조회 (예외 발생 가능)
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new GroupNotFoundException("그룹을 찾을 수 없습니다."));
 
-        List<News> newsList;
-        newsList = newsRepository.findAllByGroupOrderByCreatedAtDesc(group);
+        // 4. 뉴스 목록 조회
+        List<News> newsList = newsRepository.findAllByGroupOrderByCreatedAtDesc(group);
 
-        return newsList.stream()
+        // 5. DTO 변환
+        List<NewsResponseDTO.List> result = newsList.stream()
                 .map(NewsResponseDTO.List::toDTO)
-                .collect(Collectors.toList());
+                .toList();
+
+        // Redis에 캐시 저장
+        cacheService.save(cacheKey, result);
+
+        return result;
     }
+
 
     public NewsResponseDTO.Detail getNewsDetail(Long newsId) {
         News news = newsRepository.findById(newsId)
@@ -65,6 +82,10 @@ public class NewsService {
                 .build();
 
         News newNews = newsRepository.save(news);
+
+        String cacheKey = "groupNews:" + kakaoId;
+        cacheService.evict(cacheKey);
+
         return CreateNewsDTO.Res.toDTO(newNews);
     }
 
@@ -83,6 +104,10 @@ public class NewsService {
                 .build();
 
         NewsComment newsComment = newsCommentRepository.save(comment);
+
+        // 캐시 무효화
+        String cacheKey = "groupNews:" + kakaoId;
+        cacheService.evict(cacheKey);
         return CreateCommentDTO.Res.toDTO(newsComment);
     }
 }

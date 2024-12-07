@@ -23,9 +23,9 @@ import java.util.List;
 public class DocumentIssuedController implements DocumentAPI {
     public final DocumentIssuedService documentIssuedService;
 
-    @GetMapping("/{documentType}/{userId}")
-    public ResponseEntity<ResponseDTO<?>> getDocumentIssuedList(@PathVariable String documentType, @PathVariable Long userId) {
-        List<ResponseDocumentDTO> list = documentIssuedService.getDocumentIssuedList(userId, documentType);
+    @GetMapping("/{documentType}")
+    public ResponseEntity<ResponseDTO<?>> getDocumentIssuedList(@PathVariable String documentType, @AuthenticationPrincipal CustomUserDetails user) {
+        List<ResponseDocumentDTO> list = documentIssuedService.getDocumentIssuedList(user.getUsername(), documentType);
         return ResponseEntity
                 .status(SuccessCode.SUCCESS_RETRIEVE_ACTIVITY_LIST.getStatus().value())
                 .body(new ResponseDTO<>(SuccessCode.SUCCESS_RETRIEVE_ACTIVITY_LIST, list));

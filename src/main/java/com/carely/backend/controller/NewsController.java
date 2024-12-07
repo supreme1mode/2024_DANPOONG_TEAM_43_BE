@@ -6,11 +6,13 @@ import com.carely.backend.dto.news.CreateCommentDTO;
 import com.carely.backend.dto.news.CreateNewsDTO;
 import com.carely.backend.dto.news.NewsResponseDTO;
 import com.carely.backend.dto.response.ResponseDTO;
+import com.carely.backend.dto.user.CustomUserDetails;
 import com.carely.backend.service.NewsService;
 import com.carely.backend.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,9 +26,9 @@ public class NewsController implements NewsAPI {
     private final UserService userService;
 
     @GetMapping("/group/{groupId}")
-    public ResponseEntity<ResponseDTO> getGroupNewsList(@PathVariable("groupId") Long groupId) {
+    public ResponseEntity<ResponseDTO> getGroupNewsList(@PathVariable("groupId") Long groupId, @AuthenticationPrincipal CustomUserDetails user) {
 
-        List<NewsResponseDTO.List> res = newsService.getGroupNewsList(groupId);
+        List<NewsResponseDTO.List> res = newsService.getGroupNewsList(groupId, user.getUsername());
 
         return ResponseEntity
                 .status(SuccessCode.SUCCESS_RETRIEVE_NEWS.getStatus().value())

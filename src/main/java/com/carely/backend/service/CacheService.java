@@ -1,21 +1,29 @@
 package com.carely.backend.service;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 @Service
+@RequiredArgsConstructor
 public class CacheService {
-    private final ConcurrentHashMap<String, Object> cache = new ConcurrentHashMap<>();
+    private final RedisTemplate<String, Object> redisTemplate;
 
-    public void save(String key, Object value) {
-        cache.put(key, value);
+    // 데이터 저장 (TTL: 1시간)
+    public <T> void save(String key, T value) {
+        redisTemplate.opsForValue().set(key, value, 1, TimeUnit.HOURS);
     }
 
-    public Object get(String key) {
-        return cache.get(key);
+    // 데이터 조회
+    @SuppressWarnings("unchecked")
+    public <T> T get(String key) {
+        return (T) redisTemplate.opsForValue().get(key);
     }
 
-    public void clear(String key) {
-        cache.remove(key);
+    // 캐시 삭제
+    public void evict(String key) {
+        redisTemplate.delete(key);
     }
 }

@@ -381,8 +381,8 @@ public class CertificateService {
 
 
     @Transactional
-    public List<VolunteerListDTO> getVolunteerSessionsByUserIdAndType(String volunteerType, String userId) {
-        User user_volunteer = userRepository.findById(Long.valueOf(userId))
+    public List<VolunteerListDTO> getVolunteerSessionsByUserIdAndType(String volunteerType, String kakaoId) {
+        User user_volunteer = userRepository.findByKakaoId(kakaoId)
                 .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
 
         // 유효한 volunteerType인지 확인
@@ -504,8 +504,8 @@ public class CertificateService {
 
 
     @Transactional
-    public CertificateDTO getCertificateByUserId(String userId) {
-        User user_volunteer = userRepository.findById(Long.valueOf(userId))
+    public CertificateDTO getCertificateByUserId(String kakaoId) {
+        User user_volunteer = userRepository.findByKakaoId(kakaoId)
                 .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
 
         // Solidity 함수 정의
