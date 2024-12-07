@@ -35,7 +35,7 @@ public class UserService {
     private final VolunteerRepository volunteerRepository;
     private final OCRService ocrService;
     private final GuestBookRepository guestBookRepository;
-    private final CacheService cacheService;
+
     public RegisterDTO.Res register(RegisterDTO registerDTO, MultipartFile file) throws IOException {
 
         String imageUrl = null;
@@ -104,20 +104,6 @@ public class UserService {
                 .certificateImage(imageUrl)
                 .build();
 
-
-        // 같은 도시(city)에 있는 회원만 갱신
-        List<String> affectedKakaoIds = userRepository.findByCity(user.getCity())
-                .stream()
-                .map(User::getKakaoId)
-                .filter(kakaoId1 -> !kakaoId1.equals(user.getKakaoId()))  // 본인은 제외
-                .toList();
-
-        for (String kakaoId1 : affectedKakaoIds) {
-            String cacheKey = "userList:" + kakaoId1;
-            cacheService.evict(cacheKey);  // 캐시 무효화
-            findAllUsersByCityAndUserTypes(List.of(UserType.ALL), kakaoId);
-        }
-
         return RegisterDTO.Res.toDTO(userRepository.save(user));
     }
 
@@ -137,7 +123,6 @@ public class UserService {
 
         LocalDate birthDate = LocalDate.of(year, month, day);
         LocalDate currentDate = LocalDate.now();
-
         return Period.between(birthDate, currentDate).getYears() + 1; // 만나이 아님
     }
 
@@ -315,29 +300,15 @@ public class UserService {
 
 
     public List<MapUserDTO> findAllUsersByCityAndUserTypes(List<UserType> userTypes, String kakaoId) {
-        // 캐시에서 데이터 조회
-        String cacheKey = "userList:" + kakaoId;
-        List<MapUserDTO> cachedUsers = cacheService.get(cacheKey);
-
-        if (cachedUsers != null) {
-            return cachedUsers;
-        }
-
-        // 캐시 미존재 시 데이터베이스에서 조회
         User viewer = userRepository.findByKakaoId(kakaoId)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
         List<User> users = userRepository.findByUserTypeIn(userTypes);
 
-        List<MapUserDTO> result = users.stream()
-                .filter(user -> !user.getKakaoId().equals(kakaoId)) // 본인 제외
+        return users.stream()
+                .filter(user -> !user.getKakaoId().equals(kakaoId))  // 본인 제외
                 .map(user -> new MapUserDTO().toDTO(user, calculateTotalDuration(user, viewer), viewer))
-                .collect(Collectors.toList());
-
-        // 캐시에 저장 (TTL 1시간)
-        cacheService.save(cacheKey, result);
-
-        return result;
+                .collect(Collectors.toList());  // 빈 리스트도 collect로 반환
     }
 
     // 간병인 리스트 추천
