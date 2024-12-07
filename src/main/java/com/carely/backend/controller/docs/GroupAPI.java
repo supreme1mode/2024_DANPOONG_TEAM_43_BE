@@ -148,6 +148,7 @@ public interface GroupAPI {
                                             "status": 401,
                                             "code": "INVALID_ACCESS_TOKEN",
                                             "message": "유효하지 않은 토큰입니다.",
+                                            "data": null
                                         }
                                         """),
                                     @ExampleObject(name = "TOKEN_EXPIRED", value = """
@@ -254,16 +255,211 @@ public interface GroupAPI {
     })
     ResponseEntity<ResponseDTO> joinGroup(@PathVariable("groupId") Long groupId) ;
 
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공적으로 그룹 탈퇴한 경우",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDTO.class),
+                            examples = @ExampleObject(value =
+                                    "{ \"status\": 200, \"code\": \"SUCCESS_CANCEL_JOIN_GROUP\", \"message\": \"그룹 가입이 성공적으로 취소되었습니다.\", \"data\": { \"groupId\": 1, \"groupName\": \"그룹이름\", \"city\": \"도봉구\", \"description\": \"상세 설명\", \"schedule\": \"스케쥴\", \"headCount\": 0 } }"))),
+
+            @ApiResponse(responseCode = "404", description = "해당 groupId를 찾을 수 없는 경우",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponseDTO.class),
+                            examples = @ExampleObject(value =
+                                    "{ \"status\": 404, \"code\": \"GROUP_NOT_FOUND\", \"message\": \"해당 그룹을 찾을 수 없습니다.\", \"data\": null }"))),
+
+            @ApiResponse(responseCode = "401", description = "잘못된 토큰으로 요청할 경우",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponseDTO.class),
+                            examples = {
+                                    @ExampleObject(name = "INVALID_ACCESS_TOKEN", value = """
+                                        {
+                                            "status": 401,
+                                            "code": "INVALID_ACCESS_TOKEN",
+                                            "message": "유효하지 않은 토큰입니다.",
+                                            "data": null
+                                        }
+                                        """),
+                                    @ExampleObject(name = "TOKEN_EXPIRED", value = """
+                                        {
+                                            "status": 401,
+                                            "code": "TOKEN_EXPIRED",
+                                            "message": "토큰이 만료되었습니다.",
+                                            "data": null
+                                        }
+                                        """),
+                                    @ExampleObject(name = "TOKEN_MISSING", value = """
+                                        {
+                                            "status": 401,
+                                            "code": "TOKEN_MISSING",
+                                            "message": "요청 헤더에 토큰이 없습니다.",
+                                            "data": null
+                                        }
+                                        """)
+                            }))
+    })
     @Operation(summary = "그룹 탈퇴하기", description = "그룹을 나갑니다.")
     ResponseEntity<ResponseDTO> leaveGroup(@PathVariable("groupId") Long groupId);
 
-    @Operation(summary = "유저가 가입한 그룹 조회하기", description = "유저가 가입한 그룹을 조회합니다.")
-    ResponseEntity<ResponseDTO>getUserJoinedGroups();
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공적으로 유저가 가입한 그룹을 조회한 경우",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDTO.class),
+                            examples = @ExampleObject(value =
+                                    "{ \"status\": 200, \"code\": \"SUCCESS_REGISTER_GROUP\", \"message\": \"그룹을 성공적으로 조회했습니다.\", \"data\": { \"groupId\": 4, \"groupName\": \"그룹이름\", \"city\": \"도봉구\", \"description\": \"상세 설명\", \"schedule\": \"스케쥴\", \"headCount\": 1, \"isLiked\": true, \"isWriter\": true, \"groupImage\": \"https://groomcaregiver.s3.ap-northeast-2.amazonaws.com/group/057d5abb-6b91-4754-bdea-e5778009e3e4\" } }"))),
 
-    @Operation(summary = "그룹 목록 조회하기", description = "존재하는 그룹을 조회합니다.")
+            @ApiResponse(responseCode = "404", description = "유저가 가입한 그룹이 없는 경우",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponseDTO.class),
+                            examples = @ExampleObject(value =
+                                    "{ \"status\": 404, \"code\": \"GROUP_NOT_FOUND\", \"message\": \"유저가 가입한 그룹을 찾을 수 없습니다.\", \"data\": null }"))),
+
+            @ApiResponse(responseCode = "401", description = "잘못된 토큰으로 요청할 경우",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponseDTO.class),
+                            examples = {
+                                    @ExampleObject(name = "INVALID_ACCESS_TOKEN", value = """
+                                        {
+                                            "status": 401,
+                                            "code": "INVALID_ACCESS_TOKEN",
+                                            "message": "유효하지 않은 토큰입니다.",
+                                            "data": null
+                                        }
+                                        """),
+                                    @ExampleObject(name = "TOKEN_EXPIRED", value = """
+                                        {
+                                            "status": 401,
+                                            "code": "TOKEN_EXPIRED",
+                                            "message": "토큰이 만료되었습니다.",
+                                            "data": null
+                                        }
+                                        """),
+                                    @ExampleObject(name = "TOKEN_MISSING", value = """
+                                        {
+                                            "status": 401,
+                                            "code": "TOKEN_MISSING",
+                                            "message": "요청 헤더에 토큰이 없습니다.",
+                                            "data": null
+                                        }
+                                        """)
+                            }))
+    })
+    @Operation(summary = "유저가 가입한 그룹 조회하기", description = "유저가 가입한 그룹을 조회합니다.")
+    ResponseEntity<ResponseDTO> getUserJoinedGroups();
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공적으로 그룹 목록을 조회한 경우",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDTO.class),
+                            examples = @ExampleObject(value =
+                                    "{ \"status\": 200, \"code\": \"SUCCESS_REGISTER_GROUP\", \"message\": \"그룹을 성공적으로 조회했습니다.\", \"data\": [ { \"groupId\": 3, \"groupName\": \"그룹이름\", \"city\": \"도봉구\", \"description\": \"상세 설명\", \"headCount\": 0, \"userType\": \"VOLUNTEER\", \"isLiked\": false, \"isWriter\": true, \"groupImage\": \"https://groomcaregiver.s3.ap-northeast-2.amazonaws.com/group/a08c7664-a0a9-49f2-9180-a04f2fa69582\" }, { \"groupId\": 4, \"groupName\": \"그룹이름\", \"city\": \"도봉구\", \"description\": \"상세 설명\", \"headCount\": 0, \"userType\": \"VOLUNTEER\", \"isLiked\": true, \"isWriter\": true, \"groupImage\": \"https://groomcaregiver.s3.ap-northeast-2.amazonaws.com/group/057d5abb-6b91-4754-bdea-e5778009e3e4\" }, { \"groupId\": 5, \"groupName\": \"그룹이름\", \"city\": \"도봉구\", \"description\": \"상세 설명\", \"headCount\": 0, \"userType\": \"VOLUNTEER\", \"isLiked\": true, \"isWriter\": true, \"groupImage\": \"https://groomcaregiver.s3.ap-northeast-2.amazonaws.com/group/eaef69d2-6b7d-4aa2-a1f3-45cc5246b28b\" }, { \"groupId\": 6, \"groupName\": \"그룹이름\", \"city\": \"도봉구\", \"description\": \"상세 설명\", \"headCount\": 0, \"userType\": \"VOLUNTEER\", \"isLiked\": false, \"isWriter\": true, \"groupImage\": \"https://groomcaregiver.s3.ap-northeast-2.amazonaws.com/group/f314d720-ec42-4bc9-8360-e2197282a636\" }, { \"groupId\": 7, \"groupName\": \"그룹이름\", \"city\": \"도봉구\", \"description\": \"상세 설명\", \"headCount\": 0, \"userType\": \"CAREGIVER\", \"isLiked\": false, \"isWriter\": true, \"groupImage\": \"https://groomcaregiver.s3.ap-northeast-2.amazonaws.com/group/5d1934e4-38b3-4a2b-a56c-44ccd684dc89\" } ] }"))),
+
+            @ApiResponse(responseCode = "404", description = "조회 가능한 그룹이 없는 경우",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponseDTO.class),
+                            examples = @ExampleObject(value =
+                                    "{ \"status\": 404, \"code\": \"GROUP_NOT_FOUND\", \"message\": \"조회 가능한 그룹이 없습니다.\", \"data\": null }"))),
+
+            @ApiResponse(responseCode = "401", description = "잘못된 토큰으로 요청할 경우",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponseDTO.class),
+                            examples = {
+                                    @ExampleObject(name = "INVALID_ACCESS_TOKEN", value = """
+                                        {
+                                            "status": 401,
+                                            "code": "INVALID_ACCESS_TOKEN",
+                                            "message": "유효하지 않은 토큰입니다.",
+                                            "data": null
+                                        }
+                                        """),
+                                    @ExampleObject(name = "TOKEN_EXPIRED", value = """
+                                        {
+                                            "status": 401,
+                                            "code": "TOKEN_EXPIRED",
+                                            "message": "토큰이 만료되었습니다.",
+                                            "data": null
+                                        }
+                                        """),
+                                    @ExampleObject(name = "TOKEN_MISSING", value = """
+                                        {
+                                            "status": 401,
+                                            "code": "TOKEN_MISSING",
+                                            "message": "요청 헤더에 토큰이 없습니다.",
+                                            "data": null
+                                        }
+                                        """)
+                            }))
+    })
+    @Operation(summary = "그룹 목록 조회하기", description = "유저가 가입하지 않은 다른 그룹을 조회합니다.")
     ResponseEntity<ResponseDTO> getGroupList();
 
-    @Operation(summary = "그룹에 대한 상세 정보 조회하기", description = "그룹에 대한 상세 정보를 조회합니다")
-    ResponseEntity<ResponseDTO> getGroupDetail(@PathVariable("groupId") Long groupId) ;
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공적으로 그룹 상세 정보를 조회한 경우",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDTO.class),
+                            examples = @ExampleObject(value =
+                                    "{ \"status\": 200, \"code\": \"SUCCESS_REGISTER_GROUP\", \"message\": \"그룹을 성공적으로 조회했습니다.\", \"data\": { \"groupId\": 4, \"groupName\": \"그룹이름\", \"city\": \"도봉구\", \"description\": \"상세 설명\", \"schedule\": \"스케쥴\", \"headCount\": 1, \"isLiked\": true, \"isWriter\": true, \"groupImage\": \"https://groomcaregiver.s3.ap-northeast-2.amazonaws.com/group/057d5abb-6b91-4754-bdea-e5778009e3e4\" } }"))),
+
+            @ApiResponse(responseCode = "404", description = "그룹을 찾을 수 없는 경우",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponseDTO.class),
+                            examples = @ExampleObject(value =
+                                    "{ \"status\": 404, \"code\": \"GROUP_NOT_FOUND\", \"message\": \"그룹을 찾을 수 없습니다.\", \"data\": null }"))),
+
+            @ApiResponse(responseCode = "401", description = "잘못된 토큰으로 요청할 경우",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponseDTO.class),
+                            examples = {
+                                    @ExampleObject(name = "INVALID_ACCESS_TOKEN", value = """
+                                        {
+                                            "status": 401,
+                                            "code": "INVALID_ACCESS_TOKEN",
+                                            "message": "유효하지 않은 토큰입니다.",
+                                            "data": null
+                                        }
+                                        """),
+                                    @ExampleObject(name = "TOKEN_EXPIRED", value = """
+                                        {
+                                            "status": 401,
+                                            "code": "TOKEN_EXPIRED",
+                                            "message": "토큰이 만료되었습니다.",
+                                            "data": null
+                                        }
+                                        """),
+                                    @ExampleObject(name = "TOKEN_MISSING", value = """
+                                        {
+                                            "status": 401,
+                                            "code": "TOKEN_MISSING",
+                                            "message": "요청 헤더에 토큰이 없습니다.",
+                                            "data": null
+                                        }
+                                        """)
+                            }))
+    })
+    @Operation(summary = "그룹에 대한 상세 정보 조회하기", description = "그룹에 대한 상세 정보를 조회합니다.")
+    ResponseEntity<ResponseDTO> getGroupDetail(@PathVariable("groupId") Long groupId);
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공적으로 그룹에 가입한 유저를 조회한 경우",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDTO.class),
+                            examples = @ExampleObject(value =
+                                    "{ \"status\": 200, \"code\": \"SUCCESS_RETRIEVE_USER\", \"message\": \"유저 정보 조회를 성공했습니다.\", \"data\": [ { \"userId\": 91, \"username\": \"이규민\", \"userType\": \"CAREGIVER\", \"timeTogether\": 0, \"age\": 26 }, { \"userId\": 3, \"username\": \"이정민\", \"userType\": \"CAREGIVER\", \"timeTogether\": 0, \"age\": 52 }, { \"userId\": 6, \"username\": \"김세훈\", \"userType\": \"VOLUNTEER\", \"timeTogether\": 0, \"age\": 33 }, { \"userId\": 13, \"username\": \"정현미\", \"userType\": \"CARE_WORKER\", \"timeTogether\": 0, \"age\": 33 }, { \"userId\": 4, \"username\": \"최미선\", \"userType\": \"CAREGIVER\", \"timeTogether\": 0, \"age\": 42 } ] }"))),
+
+            @ApiResponse(responseCode = "404", description = "그룹에 가입한 유저가 없는 경우",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponseDTO.class),
+                            examples = @ExampleObject(value =
+                                    "{ \"status\": 404, \"code\": \"USER_NOT_FOUND\", \"message\": \"그룹에 가입한 유저를 찾을 수 없습니다.\", \"data\": null }"))),
+
+            @ApiResponse(responseCode = "401", description = "인증되지 않은 요청으로 조회 실패",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponseDTO.class),
+                            examples = @ExampleObject(value =
+                                    "{ \"status\": 401, \"code\": \"UNAUTHORIZED\", \"message\": \"유저 인증에 실패했습니다.\", \"data\": null }")))
+    })
+    @Operation(summary = "그룹에 가입한 사람 조회하기", description = "그룹에 가입한 사람을 조회합니다.")
+    public ResponseEntity<ResponseDTO> getGroupUser(@PathVariable("groupId") Long groupId);
+
 }
 
