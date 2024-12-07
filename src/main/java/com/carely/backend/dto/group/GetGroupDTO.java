@@ -73,7 +73,7 @@ public class GetGroupDTO {
                     // .isWriter(isWriter)
                     //  .groupImage(e.getGroupImage())
                     .isJoined(isJoined)
-                    .lastNews(lastNews)
+                    .lastNews(lastNews.plusHours(9))
                     .build();
         }
     }
