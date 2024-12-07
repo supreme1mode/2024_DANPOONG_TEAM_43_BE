@@ -1,20 +1,14 @@
-package com.carely.backend.service.EasyCodef;
+package com.carely.backend.service.easyCodef;
 
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
 
 import com.carely.backend.code.EasyCodefMessageConstant;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.util.HashMap;
 
 
 @Service
@@ -27,7 +21,7 @@ public class EasyCodef {
      * EasyCodef 사용을 위한 변수 설정 오브젝트
      */
     @Autowired
-    private EasyCodefProperties properties = new EasyCodefProperties();
+    private EasyCodefProperties properties = new com.carely.backend.service.easyCodef.EasyCodefProperties();
 
     public void setClientInfoForDemo(String demoClientId, String demoClientSecret) {
         properties.setClientInfoForDemo(demoClientId, demoClientSecret);
@@ -42,7 +36,7 @@ public class EasyCodef {
     }
 
 
-    public EasyCodefResponse requestProduct(String productUrl, int serviceType, HashMap<String, Object> parameterMap) throws UnsupportedEncodingException, JsonProcessingException, InterruptedException {
+    public EasyCodefResponse requestProduct(String productUrl, int serviceType, HashMap<String, Object> parameterMap) throws InterruptedException {
         String clientId = properties.getDemoClientId();
         String clientSecret = properties.getDemoClientSecret();
 
@@ -53,34 +47,30 @@ public class EasyCodef {
         boolean validationFlag = true;
 
         /**	#1.필수 항목 체크 - 클라이언트 정보	*/
-        validationFlag = checkClientInfo(1);
+        validationFlag = checkClientInfo();
         if(!validationFlag) {
-            EasyCodefResponse response = new EasyCodefResponse(EasyCodefMessageConstant.EMPTY_CLIENT_INFO);
-            return response;
+            return new EasyCodefResponse(EasyCodefMessageConstant.EMPTY_CLIENT_INFO);
         }
 
         /**	#2.필수 항목 체크 - 퍼블릭 키	*/
         validationFlag = checkPublicKey();
         if(!validationFlag) {
-            EasyCodefResponse response = new EasyCodefResponse(EasyCodefMessageConstant.EMPTY_PUBLIC_KEY);
-            return response;
+            return new EasyCodefResponse(EasyCodefMessageConstant.EMPTY_PUBLIC_KEY);
         }
 
         /**	#3.추가인증 키워드 체크	*/
         validationFlag = checkTwoWayKeyword(parameterMap);
         if(!validationFlag) {
-            EasyCodefResponse response = new EasyCodefResponse(EasyCodefMessageConstant.INVALID_2WAY_KEYWORD);
-            return response;
+            return new EasyCodefResponse(EasyCodefMessageConstant.INVALID_2WAY_KEYWORD);
         }
 
         /**	#4.상품 조회 요청	*/
-        EasyCodefResponse response = EasyCodefConnector.execute(productUrl, 1, parameterMap, properties);
 
         /**	#5.결과 반환	*/
-        return response;
+        return EasyCodefConnector.execute(productUrl, 1, parameterMap, properties);
     }
 
-    public EasyCodefResponse requestCertification(String productUrl, int serviceType, HashMap<String, Object> parameterMap) throws UnsupportedEncodingException, JsonProcessingException, InterruptedException {
+    public EasyCodefResponse requestCertification(String productUrl, int serviceType, HashMap<String, Object> parameterMap) throws InterruptedException {
         String clientId = properties.getDemoClientId();
         String clientSecret = properties.getDemoClientSecret();
 
@@ -91,31 +81,27 @@ public class EasyCodef {
         boolean validationFlag = true;
 
         /**	#1.필수 항목 체크 - 클라이언트 정보	*/
-        validationFlag = checkClientInfo(1);
+        validationFlag = checkClientInfo();
         if(!validationFlag) {
-            EasyCodefResponse response = new EasyCodefResponse(EasyCodefMessageConstant.EMPTY_CLIENT_INFO);
-            return response;
+            return new EasyCodefResponse(EasyCodefMessageConstant.EMPTY_CLIENT_INFO);
         }
 
         /**	#2.필수 항목 체크 - 퍼블릭 키	*/
         validationFlag = checkPublicKey();
         if(!validationFlag) {
-            EasyCodefResponse response = new EasyCodefResponse(EasyCodefMessageConstant.EMPTY_PUBLIC_KEY);
-            return response;
+            return new EasyCodefResponse(EasyCodefMessageConstant.EMPTY_PUBLIC_KEY);
         }
 
         /**	#3.추가인증 파라미터 필수 입력 체크	*/
         validationFlag = checkTwoWayInfo(parameterMap);
         if(!validationFlag) {
-            EasyCodefResponse response = new EasyCodefResponse(EasyCodefMessageConstant.INVALID_2WAY_INFO);
-            return response;
+            return new EasyCodefResponse(EasyCodefMessageConstant.INVALID_2WAY_INFO);
         }
 
         /**	#4.상품 조회 요청	*/
-        EasyCodefResponse response = EasyCodefConnector.execute(productUrl, 1, parameterMap, properties);
 
         /**	#5.결과 반환	*/
-        return response;
+        return EasyCodefConnector.execute(productUrl, 1, parameterMap, properties);
     }
 
 
@@ -124,17 +110,12 @@ public class EasyCodef {
      * @Company : ©CODEF corp.
      * @Author  : notfound404@codef.io
      * @Date    : Jun 26, 2020 3:33:23 PM
-     * @param serviceType
-     * @return
      */
-    private boolean checkClientInfo(int serviceType) {
-        if(properties.getDemoClientId() == null || "".equals(properties.getDemoClientId().trim())) {
+    private boolean checkClientInfo() {
+        if(properties.getDemoClientId() == null || properties.getDemoClientId().trim().isEmpty()) {
             return false;
         }
-        if(properties.getDemoClientSecret() == null || "".equals(properties.getDemoClientSecret().trim())) {
-            return false;
-        }
-        return true;
+        return properties.getDemoClientSecret() != null && !properties.getDemoClientSecret().trim().isEmpty();
     }
 
     /**
@@ -142,13 +123,9 @@ public class EasyCodef {
      * @Company : ©CODEF corp.
      * @Author  : notfound404@codef.io
      * @Date    : Jun 26, 2020 3:33:31 PM
-     * @return
      */
     private boolean checkPublicKey() {
-        if(properties.getPublicKey() == null || "".equals(properties.getPublicKey().trim())) {
-            return false;
-        }
-        return true;
+        return properties.getPublicKey() != null && !properties.getPublicKey().trim().isEmpty();
     }
 
     /**
@@ -156,8 +133,6 @@ public class EasyCodef {
      * @Company : ©CODEF corp.
      * @Author  : notfound404@codef.io
      * @Date    : Jun 26, 2020 3:33:39 PM
-     * @param parameterMap
-     * @return
      */
     @SuppressWarnings("unchecked")
     private boolean checkTwoWayInfo(HashMap<String, Object> parameterMap) {
@@ -191,24 +166,18 @@ public class EasyCodef {
      * @Company : ©CODEF corp.
      * @Author  : notfound404@codef.io
      * @Date    : Jun 26, 2020 3:33:45 PM
-     * @param parameterMap
-     * @return
      */
     private boolean checkTwoWayKeyword(HashMap<String, Object> parameterMap) {
-        if(parameterMap != null && (parameterMap.containsKey("is2Way") || parameterMap.containsKey("twoWayInfo"))) {
-            return false;
-        }
-
-        return true;
+        return parameterMap == null || (!parameterMap.containsKey("is2Way") && !parameterMap.containsKey("twoWayInfo"));
     }
 
 
 
-    public EasyCodefResponse createAccount(HashMap<String, Object> parameterMap) throws UnsupportedEncodingException, JsonProcessingException, InterruptedException {
+    public EasyCodefResponse createAccount(HashMap<String, Object> parameterMap) throws InterruptedException {
         return requestProduct(EasyCodefConstant.CREATE_ACCOUNT, 1, parameterMap);
     }
 
-    public EasyCodefResponse addAccount(HashMap<String, Object> parameterMap) throws UnsupportedEncodingException, JsonProcessingException, InterruptedException {
+    public EasyCodefResponse addAccount(HashMap<String, Object> parameterMap) throws InterruptedException {
         return requestProduct(EasyCodefConstant.ADD_ACCOUNT, 1, parameterMap);
     }
 
@@ -217,14 +186,8 @@ public class EasyCodef {
      * @Company : ©CODEF corp.
      * @Author  : notfound404@codef.io
      * @Date    : Jun 26, 2020 3:34:21 PM
-     * @param serviceType
-     * @param parameterMap
-     * @return
-     * @throws UnsupportedEncodingException
-     * @throws JsonProcessingException
-     * @throws InterruptedException
      */
-    public EasyCodefResponse updateAccount(int serviceType, HashMap<String, Object> parameterMap) throws UnsupportedEncodingException, JsonProcessingException, InterruptedException {
+    public EasyCodefResponse updateAccount(int serviceType, HashMap<String, Object> parameterMap) throws InterruptedException {
         return requestProduct(EasyCodefConstant.UPDATE_ACCOUNT, serviceType, parameterMap);
     }
 
@@ -233,26 +196,20 @@ public class EasyCodef {
      * @Company : ©CODEF corp.
      * @Author  : notfound404@codef.io
      * @Date    : Jun 26, 2020 3:34:30 PM
-     * @param serviceType
-     * @param parameterMap
-     * @return
-     * @throws UnsupportedEncodingException
-     * @throws JsonProcessingException
-     * @throws InterruptedException
      */
-    public EasyCodefResponse deleteAccount(int serviceType, HashMap<String, Object> parameterMap) throws UnsupportedEncodingException, JsonProcessingException, InterruptedException {
+    public EasyCodefResponse deleteAccount(int serviceType, HashMap<String, Object> parameterMap) throws InterruptedException {
         return requestProduct(EasyCodefConstant.DELETE_ACCOUNT, serviceType, parameterMap);
     }
 
-    public EasyCodefResponse getAccountList(int serviceType, HashMap<String, Object> parameterMap) throws UnsupportedEncodingException, JsonProcessingException, InterruptedException {
+    public EasyCodefResponse getAccountList(int serviceType, HashMap<String, Object> parameterMap) throws InterruptedException {
         return requestProduct(EasyCodefConstant.GET_ACCOUNT_LIST, serviceType, parameterMap);
     }
 
-    public EasyCodefResponse getConnectedIdList(int serviceType) throws UnsupportedEncodingException, JsonProcessingException, InterruptedException {
+    public EasyCodefResponse getConnectedIdList(int serviceType) throws InterruptedException {
         return requestProduct(EasyCodefConstant.GET_CID_LIST, serviceType, null);
     }
 
-    public String requestToken(int serviceType) throws JsonParseException, JsonMappingException, IOException {
+    public String requestToken(int serviceType) throws IOException {
         String clientId = properties.getDemoClientId();
         String clientSecret = properties.getDemoClientSecret();
         String accessToken = EasyCodefTokenMap.getToken(clientId); // 보유 중인 토큰이 있는 경우 반환
@@ -278,13 +235,8 @@ public class EasyCodef {
      * @Company : ©CODEF corp.
      * @Author  : notfound404@codef.io
      * @Date    : Sep 16, 2020 11:58:32 AM
-     * @param serviceType
-     * @return
-     * @throws JsonParseException
-     * @throws JsonMappingException
-     * @throws IOException
      */
-    public String requestNewToken(int serviceType) throws JsonParseException, JsonMappingException, IOException {
+    public String requestNewToken(int serviceType) {
         String clientId = properties.getDemoClientId();
         String clientSecret = properties.getDemoClientSecret();
 

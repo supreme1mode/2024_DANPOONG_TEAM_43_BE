@@ -6,10 +6,9 @@ import com.carely.backend.dto.easyCodef.AdditionalAuthDTO;
 import com.carely.backend.dto.easyCodef.RequestUserIdentityDTO;
 import com.carely.backend.dto.easyCodef.UserIdentityDTO;
 import com.carely.backend.dto.response.ResponseDTO;
-import com.carely.backend.exception.IdentityNotAcceptableException;
-import com.carely.backend.exception.ObjectNullException;
-import com.carely.backend.service.CacheService;
-import com.carely.backend.service.EasyCodef.*;
+import com.carely.backend.service.easyCodef.EasyCodef;
+import com.carely.backend.service.easyCodef.EasyCodefProperties;
+import com.carely.backend.service.easyCodef.EasyCodefResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -156,7 +155,7 @@ public class EasyCodefController implements EasyCodefAPI {
             System.out.println("Additional Info API Response Code: " + code);
 
             if (Objects.equals(code, "CF-00000")) {
-                finalResponse.set(new ResponseDTO(SuccessCode.SUCCESS_GET_IDENTITY, "Authentication successful"));
+                finalResponse.set(new ResponseDTO<>(SuccessCode.SUCCESS_GET_IDENTITY, "Authentication successful"));
                 return true; // 성공
             }
         } catch (Exception e) {

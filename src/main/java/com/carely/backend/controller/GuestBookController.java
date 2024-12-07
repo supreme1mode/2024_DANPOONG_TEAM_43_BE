@@ -5,7 +5,6 @@ import com.carely.backend.code.SuccessCode;
 import com.carely.backend.controller.docs.GuestBookAPI;
 import com.carely.backend.dto.guestBook.RequestGuestBookDTO;
 import com.carely.backend.dto.guestBook.ResponseGroupGuestbookDTO;
-import com.carely.backend.dto.guestBook.ResponseGuestBookDTO;
 import com.carely.backend.dto.response.ResponseDTO;
 import com.carely.backend.dto.user.CustomUserDetails;
 import com.carely.backend.service.GuestBookService;

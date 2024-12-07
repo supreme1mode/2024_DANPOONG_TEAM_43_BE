@@ -1,6 +1,6 @@
 package com.carely.backend.service.certificate;
 
-import javax.net.ssl.*;
+import javax.net.ssl.X509TrustManager;
 
 public class UnsafeTrustManager implements X509TrustManager {
     @Override

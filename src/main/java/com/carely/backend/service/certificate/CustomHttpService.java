@@ -3,8 +3,10 @@ package com.carely.backend.service.certificate;
 import okhttp3.OkHttpClient;
 import org.web3j.protocol.http.HttpService;
 
-import javax.net.ssl.*;
-import java.security.cert.CertificateException;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 public class CustomHttpService extends HttpService {
 
@@ -18,10 +20,10 @@ public class CustomHttpService extends HttpService {
             TrustManager[] trustAllCerts = new TrustManager[]{
                     new X509TrustManager() {
                         @Override
-                        public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {}
+                        public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {}
 
                         @Override
-                        public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {}
+                        public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {}
 
                         @Override
                         public java.security.cert.X509Certificate[] getAcceptedIssuers() {

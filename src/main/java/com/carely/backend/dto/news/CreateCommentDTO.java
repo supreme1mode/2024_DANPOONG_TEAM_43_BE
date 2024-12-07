@@ -1,6 +1,5 @@
 package com.carely.backend.dto.news;
 
-import com.carely.backend.domain.News;
 import com.carely.backend.domain.NewsComment;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

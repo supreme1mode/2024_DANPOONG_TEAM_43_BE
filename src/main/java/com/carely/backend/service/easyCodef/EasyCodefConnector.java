@@ -1,24 +1,18 @@
-package com.carely.backend.service.EasyCodef;
+package com.carely.backend.service.easyCodef;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import com.carely.backend.code.EasyCodefMessageConstant;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.codec.binary.Base64;
+import org.springframework.stereotype.Component;
+
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.HashMap;
-
-import com.carely.backend.code.EasyCodefMessageConstant;
-import org.apache.commons.codec.binary.Base64;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
 
 /**
  * <pre>
@@ -41,12 +35,6 @@ public class EasyCodefConnector {
      * @Company : ©CODEF corp.
      * @Author  : notfound404@codef.io
      * @Date    : Jun 26, 2020 3:35:26 PM
-     * @param urlPath
-     * @param serviceType
-     * @param bodyMap
-     * @param properties
-     * @return
-     * @throws InterruptedException
      */
     @SuppressWarnings("unchecked")
     public static EasyCodefResponse execute(String urlPath, int serviceType, HashMap<String, Object> bodyMap, EasyCodefProperties properties) throws InterruptedException {
@@ -62,11 +50,9 @@ public class EasyCodefConnector {
             bodyString = mapper.writeValueAsString(bodyMap);
             bodyString = URLEncoder.encode(bodyString, "UTF-8");
         } catch (JsonProcessingException e) {
-            EasyCodefResponse response = new EasyCodefResponse(EasyCodefMessageConstant.INVALID_JSON);
-            return response;
+            return new EasyCodefResponse(EasyCodefMessageConstant.INVALID_JSON);
         } catch (UnsupportedEncodingException e) {
-            EasyCodefResponse response = new EasyCodefResponse(EasyCodefMessageConstant.UNSUPPORTED_ENCODING);
-            return response;
+            return new EasyCodefResponse(EasyCodefMessageConstant.UNSUPPORTED_ENCODING);
         }
 
         /**	#3.상품 조회 요청	*/
@@ -78,13 +64,11 @@ public class EasyCodefConnector {
             System.out.println(responseMap);
             System.out.println(accessToken);
         } else if (EasyCodefConstant.ACCESS_DENIED.equals(responseMap.get("error")) || "CF-00403".equals(((HashMap<String, Object>)responseMap.get(EasyCodefConstant.RESULT)).get(EasyCodefConstant.CODE))) {	// 접근 권한이 없는 경우 - 오류코드 반환
-            EasyCodefResponse response = new EasyCodefResponse(EasyCodefMessageConstant.UNAUTHORIZED, EasyCodefConstant.ACCESS_DENIED);
-            return response;
+            return new EasyCodefResponse(EasyCodefMessageConstant.UNAUTHORIZED, EasyCodefConstant.ACCESS_DENIED);
         }
 
         /**	#4.상품 조회 결과 반환	*/
-        EasyCodefResponse response = new EasyCodefResponse(responseMap);
-        return response;
+        return new EasyCodefResponse(responseMap);
     }
 
     /**
@@ -92,10 +76,6 @@ public class EasyCodefConnector {
      * @Company : ©CODEF corp.
      * @Author  : notfound404@codef.io
      * @Date    : Jun 26, 2020 3:35:34 PM
-     * @param urlPath
-     * @param token
-     * @param bodyString
-     * @return
      */
     private static HashMap<String, Object> requestProduct(String urlPath, String token, String bodyString) {
         BufferedReader br = null;
@@ -107,13 +87,13 @@ public class EasyCodefConnector {
             con.setRequestMethod("POST");
             con.setRequestProperty("Accept", "application/json");
 
-            if (token != null && !"".equals(token)) {
+            if (token != null && !token.isEmpty()) {
                 con.setRequestProperty("Authorization", "Bearer " + token);		// 엑세스 토큰 헤더 설정
             }
 
             // 리퀘스트 바디 전송
             OutputStream os = con.getOutputStream();
-            if (bodyString != null && !"".equals(bodyString)) {
+            if (bodyString != null && !bodyString.isEmpty()) {
                 os.write(bodyString.getBytes());
             }
             os.flush();
@@ -124,20 +104,15 @@ public class EasyCodefConnector {
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 br = new BufferedReader(new InputStreamReader(con.getInputStream()));
             } else if (responseCode == HttpURLConnection.HTTP_BAD_REQUEST) {
-                EasyCodefResponse response = new EasyCodefResponse(EasyCodefMessageConstant.BAD_REQUEST, urlPath);
-                return response;
+                return new EasyCodefResponse(EasyCodefMessageConstant.BAD_REQUEST, urlPath);
             } else if (responseCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
-                EasyCodefResponse response = new EasyCodefResponse(EasyCodefMessageConstant.UNAUTHORIZED, urlPath);
-                return response;
+                return new EasyCodefResponse(EasyCodefMessageConstant.UNAUTHORIZED, urlPath);
             } else if (responseCode == HttpURLConnection.HTTP_FORBIDDEN) {
-                EasyCodefResponse response = new EasyCodefResponse(EasyCodefMessageConstant.FORBIDDEN, urlPath);
-                return response;
+                return new EasyCodefResponse(EasyCodefMessageConstant.FORBIDDEN, urlPath);
             } else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
-                EasyCodefResponse response = new EasyCodefResponse(EasyCodefMessageConstant.NOT_FOUND, urlPath);
-                return response;
+                return new EasyCodefResponse(EasyCodefMessageConstant.NOT_FOUND, urlPath);
             } else {
-                EasyCodefResponse response = new EasyCodefResponse(EasyCodefMessageConstant.SERVER_ERROR, urlPath);
-                return response;
+                return new EasyCodefResponse(EasyCodefMessageConstant.SERVER_ERROR, urlPath);
             }
 
             // 응답 바디 read
@@ -153,8 +128,7 @@ public class EasyCodefConnector {
             return mapper.readValue(URLDecoder.decode(responseStr.toString(), "UTF-8"), new TypeReference<HashMap<String, Object>>(){});
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            EasyCodefResponse response = new EasyCodefResponse(EasyCodefMessageConstant.LIBRARY_SENDER_ERROR, e.getMessage());
-            return response;
+            return new EasyCodefResponse(EasyCodefMessageConstant.LIBRARY_SENDER_ERROR, e.getMessage());
         } finally {
             if(br != null) {
                 try {
@@ -169,16 +143,12 @@ public class EasyCodefConnector {
      * @Company : ©CODEF corp.
      * @Author  : notfound404@codef.io
      * @Date    : Jun 26, 2020 3:35:47 PM
-     * @param clientId
-     * @param clientSecret
-     * @return
-     * @throws InterruptedException
      */
     private static String getToken(String clientId, String clientSecret) throws InterruptedException {
         int i = 0;
         String accessToken = EasyCodefTokenMap.getToken(clientId);
-        if(accessToken == null || "".equals(accessToken) || !checkToken(accessToken)) { //만료 조건 추가
-            while(i < REPEAT_COUNT) {	// 토큰 발급 요청은 최대 3회까지 재시도
+        if(accessToken == null || accessToken.isEmpty() || !checkToken(accessToken)) { //만료 조건 추가
+            while(true) {	// 토큰 발급 요청은 최대 3회까지 재시도
                 HashMap<String, Object> tokenMap = publishToken(clientId, clientSecret);	// 토큰 발급 요청
                 if(tokenMap != null) {
                     String newToken = (String)tokenMap.get("access_token");
@@ -187,12 +157,8 @@ public class EasyCodefConnector {
 
                 }
 
-                if(accessToken != null || !"".equals(accessToken)) {
-                    break;	// 정상 발급시 반복문 종료
-                }
+                break;    // 정상 발급시 반복문 종료
 
-                Thread.sleep(20);
-                i++;
             }
         }
 
@@ -204,9 +170,6 @@ public class EasyCodefConnector {
      * @Company : ©CODEF corp.
      * @Author  : notfound404@codef.io
      * @Date    : Jun 26, 2020 3:36:01 PM
-     * @param clientId
-     * @param clientSecret
-     * @return
      */
     public static HashMap<String, Object> publishToken(String clientId, String clientSecret) {
         BufferedReader br = null;
@@ -251,8 +214,7 @@ public class EasyCodefConnector {
             }
             br.close();
 
-            HashMap<String, Object> tokenMap = mapper.readValue(URLDecoder.decode(responseStr.toString(), "UTF-8"), new TypeReference<HashMap<String, Object>>(){});
-            return tokenMap;
+            return mapper.readValue(URLDecoder.decode(responseStr.toString(), "UTF-8"), new TypeReference<HashMap<String, Object>>(){});
         } catch (Exception e) {
             return null;
         } finally {
@@ -266,8 +228,6 @@ public class EasyCodefConnector {
 
     /**
      * 토큰 유효기간 확인
-     * @param accessToken
-     * @return
      */
     private static boolean checkToken(String accessToken) {
         HashMap<String, Object> tokenMap = null;

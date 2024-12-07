@@ -1,7 +1,6 @@
 package com.carely.backend.repository;
 
 
-import com.carely.backend.domain.GuestBookEntity;
 import com.carely.backend.domain.User;
 import com.carely.backend.domain.Volunteer;
 import org.springframework.data.jpa.repository.JpaRepository;

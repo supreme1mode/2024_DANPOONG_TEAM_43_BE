@@ -6,7 +6,6 @@ import com.carely.backend.domain.Volunteer;
 import com.carely.backend.domain.enums.UserType;
 import com.carely.backend.dto.guestBook.RequestGuestBookDTO;
 import com.carely.backend.dto.guestBook.ResponseGroupGuestbookDTO;
-import com.carely.backend.dto.guestBook.ResponseGuestBookDTO;
 import com.carely.backend.exception.*;
 import com.carely.backend.repository.GroupRepository;
 import com.carely.backend.repository.GuestBookRepository;
@@ -17,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;

@@ -2,18 +2,15 @@ package com.carely.backend.dto.user;
 
 import com.carely.backend.domain.User;
 import com.carely.backend.domain.enums.UserType;
-import com.carely.backend.service.kakao.KakaoAddressService;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.Map;
 
 @Getter
 @Builder

@@ -1,14 +1,14 @@
 package com.carely.backend.controller;
 
 import com.carely.backend.code.SuccessCode;
-import com.carely.backend.dto.certificate.CertificateDTO;
 import com.carely.backend.dto.response.ResponseDTO;
-import com.carely.backend.dto.user.CustomUserDetails;
 import com.carely.backend.service.ocr.OCRService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -21,7 +21,7 @@ public class OCRController  {
         this.ocrService = ocrService;
     }
     @PostMapping(value = "/extract", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseDTO<?>> extractText(@RequestPart("file") MultipartFile file) throws Exception {
+    public ResponseEntity<ResponseDTO<?>> extractText(@RequestPart("file") MultipartFile file) {
 //        if (user.getUsername() == null) {
 //            // 가입 안 된 유저... 1을 보내주거나 해야 함....
 //            // 생년월일, 이름 있어야 함... 그래야 자격증 검증 가능할 듯?

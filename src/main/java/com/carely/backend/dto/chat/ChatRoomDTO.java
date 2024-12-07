@@ -1,6 +1,5 @@
 package com.carely.backend.dto.chat;
 
-import com.carely.backend.domain.ChatRoomEntity;
 import lombok.Getter;
 import lombok.Setter;
 

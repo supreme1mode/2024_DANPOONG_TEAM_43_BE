@@ -3,11 +3,7 @@ package com.carely.backend.dto.certificate;
 
 import lombok.Builder;
 import lombok.Data;
-
-import lombok.Builder;
-import lombok.Data;
 import org.web3j.abi.datatypes.DynamicStruct;
-import org.web3j.abi.datatypes.Type;
 
 @Data
 @Builder
