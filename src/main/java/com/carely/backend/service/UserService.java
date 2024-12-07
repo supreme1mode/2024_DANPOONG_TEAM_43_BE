@@ -212,7 +212,8 @@ public class UserService {
 
         String city = addressDetails[1]; // 시/군 정보
 
-        user.updateUserAddress(address, detailAddress, city);
+        // 시연을 위해 city 업데이트 안 함
+        user.updateUserAddress(address, detailAddress);
 
 
         userRepository.save(user);
