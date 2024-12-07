@@ -35,11 +35,35 @@ public interface ChatAPI {
                             examples = @ExampleObject(value =
                                     "{ \"status\": 400, \"code\": \"INVALID_REQUEST\", \"message\": \"요청 데이터가 잘못되었습니다.\", \"data\": null }"))),
 
-            @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자로 요청할 경우",
+            @ApiResponse(responseCode = "401", description = "잘못된 토큰으로 요청할 경우",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponseDTO.class),
-                            examples = @ExampleObject(value =
-                                    "{ \"status\": 401, \"code\": \"UNAUTHORIZED\", \"message\": \"사용자가 인증되지 않았습니다.\", \"data\": null }")))
+                            examples = {
+                                    @ExampleObject(name = "INVALID_ACCESS_TOKEN", value = """
+                                        {
+                                            "status": 401,
+                                            "code": "INVALID_ACCESS_TOKEN",
+                                            "message": "유효하지 않은 토큰입니다.",
+                                            "data": null
+                                        }
+                                        """),
+                                    @ExampleObject(name = "TOKEN_EXPIRED", value = """
+                                        {
+                                            "status": 401,
+                                            "code": "TOKEN_EXPIRED",
+                                            "message": "토큰이 만료되었습니다.",
+                                            "data": null
+                                        }
+                                        """),
+                                    @ExampleObject(name = "TOKEN_MISSING", value = """
+                                        {
+                                            "status": 401,
+                                            "code": "TOKEN_MISSING",
+                                            "message": "요청 헤더에 토큰이 없습니다.",
+                                            "data": null
+                                        }
+                                        """)
+                            }))
     })
     @Operation(summary = "채팅방을 생성하기", description = "채팅방을 생성합니다.")
     public ResponseEntity<?> createRoom(@RequestBody ChatRequest chatRequest);
@@ -57,11 +81,35 @@ public interface ChatAPI {
                             examples = @ExampleObject(value =
                                     "{ \"status\": 200, \"code\": \"SUCCESS_FIND_CHATROOM\", \"message\": \"모든 채팅방을 조회했습니다.\", \"data\": [ { \"id\": 6, \"type\": \"TALK\", \"roomId\": \"c0babffb-a39b-45e5-b326-a964b49e9409\", \"senderId\": 51, \"message\": \"반가워요\", \"timestamp\": \"2024-11-17T18:15:39.538526\", \"fileUrl\": null, \"fileName\": null, \"isApproved\": false }, { \"id\": 7, \"type\": \"TALK\", \"roomId\": \"c0babffb-a39b-45e5-b326-a964b49e9409\", \"senderId\": 51, \"message\": \"ㅋㅎ\", \"timestamp\": \"2024-11-17T18:15:55.295389\", \"fileUrl\": null, \"fileName\": null, \"isApproved\": false }, { \"id\": 8, \"type\": \"RESERVATION\", \"roomId\": \"c0babffb-a39b-45e5-b326-a964b49e9409\", \"senderId\": 51, \"message\": \"{\\\"id\\\":3,\\\"volunteerId\\\":51,\\\"caregiverId\\\":50,\\\"startTime\\\":\\\"2024-11-17T04:33:06.36\\\",\\\"endTime\\\":\\\"2024-11-17T04:33:06.36\\\",\\\"durationHours\\\":4,\\\"salary\\\":0,\\\"location\\\":\\\"경기도 용인시 수지구 어딘가\\\",\\\"mainTask\\\":\\\"설거지\\\",\\\"volunteerType\\\":\\\"VOLUNTEER_REQUEST\\\",\\\"roomId\\\":\\\"c0babffb-a39b-45e5-b326-a964b49e9409\\\"}\", \"timestamp\": \"2024-11-17T18:30:44.223335\", \"fileUrl\": null, \"fileName\": null, \"isApproved\": true }, { \"id\": 9, \"type\": \"RESERVATION\", \"roomId\": \"c0babffb-a39b-45e5-b326-a964b49e9409\", \"senderId\": 50, \"message\": \"약속을 수락했어요!\", \"timestamp\": \"2024-11-17T18:19:04.822753\", \"fileUrl\": null, \"fileName\": null, \"isApproved\": true }, { \"id\": 23, \"type\": \"FILE\", \"roomId\": \"95c506c0-28f7-4877-80ad-6863ce2e1af9\", \"senderId\": 51, \"message\": \"사진을 보냈습니다.\", \"timestamp\": \"2024-11-17T22:03:20.713524\", \"fileUrl\": \"https://groomcaregiver.s3.ap-northeast-2.amazonaws.com/cbf9f1dc-ff59-41e9-b612-e121eddab16c-KakaoTalk_20241114_101142529.jpg\", \"fileName\": \"KakaoTalk_20241114_101142529.jpg\", \"isApproved\": null } ] }"))),
 
-            @ApiResponse(responseCode = "404", description = "해당 채팅방이 존재하지 않을 경우",
+            @ApiResponse(responseCode = "401", description = "잘못된 토큰으로 요청할 경우",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponseDTO.class),
-                            examples = @ExampleObject(value =
-                                    "{ \"status\": 404, \"code\": \"CHATROOM_NOT_FOUND\", \"message\": \"해당 채팅방을 찾을 수 없습니다.\", \"data\": null }")))
+                            examples = {
+                                    @ExampleObject(name = "INVALID_ACCESS_TOKEN", value = """
+                                        {
+                                            "status": 401,
+                                            "code": "INVALID_ACCESS_TOKEN",
+                                            "message": "유효하지 않은 토큰입니다.",
+                                            "data": null
+                                        }
+                                        """),
+                                    @ExampleObject(name = "TOKEN_EXPIRED", value = """
+                                        {
+                                            "status": 401,
+                                            "code": "TOKEN_EXPIRED",
+                                            "message": "토큰이 만료되었습니다.",
+                                            "data": null
+                                        }
+                                        """),
+                                    @ExampleObject(name = "TOKEN_MISSING", value = """
+                                        {
+                                            "status": 401,
+                                            "code": "TOKEN_MISSING",
+                                            "message": "요청 헤더에 토큰이 없습니다.",
+                                            "data": null
+                                        }
+                                        """)
+                            }))
     })
     @Operation(summary = "채팅방에 해당하는 메세지 조회하기.", description = "채팅방에 해당하는 메세지들 조회합니다.")
     public ResponseEntity<?> getMessagesByRoomId(@PathVariable("roomId") String roomId);
@@ -81,7 +129,35 @@ public interface ChatAPI {
                             schema = @Schema(implementation = ResponseDTO.class),
                             examples = @ExampleObject(value =
                                     "{ \"status\": 200, \"code\": \"SUCCESS_FIND_CHATROOM\", \"message\": \"모든 채팅방을 조회했습니다.\", \"data\": [ { \"id\": 6, \"type\": \"TALK\", \"roomId\": \"c0babffb-a39b-45e5-b326-a964b49e9409\", \"senderId\": 51, \"message\": \"반가워요\", \"timestamp\": \"2024-11-17T18:15:39.538526\", \"fileUrl\": null, \"fileName\": null, \"isApproved\": false }, { \"id\": 7, \"type\": \"TALK\", \"roomId\": \"c0babffb-a39b-45e5-b326-a964b49e9409\", \"senderId\": 51, \"message\": \"ㅋㅎ\", \"timestamp\": \"2024-11-17T18:15:55.295389\", \"fileUrl\": null, \"fileName\": null, \"isApproved\": false }, { \"id\": 8, \"type\": \"RESERVATION\", \"roomId\": \"c0babffb-a39b-45e5-b326-a964b49e9409\", \"senderId\": 51, \"message\": \"{\\\"id\\\":3,\\\"volunteerId\\\":51,\\\"caregiverId\\\":50,\\\"startTime\\\":\\\"2024-11-17T04:33:06.36\\\",\\\"endTime\\\":\\\"2024-11-17T04:33:06.36\\\",\\\"durationHours\\\":4,\\\"salary\\\":0,\\\"location\\\":\\\"경기도 용인시 수지구 어딘가\\\",\\\"mainTask\\\":\\\"설거지\\\",\\\"volunteerType\\\":\\\"VOLUNTEER_REQUEST\\\",\\\"roomId\\\":\\\"c0babffb-a39b-45e5-b326-a964b49e9409\\\"}\", \"timestamp\": \"2024-11-17T18:30:44.223335\", \"fileUrl\": null, \"fileName\": null, \"isApproved\": true }, { \"id\": 9, \"type\": \"RESERVATION\", \"roomId\": \"c0babffb-a39b-45e5-b326-a964b49e9409\", \"senderId\": 50, \"message\": \"약속을 수락했어요!\", \"timestamp\": \"2024-11-17T18:19:04.822753\", \"fileUrl\": null, \"fileName\": null, \"isApproved\": true }, { \"id\": 23, \"type\": \"FILE\", \"roomId\": \"95c506c0-28f7-4877-80ad-6863ce2e1af9\", \"senderId\": 51, \"message\": \"사진을 보냈습니다.\", \"timestamp\": \"2024-11-17T22:03:20.713524\", \"fileUrl\": \"https://groomcaregiver.s3.ap-northeast-2.amazonaws.com/cbf9f1dc-ff59-41e9-b612-e121eddab16c-KakaoTalk_20241114_101142529.jpg\", \"fileName\": \"KakaoTalk_20241114_101142529.jpg\", \"isApproved\": null } ] }"))),
-
+            @ApiResponse(responseCode = "401", description = "잘못된 토큰으로 요청할 경우",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponseDTO.class),
+                            examples = {
+                                    @ExampleObject(name = "INVALID_ACCESS_TOKEN", value = """
+                                        {
+                                            "status": 401,
+                                            "code": "INVALID_ACCESS_TOKEN",
+                                            "message": "유효하지 않은 토큰입니다.",
+                                            "data": null
+                                        }
+                                        """),
+                                    @ExampleObject(name = "TOKEN_EXPIRED", value = """
+                                        {
+                                            "status": 401,
+                                            "code": "TOKEN_EXPIRED",
+                                            "message": "토큰이 만료되었습니다.",
+                                            "data": null
+                                        }
+                                        """),
+                                    @ExampleObject(name = "TOKEN_MISSING", value = """
+                                        {
+                                            "status": 401,
+                                            "code": "TOKEN_MISSING",
+                                            "message": "요청 헤더에 토큰이 없습니다.",
+                                            "data": null
+                                        }
+                                        """)
+                            })),
             @ApiResponse(responseCode = "404", description = "열린 채팅방이 존재하지 않을 경우",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponseDTO.class),
