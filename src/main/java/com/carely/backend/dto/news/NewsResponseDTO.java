@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -19,7 +21,9 @@ public class NewsResponseDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class List {
+    public static class List implements Serializable {
+        @Serial
+        private static final long serialVersionUID = 1L; // 직렬화 UID 추가
         private Long newsId;
         private String title;
         private String content;
@@ -49,7 +53,9 @@ public class NewsResponseDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Detail {
+    public static class Detail implements Serializable{
+        @Serial
+        private static final long serialVersionUID = 1L; // 직렬화 UID 추가
         private Long newsId;
         private String title;
         private String content;
