@@ -1,6 +1,5 @@
-package com.carely.backend.service.EasyCodef;
+package com.carely.backend.service.easyCodef;
 
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 /**

@@ -1,10 +1,6 @@
-package com.carely.backend.service.EasyCodef;
+package com.carely.backend.service.easyCodef;
 
 import com.carely.backend.code.EasyCodefMessageConstant;
-import com.carely.backend.code.SuccessCode;
-import com.carely.backend.dto.response.ResponseDTO;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
