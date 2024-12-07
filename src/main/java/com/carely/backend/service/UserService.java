@@ -7,7 +7,6 @@ import com.carely.backend.domain.enums.UserType;
 import com.carely.backend.dto.guestBook.UserDetailGuestBookDTO;
 import com.carely.backend.dto.user.*;
 import com.carely.backend.exception.*;
-import com.carely.backend.repository.GroupRepository;
 import com.carely.backend.repository.GuestBookRepository;
 import com.carely.backend.repository.UserRepository;
 import com.carely.backend.repository.VolunteerRepository;
@@ -22,11 +21,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-import java.net.URLEncoder;
 
 @Service
 @RequiredArgsConstructor
@@ -147,7 +145,17 @@ public class UserService {
 
         // 함께한 사람 추가
         MyPageDTO.DetailRes res = MyPageDTO.DetailRes.toDTO(user);
-        res.setTogetherTime(calculateTotalDuration(viewer, user));
+        List<Volunteer> volunteers = volunteerRepository.findByVolunteerOrCaregiver(user);
+        if (volunteers.isEmpty()) {
+            res.setTogetherTime(0L);
+        }
+        else {
+            AtomicInteger result = new AtomicInteger();
+            volunteers.stream().map((volunteer -> {
+                return result.addAndGet(volunteer.getDurationHours());
+            }));
+            res.setTogetherTime(result.longValue());
+        }
 
         // 함께한 사람 방명록 추가
         List<Volunteer> result = volunteerRepository.findByVolunteerOrCaregiver(user);

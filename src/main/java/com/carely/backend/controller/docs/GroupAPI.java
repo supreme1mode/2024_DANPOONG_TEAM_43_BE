@@ -2,7 +2,6 @@ package com.carely.backend.controller.docs;
 
 
 import com.carely.backend.dto.group.CreateGroupDTO;
-import com.carely.backend.dto.group.GetGroupDTO;
 import com.carely.backend.dto.response.ErrorResponseDTO;
 import com.carely.backend.dto.response.ResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,10 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -89,8 +85,7 @@ public interface GroupAPI {
                                         """)
                             }))
     })
-
-    public ResponseEntity<ResponseDTO> createGroup(@RequestPart("createGroupDTO") CreateGroupDTO createGroupDTO) throws IOException;
+    ResponseEntity<ResponseDTO> createGroup(@RequestPart("createGroupDTO") CreateGroupDTO createGroupDTO) throws IOException;
 
     @Operation(summary = "그룹 삭제하기", description = "그룹을 만든 사람이 그룹을 삭제합니다.")
     @ApiResponses(value = {
@@ -173,8 +168,7 @@ public interface GroupAPI {
                                         """)
                             }))
     })
-
-    public ResponseEntity<ResponseDTO> deleteGroup(@PathVariable("groupId") Long groupId) ;
+    ResponseEntity<ResponseDTO> deleteGroup(@PathVariable("groupId") Long groupId) ;
 
     @Operation(summary = "그룹 가입하기", description = "그룹에 가입합니다.")
     @ApiResponses(value = {
@@ -258,19 +252,18 @@ public interface GroupAPI {
                                         """)
                             }))
     })
-
-    public ResponseEntity<ResponseDTO> joinGroup(@PathVariable("groupId") Long groupId) ;
+    ResponseEntity<ResponseDTO> joinGroup(@PathVariable("groupId") Long groupId) ;
 
     @Operation(summary = "그룹 탈퇴하기", description = "그룹을 나갑니다.")
-    public ResponseEntity<ResponseDTO> leaveGroup(@PathVariable("groupId") Long groupId);
+    ResponseEntity<ResponseDTO> leaveGroup(@PathVariable("groupId") Long groupId);
 
     @Operation(summary = "유저가 가입한 그룹 조회하기", description = "유저가 가입한 그룹을 조회합니다.")
-    public ResponseEntity<ResponseDTO>getUserJoinedGroups();
+    ResponseEntity<ResponseDTO>getUserJoinedGroups();
 
     @Operation(summary = "그룹 목록 조회하기", description = "존재하는 그룹을 조회합니다.")
-    public ResponseEntity<ResponseDTO> getGroupList();
+    ResponseEntity<ResponseDTO> getGroupList();
 
     @Operation(summary = "그룹에 대한 상세 정보 조회하기", description = "그룹에 대한 상세 정보를 조회합니다")
-    public ResponseEntity<ResponseDTO> getGroupDetail(@PathVariable("groupId") Long groupId) ;
+    ResponseEntity<ResponseDTO> getGroupDetail(@PathVariable("groupId") Long groupId) ;
 }
 

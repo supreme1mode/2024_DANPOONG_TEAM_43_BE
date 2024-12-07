@@ -1,6 +1,5 @@
 package com.carely.backend.controller.docs;
 
-import com.carely.backend.dto.chat.ChatRequest;
 import com.carely.backend.dto.guestBook.RequestGuestBookDTO;
 import com.carely.backend.dto.response.ErrorResponseDTO;
 import com.carely.backend.dto.response.ResponseDTO;
@@ -89,7 +88,7 @@ public interface GuestBookAPI {
                                             """)
                             }))
     })
-    public ResponseEntity<?> registerGuestBook(@Valid @AuthenticationPrincipal CustomUserDetails user, @RequestBody RequestGuestBookDTO requestGuestBookDTO, @PathVariable Long id);
+    ResponseEntity<?> registerGuestBook(@Valid @AuthenticationPrincipal CustomUserDetails user, @RequestBody RequestGuestBookDTO requestGuestBookDTO, @PathVariable Long id);
 
 //    @Operation(summary = "방명록 조회하기", description = "전체 방명록을 조회합니다.")
 //    public ResponseEntity<?> getAllGuestBook(@Valid @AuthenticationPrincipal CustomUserDetails user);
@@ -102,8 +101,7 @@ public interface GuestBookAPI {
 //    public ResponseEntity<ResponseDTO<?>> getGuestBookCaregiverHome(@Valid @AuthenticationPrincipal CustomUserDetails user);
 
     @Operation(summary = "방명록 삭제하기", description = "방명록을 삭제합니다. volunteer_id를 넣어주세요. 본인이 volunteer로 작성한 방명록만 삭제가 가능합니다.")
-    
-    public ResponseEntity<ResponseDTO<?>> deleteGuestBook(@Valid @AuthenticationPrincipal CustomUserDetails user, @PathVariable Long id);
+    ResponseEntity<ResponseDTO<?>> deleteGuestBook(@Valid @AuthenticationPrincipal CustomUserDetails user, @PathVariable Long id);
 
     @Operation(summary = "그룹 방명록 불러오기", description = "group_id에 있는 방명록을 모두 불러옵니다.")
     @ApiResponses(value = {
@@ -187,7 +185,7 @@ public interface GuestBookAPI {
                                         """)
                             }))
     })
-    public ResponseEntity<ResponseDTO<?>> getGroupGuestbook(@PathVariable Long groupId, @AuthenticationPrincipal CustomUserDetails user);
+    ResponseEntity<ResponseDTO<?>> getGroupGuestbook(@PathVariable Long groupId, @AuthenticationPrincipal CustomUserDetails user);
 
 
 
@@ -273,7 +271,7 @@ public interface GuestBookAPI {
                                         """)
                             }))
     })
-    public ResponseEntity<ResponseDTO<?>> getMyPageGuestBook(@AuthenticationPrincipal CustomUserDetails user);
+    ResponseEntity<ResponseDTO<?>> getMyPageGuestBook(@AuthenticationPrincipal CustomUserDetails user);
 
 
 }

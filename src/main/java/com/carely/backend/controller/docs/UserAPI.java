@@ -20,10 +20,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.view.RedirectView;
 
 import java.io.IOException;
-import java.util.Map;
 
 public interface UserAPI {
     @Operation(summary = "회원가입하기", description = "회원가입을 진행합니다.")
@@ -47,7 +45,7 @@ public interface UserAPI {
             ),
 
     })
-    public ResponseEntity<ResponseDTO> registerUser(@RequestPart("registerDTO") RegisterDTO registerDTO, @RequestPart MultipartFile file) throws IOException;
+    ResponseEntity<ResponseDTO> registerUser(@RequestPart("registerDTO") RegisterDTO registerDTO, @RequestPart MultipartFile file) throws IOException;
 
     @Operation(summary = "access token 재발급하기",
             parameters = {
@@ -81,21 +79,21 @@ public interface UserAPI {
     ResponseEntity<ResponseDTO> reissue(HttpServletRequest request, HttpServletResponse response) throws IOException;
 
     @Operation(summary = "카카오 로그인", description = "카카오 code를 이용한 로그인")
-    public ResponseEntity<?> kakaoCallback(@RequestParam("code") String code, HttpServletResponse response) throws IOException;
+    ResponseEntity<?> kakaoCallback(@RequestParam("code") String code, HttpServletResponse response) throws IOException;
 
     @Operation(summary = "현재 로그인한 유저 정보 조회하기", description = "현재 로그인한 유저 정보를 조회합니다.")
-    public ResponseEntity<ResponseDTO> getMypage();
+    ResponseEntity<ResponseDTO> getMypage();
 
     @Operation(summary = "유저 상세 정보 조회하기", description = "유저의 상세 정보를 조회합니다.")
-    public ResponseEntity<ResponseDTO> getDetailUseInfo(@PathVariable("userId") Long userId);
+    ResponseEntity<ResponseDTO> getDetailUseInfo(@PathVariable("userId") Long userId);
 
     @Operation(summary = "위치 인증 여부 확인하기", description = "사용자가 위치를 인증했는지 확인합니다.")
-    public ResponseEntity<ResponseDTO> verifyAuthentication();
+    ResponseEntity<ResponseDTO> verifyAuthentication();
 
     @Operation(summary = "주소를 전달해 위치 인증하기", description = "주소를 전달해 위치 인증을 진행합니다.")
-    public ResponseEntity<ResponseDTO> verifyAuthenticationPost(@RequestBody() AddressDTO addressDTO);
+    ResponseEntity<ResponseDTO> verifyAuthenticationPost(@RequestBody() AddressDTO addressDTO);
 
     @Operation(summary = "유저 삭제하기", description = "유저를 삭제합니다. (회원 탈퇴로 나중에 수정하기)gi")
-    public ResponseEntity<ResponseDTO> deleteUser(@PathVariable String kakao_id) ;
+    ResponseEntity<ResponseDTO> deleteUser(@PathVariable String kakao_id) ;
 
 }

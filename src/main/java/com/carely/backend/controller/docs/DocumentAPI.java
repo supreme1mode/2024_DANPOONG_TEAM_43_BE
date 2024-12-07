@@ -98,7 +98,7 @@ public interface DocumentAPI {
                                         """)
                             }))
     })
-    public ResponseEntity<ResponseDTO<?>> getDocumentIssuedList(@PathVariable String documentType, @AuthenticationPrincipal CustomUserDetails user);
+    ResponseEntity<ResponseDTO<?>> getDocumentIssuedList(@PathVariable String documentType, @AuthenticationPrincipal CustomUserDetails user);
 
 
     }

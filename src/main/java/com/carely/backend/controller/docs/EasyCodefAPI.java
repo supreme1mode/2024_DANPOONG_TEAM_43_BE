@@ -1,10 +1,8 @@
 package com.carely.backend.controller.docs;
 
-import com.carely.backend.dto.easyCodef.AdditionalAuthDTO;
 import com.carely.backend.dto.easyCodef.RequestUserIdentityDTO;
 import com.carely.backend.dto.response.ErrorResponseDTO;
 import com.carely.backend.dto.response.ResponseDTO;
-import com.carely.backend.service.EasyCodef.EasyCodefResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -46,5 +44,5 @@ public interface EasyCodefAPI {
                                         """)
                             }))
     })
-    public ResponseEntity<ResponseDTO> connectAPI(@RequestBody RequestUserIdentityDTO requestUserIdentityDTO) throws InterruptedException, UnsupportedEncodingException, JsonProcessingException;
+    ResponseEntity<ResponseDTO> connectAPI(@RequestBody RequestUserIdentityDTO requestUserIdentityDTO) throws InterruptedException, UnsupportedEncodingException, JsonProcessingException;
 }

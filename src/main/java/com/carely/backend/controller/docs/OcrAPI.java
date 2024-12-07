@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -50,5 +49,5 @@ public interface OcrAPI {
                     )
             )
     })
-    public ResponseEntity<ResponseDTO<?>> extractText(@Valid @RequestPart("file") MultipartFile file) throws IOException;
+    ResponseEntity<ResponseDTO<?>> extractText(@Valid @RequestPart("file") MultipartFile file);
 }
