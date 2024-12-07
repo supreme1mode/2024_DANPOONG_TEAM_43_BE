@@ -14,6 +14,8 @@ public interface VolunteerRepository extends JpaRepository<Volunteer, Long> {
 
     @Query("SELECT DISTINCT v FROM Volunteer v WHERE " +
             "(v.volunteer = :volunteer AND v.caregiver = :caregiver) " +
+            "OR " +
+            "(v.volunteer = :caregiver AND v.caregiver = :volunteer) " +
             "ORDER BY v.id DESC")
     List<Volunteer> findByVolunteerAndCaregiver(@Param("volunteer") User volunteer, @Param("caregiver") User caregiver);
 
