@@ -230,14 +230,15 @@ public class UserService {
 
     private Long calculateTotalDuration(User user1, User user2) {
         List<Volunteer> sharedVolunteers = volunteerRepository.findByVolunteerAndCaregiver(user1, user2);
-
+        System.out.println(sharedVolunteers.size());
         return sharedVolunteers.stream()
                 .mapToLong(volunteer -> {
-                    if (volunteer.getStartTime() != null && volunteer.getEndTime() != null &&
-                            volunteer.getEndTime().isBefore(LocalDateTime.now())) { // 종료 시간이 현재 시간보다 이전인 경우
-                        return volunteer.getDurationHours(); // 함께한 시간에 추가
-                    }
-                    return 0;
+                    return volunteer.getDurationHours();
+//                    if (volunteer.getStartTime() != null && volunteer.getEndTime() != null &&
+//                            volunteer.getEndTime().isBefore(LocalDateTime.now())) { // 종료 시간이 현재 시간보다 이전인 경우
+//                        return volunteer.getDurationHours(); // 함께한 시간에 추가
+//                    }
+//                    return 0;
                 })
                 .sum();
     }
