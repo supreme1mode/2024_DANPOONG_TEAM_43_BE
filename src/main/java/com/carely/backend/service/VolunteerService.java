@@ -84,6 +84,7 @@ public class VolunteerService {
 
     @Transactional
     public CreateVolunteerDTO.Res updateApproval(Long volunteerId, Long messageId, String roomId, String kakaoId) throws Exception {
+
         User user = userRepository.findByKakaoId(kakaoId)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
@@ -98,6 +99,8 @@ public class VolunteerService {
         if(!chat.getRoomId().equals(roomId))
             throw new NotMatchChatroomException("");
 
+
+
         // volunteer 대상자가 아니라면
         // if(!Objects.equals(volunteer.getVolunteer().getId(), user.getId()))
         //     throw new NotEligibleCaregiver("");
@@ -109,6 +112,7 @@ public class VolunteerService {
         volunteer.updateVolunteerApproval();
 
         chat.updateVolunteerApproval();
+
         chatMessageRepository.save(chat);
         //callExternalApi(volunteer);
         // 블록체인 함수 호출

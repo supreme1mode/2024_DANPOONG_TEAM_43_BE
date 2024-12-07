@@ -315,9 +315,10 @@ public class UserService {
 
         // 같은 city에 있는 간병인만 조회
         String currentCity = currentUser.getCity();
-
+        System.out.println(currentCity);
         // 같은 city에 있는 모든 사용자 조회
         List<User> allCaregivers = userRepository.findByUserTypeAndCity(UserType.CAREGIVER, currentCity);
+        System.out.println(allCaregivers);
         System.out.println(currentUser.getAddress());
 
         // 본인 제외, 보완 가능한 trait 필터링

@@ -73,9 +73,9 @@ public class VolunteerController implements VolunteerAPI {
     public ResponseEntity<?> approveVolunteer(@PathVariable("volunteerId") Long volunteerId,
                                              @RequestBody() UpdateVolunteerApprovalDTO updateVolunteerApprovalDTO) throws Exception {
 
-        //String kakaoId = SecurityContextHolder.getContext().getAuthentication().getName();
+        String kakaoId = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        CreateVolunteerDTO.Res res = volunteerService.updateApproval(volunteerId, updateVolunteerApprovalDTO.getMessageId(), updateVolunteerApprovalDTO.getRoomId(), "3777478397");
+        CreateVolunteerDTO.Res res = volunteerService.updateApproval(volunteerId, updateVolunteerApprovalDTO.getMessageId(), updateVolunteerApprovalDTO.getRoomId(), kakaoId);
 
         //ChatRoomEntity chatRoom = chatService.findRoomById(updateVolunteerApprovalDTO.getRoomId());
 
