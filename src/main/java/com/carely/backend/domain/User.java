@@ -130,11 +130,17 @@ public class User extends BaseEntity {
     }
 
     // 주소 업데이트
-    public void updateUserAddress(String address, String detailAddress, String city) {
-        this.address = address;
-        this.detailAddress = detailAddress;
+//    public void updateUserAddress(String address, String detailAddress, String city) {
+//        this.address = address;
+//        this.detailAddress = detailAddress;
+//        this.locationAuthentication = true;
+//        this.city = city;
+//    }
+
+        public void updateUserAddress(String address, String detailAddress) {
+//        this.address = address;
+//        this.detailAddress = detailAddress;
         this.locationAuthentication = true;
-        this.city = city;
     }
 
     // 요약 업데이트
