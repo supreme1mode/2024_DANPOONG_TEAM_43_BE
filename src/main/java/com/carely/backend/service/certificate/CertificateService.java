@@ -8,6 +8,7 @@ import com.carely.backend.dto.certificate.VolunteerListDTO;
 import com.carely.backend.dto.certificate.volunteerDTO;
 import com.carely.backend.exception.*;
 import com.carely.backend.repository.UserRepository;
+import com.carely.backend.repository.VolunteerRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,13 +48,15 @@ public class CertificateService {
     private final UserRepository userRepository;
     protected final RawTransactionManager txManager;
     protected final StaticGasProvider gasProvider;
+    private final VolunteerRepository volunteerRepository;
 
     private final GanacheProperties ganacheProperties;
     private String ganacheUrl = "http://3.34.24.211:7545";
 
     @Autowired
-    public CertificateService(UserRepository userRepository, GanacheProperties ganacheProperties) {
+    public CertificateService(UserRepository userRepository, VolunteerRepository volunteerRepository, GanacheProperties ganacheProperties) {
         this.userRepository = userRepository;
+        this.volunteerRepository = volunteerRepository;
         this.ganacheProperties = ganacheProperties;
         String privateKey = ganacheProperties.getPrivateKey().trim(); // 공백 제거
         String contractKey = ganacheProperties.getContractKey().trim(); // 공백 제거
@@ -336,6 +339,18 @@ public class CertificateService {
     public int calculateTotalVolunteerHours(String userId) {
         User user = userRepository.findById(Long.valueOf(userId))
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        if (user.getUserType().equals(UserType.CAREGIVER)) {
+            int result = 0;
+            List<Volunteer> list = volunteerRepository.findByCaregiver(user);
+            for(Volunteer volunteer : list) {
+                if (volunteer.getIsApproved()) {
+                    result += volunteer.getDurationHours();
+                }
+            }
+            return result;
+        }
+
         // Solidity 함수 호출을 위한 Function 객체 생성
         Function function = new Function(
                 "calculateTotalVolunteerHours",
